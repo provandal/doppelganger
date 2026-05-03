@@ -1,0 +1,2011 @@
+/home/vamsi/src/phd/codebase/ns3-datacenter/simulator/ns-3.39/examples/PowerTCP/config-burst.txtENABLE_QCN			Yes
+PACKET_PAYLOAD_SIZE		1000
+TOPOLOGY_FILE			examples/PowerTCP/topology-256.txt
+FLOW_FILE			examples/PowerTCP/flow-burstExp-256.txt
+TRACE_FILE			mix/trace.txt
+TRACE_OUTPUT_FILE		mix/mix.tr
+FCT_OUTPUT_FILE		mix/fct.txt
+PFC_OUTPUT_FILE				mix/pfc.txt
+SIMULATOR_STOP_TIME		0.2
+CC_MODE		3
+ALPHA_RESUME_INTERVAL		1
+RATE_DECREASE_INTERVAL		4
+CLAMP_TARGET_RATE		No
+RP_TIMER			900
+EWMA_GAIN			0.00390625
+FAST_RECOVERY_TIMES		1
+RATE_AI				50Mb/s
+RATE_HAI			100Mb/s
+MIN_RATE		100Mb/s
+DCTCP_RATE_AI				1000Mb/s
+ERROR_RATE_PER_LINK		0.001
+L2_CHUNK_SIZE			4000
+L2_ACK_INTERVAL			1
+L2_BACK_TO_ZERO			No
+HAS_WIN		1
+GLOBAL_T		1
+VAR_WIN		1
+FAST_REACT		1
+U_TARGET		0.95
+MI_THRESH		5
+INT_MULTI				1
+MULTI_RATE				0
+SAMPLE_FEEDBACK				0
+PINT_LOG_BASE				1.05
+PINT_PROB				1
+RATE_BOUND		1
+ACK_HIGH_PRIO		0
+LINK_DOWN				0 0 0
+ENABLE_TRACE				1
+KMAX_MAP				 25000000000 400 50000000000 800 100000000000 1600
+KMIN_MAP				 25000000000 100 50000000000 200 100000000000 400
+PMAX_MAP				 25000000000 0.2 50000000000 0.2 100000000000 0.2
+BUFFER_SIZE				4
+QLEN_MON_FILE				mix/qlen.txt
+QLEN_MON_START				2000000000
+QLEN_MON_END				2010000000
+276 20 20 288
+switch_num 20
+sid 256
+sid 257
+sid 258
+sid 259
+sid 260
+sid 261
+sid 262
+sid 263
+sid 264
+sid 265
+sid 266
+sid 267
+sid 268
+sid 269
+sid 270
+sid 271
+sid 272
+sid 273
+sid 274
+sid 275
+0 256 276 25000000000.0 1us 0
+1 256 276 25000000000.0 1us 0
+2 256 276 25000000000.0 1us 0
+3 256 276 25000000000.0 1us 0
+4 256 276 25000000000.0 1us 0
+5 256 276 25000000000.0 1us 0
+6 256 276 25000000000.0 1us 0
+7 256 276 25000000000.0 1us 0
+8 256 276 25000000000.0 1us 0
+9 256 276 25000000000.0 1us 0
+10 256 276 25000000000.0 1us 0
+11 256 276 25000000000.0 1us 0
+12 256 276 25000000000.0 1us 0
+13 256 276 25000000000.0 1us 0
+14 256 276 25000000000.0 1us 0
+15 256 276 25000000000.0 1us 0
+16 256 276 25000000000.0 1us 0
+17 256 276 25000000000.0 1us 0
+18 256 276 25000000000.0 1us 0
+19 256 276 25000000000.0 1us 0
+20 256 276 25000000000.0 1us 0
+21 256 276 25000000000.0 1us 0
+22 256 276 25000000000.0 1us 0
+23 256 276 25000000000.0 1us 0
+24 256 276 25000000000.0 1us 0
+25 256 276 25000000000.0 1us 0
+26 256 276 25000000000.0 1us 0
+27 256 276 25000000000.0 1us 0
+28 256 276 25000000000.0 1us 0
+29 256 276 25000000000.0 1us 0
+30 256 276 25000000000.0 1us 0
+31 256 276 25000000000.0 1us 0
+32 257 276 25000000000.0 1us 0
+33 257 276 25000000000.0 1us 0
+34 257 276 25000000000.0 1us 0
+35 257 276 25000000000.0 1us 0
+36 257 276 25000000000.0 1us 0
+37 257 276 25000000000.0 1us 0
+38 257 276 25000000000.0 1us 0
+39 257 276 25000000000.0 1us 0
+40 257 276 25000000000.0 1us 0
+41 257 276 25000000000.0 1us 0
+42 257 276 25000000000.0 1us 0
+43 257 276 25000000000.0 1us 0
+44 257 276 25000000000.0 1us 0
+45 257 276 25000000000.0 1us 0
+46 257 276 25000000000.0 1us 0
+47 257 276 25000000000.0 1us 0
+48 257 276 25000000000.0 1us 0
+49 257 276 25000000000.0 1us 0
+50 257 276 25000000000.0 1us 0
+51 257 276 25000000000.0 1us 0
+52 257 276 25000000000.0 1us 0
+53 257 276 25000000000.0 1us 0
+54 257 276 25000000000.0 1us 0
+55 257 276 25000000000.0 1us 0
+56 257 276 25000000000.0 1us 0
+57 257 276 25000000000.0 1us 0
+58 257 276 25000000000.0 1us 0
+59 257 276 25000000000.0 1us 0
+60 257 276 25000000000.0 1us 0
+61 257 276 25000000000.0 1us 0
+62 257 276 25000000000.0 1us 0
+63 257 276 25000000000.0 1us 0
+64 258 276 25000000000.0 1us 0
+65 258 276 25000000000.0 1us 0
+66 258 276 25000000000.0 1us 0
+67 258 276 25000000000.0 1us 0
+68 258 276 25000000000.0 1us 0
+69 258 276 25000000000.0 1us 0
+70 258 276 25000000000.0 1us 0
+71 258 276 25000000000.0 1us 0
+72 258 276 25000000000.0 1us 0
+73 258 276 25000000000.0 1us 0
+74 258 276 25000000000.0 1us 0
+75 258 276 25000000000.0 1us 0
+76 258 276 25000000000.0 1us 0
+77 258 276 25000000000.0 1us 0
+78 258 276 25000000000.0 1us 0
+79 258 276 25000000000.0 1us 0
+80 258 276 25000000000.0 1us 0
+81 258 276 25000000000.0 1us 0
+82 258 276 25000000000.0 1us 0
+83 258 276 25000000000.0 1us 0
+84 258 276 25000000000.0 1us 0
+85 258 276 25000000000.0 1us 0
+86 258 276 25000000000.0 1us 0
+87 258 276 25000000000.0 1us 0
+88 258 276 25000000000.0 1us 0
+89 258 276 25000000000.0 1us 0
+90 258 276 25000000000.0 1us 0
+91 258 276 25000000000.0 1us 0
+92 258 276 25000000000.0 1us 0
+93 258 276 25000000000.0 1us 0
+94 258 276 25000000000.0 1us 0
+95 258 276 25000000000.0 1us 0
+96 259 276 25000000000.0 1us 0
+97 259 276 25000000000.0 1us 0
+98 259 276 25000000000.0 1us 0
+99 259 276 25000000000.0 1us 0
+100 259 276 25000000000.0 1us 0
+101 259 276 25000000000.0 1us 0
+102 259 276 25000000000.0 1us 0
+103 259 276 25000000000.0 1us 0
+104 259 276 25000000000.0 1us 0
+105 259 276 25000000000.0 1us 0
+106 259 276 25000000000.0 1us 0
+107 259 276 25000000000.0 1us 0
+108 259 276 25000000000.0 1us 0
+109 259 276 25000000000.0 1us 0
+110 259 276 25000000000.0 1us 0
+111 259 276 25000000000.0 1us 0
+112 259 276 25000000000.0 1us 0
+113 259 276 25000000000.0 1us 0
+114 259 276 25000000000.0 1us 0
+115 259 276 25000000000.0 1us 0
+116 259 276 25000000000.0 1us 0
+117 259 276 25000000000.0 1us 0
+118 259 276 25000000000.0 1us 0
+119 259 276 25000000000.0 1us 0
+120 259 276 25000000000.0 1us 0
+121 259 276 25000000000.0 1us 0
+122 259 276 25000000000.0 1us 0
+123 259 276 25000000000.0 1us 0
+124 259 276 25000000000.0 1us 0
+125 259 276 25000000000.0 1us 0
+126 259 276 25000000000.0 1us 0
+127 259 276 25000000000.0 1us 0
+128 260 276 25000000000.0 1us 0
+129 260 276 25000000000.0 1us 0
+130 260 276 25000000000.0 1us 0
+131 260 276 25000000000.0 1us 0
+132 260 276 25000000000.0 1us 0
+133 260 276 25000000000.0 1us 0
+134 260 276 25000000000.0 1us 0
+135 260 276 25000000000.0 1us 0
+136 260 276 25000000000.0 1us 0
+137 260 276 25000000000.0 1us 0
+138 260 276 25000000000.0 1us 0
+139 260 276 25000000000.0 1us 0
+140 260 276 25000000000.0 1us 0
+141 260 276 25000000000.0 1us 0
+142 260 276 25000000000.0 1us 0
+143 260 276 25000000000.0 1us 0
+144 260 276 25000000000.0 1us 0
+145 260 276 25000000000.0 1us 0
+146 260 276 25000000000.0 1us 0
+147 260 276 25000000000.0 1us 0
+148 260 276 25000000000.0 1us 0
+149 260 276 25000000000.0 1us 0
+150 260 276 25000000000.0 1us 0
+151 260 276 25000000000.0 1us 0
+152 260 276 25000000000.0 1us 0
+153 260 276 25000000000.0 1us 0
+154 260 276 25000000000.0 1us 0
+155 260 276 25000000000.0 1us 0
+156 260 276 25000000000.0 1us 0
+157 260 276 25000000000.0 1us 0
+158 260 276 25000000000.0 1us 0
+159 260 276 25000000000.0 1us 0
+160 261 276 25000000000.0 1us 0
+161 261 276 25000000000.0 1us 0
+162 261 276 25000000000.0 1us 0
+163 261 276 25000000000.0 1us 0
+164 261 276 25000000000.0 1us 0
+165 261 276 25000000000.0 1us 0
+166 261 276 25000000000.0 1us 0
+167 261 276 25000000000.0 1us 0
+168 261 276 25000000000.0 1us 0
+169 261 276 25000000000.0 1us 0
+170 261 276 25000000000.0 1us 0
+171 261 276 25000000000.0 1us 0
+172 261 276 25000000000.0 1us 0
+173 261 276 25000000000.0 1us 0
+174 261 276 25000000000.0 1us 0
+175 261 276 25000000000.0 1us 0
+176 261 276 25000000000.0 1us 0
+177 261 276 25000000000.0 1us 0
+178 261 276 25000000000.0 1us 0
+179 261 276 25000000000.0 1us 0
+180 261 276 25000000000.0 1us 0
+181 261 276 25000000000.0 1us 0
+182 261 276 25000000000.0 1us 0
+183 261 276 25000000000.0 1us 0
+184 261 276 25000000000.0 1us 0
+185 261 276 25000000000.0 1us 0
+186 261 276 25000000000.0 1us 0
+187 261 276 25000000000.0 1us 0
+188 261 276 25000000000.0 1us 0
+189 261 276 25000000000.0 1us 0
+190 261 276 25000000000.0 1us 0
+191 261 276 25000000000.0 1us 0
+192 262 276 25000000000.0 1us 0
+193 262 276 25000000000.0 1us 0
+194 262 276 25000000000.0 1us 0
+195 262 276 25000000000.0 1us 0
+196 262 276 25000000000.0 1us 0
+197 262 276 25000000000.0 1us 0
+198 262 276 25000000000.0 1us 0
+199 262 276 25000000000.0 1us 0
+200 262 276 25000000000.0 1us 0
+201 262 276 25000000000.0 1us 0
+202 262 276 25000000000.0 1us 0
+203 262 276 25000000000.0 1us 0
+204 262 276 25000000000.0 1us 0
+205 262 276 25000000000.0 1us 0
+206 262 276 25000000000.0 1us 0
+207 262 276 25000000000.0 1us 0
+208 262 276 25000000000.0 1us 0
+209 262 276 25000000000.0 1us 0
+210 262 276 25000000000.0 1us 0
+211 262 276 25000000000.0 1us 0
+212 262 276 25000000000.0 1us 0
+213 262 276 25000000000.0 1us 0
+214 262 276 25000000000.0 1us 0
+215 262 276 25000000000.0 1us 0
+216 262 276 25000000000.0 1us 0
+217 262 276 25000000000.0 1us 0
+218 262 276 25000000000.0 1us 0
+219 262 276 25000000000.0 1us 0
+220 262 276 25000000000.0 1us 0
+221 262 276 25000000000.0 1us 0
+222 262 276 25000000000.0 1us 0
+223 262 276 25000000000.0 1us 0
+224 263 276 25000000000.0 1us 0
+225 263 276 25000000000.0 1us 0
+226 263 276 25000000000.0 1us 0
+227 263 276 25000000000.0 1us 0
+228 263 276 25000000000.0 1us 0
+229 263 276 25000000000.0 1us 0
+230 263 276 25000000000.0 1us 0
+231 263 276 25000000000.0 1us 0
+232 263 276 25000000000.0 1us 0
+233 263 276 25000000000.0 1us 0
+234 263 276 25000000000.0 1us 0
+235 263 276 25000000000.0 1us 0
+236 263 276 25000000000.0 1us 0
+237 263 276 25000000000.0 1us 0
+238 263 276 25000000000.0 1us 0
+239 263 276 25000000000.0 1us 0
+240 263 276 25000000000.0 1us 0
+241 263 276 25000000000.0 1us 0
+242 263 276 25000000000.0 1us 0
+243 263 276 25000000000.0 1us 0
+244 263 276 25000000000.0 1us 0
+245 263 276 25000000000.0 1us 0
+246 263 276 25000000000.0 1us 0
+247 263 276 25000000000.0 1us 0
+248 263 276 25000000000.0 1us 0
+249 263 276 25000000000.0 1us 0
+250 263 276 25000000000.0 1us 0
+251 263 276 25000000000.0 1us 0
+252 263 276 25000000000.0 1us 0
+253 263 276 25000000000.0 1us 0
+254 263 276 25000000000.0 1us 0
+255 263 276 25000000000.0 1us 0
+256 264 276 100000000000.0 1us 0
+256 265 276 100000000000.0 1us 0
+257 264 276 100000000000.0 1us 0
+257 265 276 100000000000.0 1us 0
+258 266 276 100000000000.0 1us 0
+258 267 276 100000000000.0 1us 0
+259 266 276 100000000000.0 1us 0
+259 267 276 100000000000.0 1us 0
+260 268 276 100000000000.0 1us 0
+260 269 276 100000000000.0 1us 0
+261 268 276 100000000000.0 1us 0
+261 269 276 100000000000.0 1us 0
+262 270 276 100000000000.0 1us 0
+262 271 276 100000000000.0 1us 0
+263 270 276 100000000000.0 1us 0
+263 271 276 100000000000.0 1us 0
+264 272 276 100000000000.0 5us 0
+264 273 276 100000000000.0 5us 0
+265 274 276 100000000000.0 5us 0
+265 275 276 100000000000.0 5us 0
+266 272 276 100000000000.0 5us 0
+266 273 276 100000000000.0 5us 0
+267 274 276 100000000000.0 5us 0
+267 275 276 100000000000.0 5us 0
+268 272 276 100000000000.0 5us 0
+268 273 276 100000000000.0 5us 0
+269 274 276 100000000000.0 5us 0
+269 275 276 100000000000.0 5us 0
+270 272 276 100000000000.0 5us 0
+270 273 276 100000000000.0 5us 0
+271 274 276 100000000000.0 5us 0
+271 275 276 100000000000.0 5us 0
+maxRtt=28960 maxBdp=90500 minRtt=4640
+Flow 0 16 3 11000 1000000000000 0.13 0
+0.13
+Running Simulation.
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 2 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 3 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 4 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 5 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 6 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 7 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 8 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 9 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 10 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 16 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 6.96e-06 normpower 0
+ToR 0 Total 0 throughput 0 buffer 0 time 6.96e-06
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 2.122e-314
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 2.122e-314
+ToR 0 Port 2 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 2.122e-314
+ToR 0 Port 3 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 2.122e-314
+ToR 0 Port 4 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 2.122e-314
+ToR 0 Port 5 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 2.122e-314
+ToR 0 Port 6 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 2.122e-314
+ToR 0 Port 7 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 2.122e-314
+ToR 0 Port 8 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 2.122e-314
+ToR 0 Port 9 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 2.122e-314
+ToR 0 Port 10 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 2.122e-314
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 2.122e-314
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 2.122e-314
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 2.122e-314
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 2.122e-314
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 2.122e-314
+ToR 0 Port 16 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 0
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 0
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 0
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 0
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 0
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 0
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 0
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 0
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 0
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 0
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 0
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 0
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 0
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 0
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 0
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 1.392e-05 normpower 0
+ToR 0 Total 0 throughput 0 buffer 0 time 1.392e-05
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 4.84992e-310
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 4.84992e-310
+ToR 0 Port 2 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 4.84992e-310
+ToR 0 Port 3 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 4.84992e-310
+ToR 0 Port 4 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 4.84992e-310
+ToR 0 Port 5 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 4.84992e-310
+ToR 0 Port 6 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 4.84992e-310
+ToR 0 Port 7 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 4.84992e-310
+ToR 0 Port 8 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 4.84992e-310
+ToR 0 Port 9 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 4.84992e-310
+ToR 0 Port 10 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 4.84992e-310
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 4.84992e-310
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 4.84992e-310
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 4.84992e-310
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 4.84992e-310
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 4.84992e-310
+ToR 0 Port 16 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 0
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 0
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 0
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 0
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 0
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 0
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 0
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 0
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 0
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 0
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 0
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 0
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 0
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 0
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 0
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 2.088e-05 normpower 0
+ToR 0 Total 0 throughput 0 buffer 0 time 2.088e-05
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 2.122e-314
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 2.122e-314
+ToR 0 Port 2 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 2.122e-314
+ToR 0 Port 3 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 2.122e-314
+ToR 0 Port 4 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 2.122e-314
+ToR 0 Port 5 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 2.122e-314
+ToR 0 Port 6 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 2.122e-314
+ToR 0 Port 7 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 2.122e-314
+ToR 0 Port 8 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 2.122e-314
+ToR 0 Port 9 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 2.122e-314
+ToR 0 Port 10 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 2.122e-314
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 2.122e-314
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 2.122e-314
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 2.122e-314
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 2.122e-314
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 2.122e-314
+ToR 0 Port 16 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 0
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 0
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 0
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 0
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 0
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 0
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 0
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 0
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 0
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 0
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 0
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 0
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 0
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 0
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 0
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 2.784e-05 normpower 0
+ToR 0 Total 0 throughput 0 buffer 0 time 2.784e-05
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 2.122e-314
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 2.122e-314
+ToR 0 Port 2 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 2.122e-314
+ToR 0 Port 3 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 2.122e-314
+ToR 0 Port 4 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 2.122e-314
+ToR 0 Port 5 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 2.122e-314
+ToR 0 Port 6 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 2.122e-314
+ToR 0 Port 7 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 2.122e-314
+ToR 0 Port 8 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 2.122e-314
+ToR 0 Port 9 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 2.122e-314
+ToR 0 Port 10 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 2.122e-314
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 2.122e-314
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 2.122e-314
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 2.122e-314
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 2.122e-314
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 2.122e-314
+ToR 0 Port 16 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 0
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 0
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 0
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 0
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 0
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 0
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 0
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 0
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 0
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 0
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 0
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 0
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 0
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 0
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 0
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 3.48e-05 normpower 0
+ToR 0 Total 0 throughput 0 buffer 0 time 3.48e-05
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 2.122e-314
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 2.122e-314
+ToR 0 Port 2 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 2.122e-314
+ToR 0 Port 3 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 2.122e-314
+ToR 0 Port 4 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 2.122e-314
+ToR 0 Port 5 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 2.122e-314
+ToR 0 Port 6 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 2.122e-314
+ToR 0 Port 7 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 2.122e-314
+ToR 0 Port 8 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 2.122e-314
+ToR 0 Port 9 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 2.122e-314
+ToR 0 Port 10 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 2.122e-314
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 2.122e-314
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 2.122e-314
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 2.122e-314
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 2.122e-314
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 2.122e-314
+ToR 0 Port 16 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 0
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 0
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 0
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 0
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 0
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 0
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 0
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 0
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 0
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 0
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 0
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 0
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 0
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 0
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 0
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 4.176e-05 normpower 0
+ToR 0 Total 0 throughput 0 buffer 0 time 4.176e-05
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 2.122e-314
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 2.122e-314
+ToR 0 Port 2 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 2.122e-314
+ToR 0 Port 3 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 2.122e-314
+ToR 0 Port 4 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 2.122e-314
+ToR 0 Port 5 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 2.122e-314
+ToR 0 Port 6 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 2.122e-314
+ToR 0 Port 7 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 2.122e-314
+ToR 0 Port 8 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 2.122e-314
+ToR 0 Port 9 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 2.122e-314
+ToR 0 Port 10 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 2.122e-314
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 2.122e-314
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 2.122e-314
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 2.122e-314
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 2.122e-314
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 2.122e-314
+ToR 0 Port 16 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 0
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 0
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 0
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 0
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 0
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 0
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 0
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 0
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 0
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 0
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 0
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 0
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 0
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 0
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 0
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 4.872e-05 normpower 0
+ToR 0 Total 0 throughput 0 buffer 0 time 4.872e-05
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 2.122e-314
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 2.122e-314
+ToR 0 Port 2 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 2.122e-314
+ToR 0 Port 3 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 2.122e-314
+ToR 0 Port 4 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 2.122e-314
+ToR 0 Port 5 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 2.122e-314
+ToR 0 Port 6 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 2.122e-314
+ToR 0 Port 7 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 2.122e-314
+ToR 0 Port 8 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 2.122e-314
+ToR 0 Port 9 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 2.122e-314
+ToR 0 Port 10 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 2.122e-314
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 2.122e-314
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 2.122e-314
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 2.122e-314
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 2.122e-314
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 2.122e-314
+ToR 0 Port 16 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 0
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 0
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 0
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 0
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 0
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 0
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 0
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 0
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 0
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 0
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 0
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 0
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 0
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 0
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 0
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 5.568e-05 normpower 0
+ToR 0 Total 0 throughput 0 buffer 0 time 5.568e-05
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 2.122e-314
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 2.122e-314
+ToR 0 Port 2 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 2.122e-314
+ToR 0 Port 3 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 2.122e-314
+ToR 0 Port 4 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 2.122e-314
+ToR 0 Port 5 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 2.122e-314
+ToR 0 Port 6 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 2.122e-314
+ToR 0 Port 7 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 2.122e-314
+ToR 0 Port 8 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 2.122e-314
+ToR 0 Port 9 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 2.122e-314
+ToR 0 Port 10 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 2.122e-314
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 2.122e-314
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 2.122e-314
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 2.122e-314
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 2.122e-314
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 2.122e-314
+ToR 0 Port 16 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 0
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 0
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 0
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 0
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 0
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 0
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 0
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 0
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 0
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 0
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 0
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 0
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 0
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 0
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 0
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 6.264e-05 normpower 0
+ToR 0 Total 0 throughput 0 buffer 0 time 6.264e-05
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 2.122e-314
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 2.122e-314
+ToR 0 Port 2 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 2.122e-314
+ToR 0 Port 3 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 2.122e-314
+ToR 0 Port 4 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 2.122e-314
+ToR 0 Port 5 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 2.122e-314
+ToR 0 Port 6 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 2.122e-314
+ToR 0 Port 7 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 2.122e-314
+ToR 0 Port 8 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 2.122e-314
+ToR 0 Port 9 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 2.122e-314
+ToR 0 Port 10 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 2.122e-314
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 2.122e-314
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 2.122e-314
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 2.122e-314
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 2.122e-314
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 2.122e-314
+ToR 0 Port 16 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 0
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 0
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 0
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 0
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 0
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 0
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 0
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 0
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 0
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 0
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 0
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 0
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 0
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 0
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 0
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 6.96e-05 normpower 0
+ToR 0 Total 0 throughput 0 buffer 0 time 6.96e-05
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 2.122e-314
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 2.122e-314
+ToR 0 Port 2 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 2.122e-314
+ToR 0 Port 3 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 2.122e-314
+ToR 0 Port 4 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 2.122e-314
+ToR 0 Port 5 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 2.122e-314
+ToR 0 Port 6 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 2.122e-314
+ToR 0 Port 7 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 2.122e-314
+ToR 0 Port 8 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 2.122e-314
+ToR 0 Port 9 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 2.122e-314
+ToR 0 Port 10 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 2.122e-314
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 2.122e-314
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 2.122e-314
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 2.122e-314
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 2.122e-314
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 2.122e-314
+ToR 0 Port 16 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 0
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 0
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 0
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 0
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 0
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 0
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 0
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 0
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 0
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 0
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 0
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 0
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 0
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 0
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 0
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 7.656e-05 normpower 0
+ToR 0 Total 0 throughput 0 buffer 0 time 7.656e-05
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 2.122e-314
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 2.122e-314
+ToR 0 Port 2 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 2.122e-314
+ToR 0 Port 3 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 2.122e-314
+ToR 0 Port 4 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 2.122e-314
+ToR 0 Port 5 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 2.122e-314
+ToR 0 Port 6 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 2.122e-314
+ToR 0 Port 7 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 2.122e-314
+ToR 0 Port 8 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 2.122e-314
+ToR 0 Port 9 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 2.122e-314
+ToR 0 Port 10 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 2.122e-314
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 2.122e-314
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 2.122e-314
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 2.122e-314
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 2.122e-314
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 2.122e-314
+ToR 0 Port 16 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 0
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 0
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 0
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 0
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 0
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 0
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 0
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 0
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 0
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 0
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 0
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 0
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 0
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 0
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 0
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 8.352e-05 normpower 0
+ToR 0 Total 0 throughput 0 buffer 0 time 8.352e-05
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 2.122e-314
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 2.122e-314
+ToR 0 Port 2 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 2.122e-314
+ToR 0 Port 3 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 2.122e-314
+ToR 0 Port 4 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 2.122e-314
+ToR 0 Port 5 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 2.122e-314
+ToR 0 Port 6 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 2.122e-314
+ToR 0 Port 7 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 2.122e-314
+ToR 0 Port 8 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 2.122e-314
+ToR 0 Port 9 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 2.122e-314
+ToR 0 Port 10 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 2.122e-314
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 2.122e-314
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 2.122e-314
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 2.122e-314
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 2.122e-314
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 2.122e-314
+ToR 0 Port 16 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 0
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 0
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 0
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 0
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 0
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 0
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 0
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 0
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 0
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 0
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 0
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 0
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 0
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 0
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 0
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 9.048e-05 normpower 0
+ToR 0 Total 0 throughput 0 buffer 0 time 9.048e-05
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 2.122e-314
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 2.122e-314
+ToR 0 Port 2 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 2.122e-314
+ToR 0 Port 3 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 2.122e-314
+ToR 0 Port 4 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 2.122e-314
+ToR 0 Port 5 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 2.122e-314
+ToR 0 Port 6 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 2.122e-314
+ToR 0 Port 7 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 2.122e-314
+ToR 0 Port 8 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 2.122e-314
+ToR 0 Port 9 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 2.122e-314
+ToR 0 Port 10 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 2.122e-314
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 2.122e-314
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 2.122e-314
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 2.122e-314
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 2.122e-314
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 2.122e-314
+ToR 0 Port 16 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 0
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 0
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 0
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 0
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 0
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 0
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 0
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 0
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 0
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 0
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 0
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 0
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 0
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 0
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 0
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 9.744e-05 normpower 0
+ToR 0 Total 0 throughput 0 buffer 0 time 9.744e-05
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 2.122e-314
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 2.122e-314
+ToR 0 Port 2 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 2.122e-314
+ToR 0 Port 3 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 2.122e-314
+ToR 0 Port 4 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 2.122e-314
+ToR 0 Port 5 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 2.122e-314
+ToR 0 Port 6 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 2.122e-314
+ToR 0 Port 7 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 2.122e-314
+ToR 0 Port 8 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 2.122e-314
+ToR 0 Port 9 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 2.122e-314
+ToR 0 Port 10 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 2.122e-314
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 2.122e-314
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 2.122e-314
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 2.122e-314
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 2.122e-314
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 2.122e-314
+ToR 0 Port 16 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 0
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 0
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 0
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 0
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 0
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 0
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 0
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 0
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 0
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 0
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 0
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 0
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 0
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 0
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 0
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.0001044 normpower 0
+ToR 0 Total 0 throughput 0 buffer 0 time 0.0001044
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 2.122e-314
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 2.122e-314
+ToR 0 Port 2 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 2.122e-314
+ToR 0 Port 3 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 2.122e-314
+ToR 0 Port 4 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 2.122e-314
+ToR 0 Port 5 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 2.122e-314
+ToR 0 Port 6 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 2.122e-314
+ToR 0 Port 7 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 2.122e-314
+ToR 0 Port 8 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 2.122e-314
+ToR 0 Port 9 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 2.122e-314
+ToR 0 Port 10 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 2.122e-314
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 2.122e-314
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 2.122e-314
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 2.122e-314
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 2.122e-314
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 2.122e-314
+ToR 0 Port 16 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 0
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 0
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 0
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 0
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 0
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 0
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 0
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 0
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 0
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 0
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 0
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 0
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 0
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 0
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 0
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.00011136 normpower 0
+ToR 0 Total 0 throughput 0 buffer 0 time 0.00011136
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 2.122e-314
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 2.122e-314
+ToR 0 Port 2 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 2.122e-314
+ToR 0 Port 3 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 2.122e-314
+ToR 0 Port 4 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 2.122e-314
+ToR 0 Port 5 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 2.122e-314
+ToR 0 Port 6 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 2.122e-314
+ToR 0 Port 7 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 2.122e-314
+ToR 0 Port 8 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 2.122e-314
+ToR 0 Port 9 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 2.122e-314
+ToR 0 Port 10 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 2.122e-314
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 2.122e-314
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 2.122e-314
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 2.122e-314
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 2.122e-314
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 2.122e-314
+ToR 0 Port 16 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 0
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 0
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 0
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 0
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 0
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 0
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 0
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 0
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 0
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 0
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 0
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 0
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 0
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 0
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 0
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.00011832 normpower 0
+ToR 0 Total 0 throughput 0 buffer 0 time 0.00011832
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 2.122e-314
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 2.122e-314
+ToR 0 Port 2 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 2.122e-314
+ToR 0 Port 3 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 2.122e-314
+ToR 0 Port 4 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 2.122e-314
+ToR 0 Port 5 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 2.122e-314
+ToR 0 Port 6 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 2.122e-314
+ToR 0 Port 7 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 2.122e-314
+ToR 0 Port 8 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 2.122e-314
+ToR 0 Port 9 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 2.122e-314
+ToR 0 Port 10 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 2.122e-314
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 2.122e-314
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 2.122e-314
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 2.122e-314
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 2.122e-314
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 2.122e-314
+ToR 0 Port 16 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 0
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 0
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 0
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 0
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 0
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 0
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 0
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 0
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 0
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 0
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 0
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 0
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 0
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 0
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 0
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.00012528 normpower 0
+ToR 0 Total 0 throughput 0 buffer 0 time 0.00012528
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 2.122e-314
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 2.122e-314
+ToR 0 Port 2 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 2.122e-314
+ToR 0 Port 3 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 2.122e-314
+ToR 0 Port 4 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 2.122e-314
+ToR 0 Port 5 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 2.122e-314
+ToR 0 Port 6 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 2.122e-314
+ToR 0 Port 7 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 2.122e-314
+ToR 0 Port 8 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 2.122e-314
+ToR 0 Port 9 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 2.122e-314
+ToR 0 Port 10 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 2.122e-314
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 2.122e-314
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 2.122e-314
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 2.122e-314
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 2.122e-314
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 2.122e-314
+ToR 0 Port 16 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 0
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 0
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 0
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 0
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 0
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 0
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 0
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 0
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 0
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 0
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 0
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 0
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 0
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 0
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 0
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.00013224 normpower 0
+ToR 0 Total 0 throughput 0 buffer 0 time 0.00013224
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.0001392 normpower 2.122e-314
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.0001392 normpower 2.122e-314
+ToR 0 Port 2 throughput 0 txBytes 0 qlen 0 time 0.0001392 normpower 2.122e-314
+ToR 0 Port 3 throughput 0 txBytes 0 qlen 0 time 0.0001392 normpower 2.122e-314
+ToR 0 Port 4 throughput 0 txBytes 0 qlen 0 time 0.0001392 normpower 2.122e-314
+ToR 0 Port 5 throughput 0 txBytes 0 qlen 0 time 0.0001392 normpower 2.122e-314
+ToR 0 Port 6 throughput 0 txBytes 0 qlen 0 time 0.0001392 normpower 2.122e-314
+ToR 0 Port 7 throughput 0 txBytes 0 qlen 0 time 0.0001392 normpower 2.122e-314
+ToR 0 Port 8 throughput 0 txBytes 0 qlen 0 time 0.0001392 normpower 2.122e-314
+ToR 0 Port 9 throughput 0 txBytes 0 qlen 0 time 0.0001392 normpower 2.122e-314
+ToR 0 Port 10 throughput 0 txBytes 0 qlen 0 time 0.0001392 normpower 2.122e-314
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.0001392 normpower 2.122e-314
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.0001392 normpower 2.122e-314
+
+==========================================================================
+[ TRUNCATED FOR REPOSITORY STORAGE ]
+[ Original file: 948881 lines, 72209742 bytes. ]
+[ Showing first 1000 and last 1000 lines for spike-artifact purposes. ]
+[ Body omitted (NS-3 simulator stdout, mostly repetitive event traces). ]
+[ The load-bearing scientific output is in this directory's fct.txt; ]
+[ this stdout dump is preserved only as a record of what the run produced. ]
+[ Reproducible by re-running the spike: docker build, then ./waf --run ... ]
+==========================================================================
+
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.199787 normpower 1.054
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.199787 normpower 1.054
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.199787 normpower 1.054
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.199787 normpower 1.054
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.199787 normpower 1.054
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.199787 normpower 1.054
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.199787 normpower 1.054
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.199787 normpower 1.054
+ToR 0 Total 0 throughput 2.50575e+10 buffer 1090 time 0.199787
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.199794 normpower 4.84896e-310
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.199794 normpower 4.84896e-310
+ToR 0 Port 2 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199794 normpower 4.84896e-310
+ToR 0 Port 3 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199794 normpower 4.84896e-310
+ToR 0 Port 4 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199794 normpower 4.84896e-310
+ToR 0 Port 5 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199794 normpower 4.84896e-310
+ToR 0 Port 6 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199794 normpower 4.84896e-310
+ToR 0 Port 7 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199794 normpower 4.84896e-310
+ToR 0 Port 8 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199794 normpower 4.84896e-310
+ToR 0 Port 9 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199794 normpower 4.84896e-310
+ToR 0 Port 10 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199794 normpower 4.84896e-310
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.199794 normpower 4.84896e-310
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.199794 normpower 4.84896e-310
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.199794 normpower 4.84896e-310
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.199794 normpower 4.84896e-310
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.199794 normpower 4.84896e-310
+ToR 0 Port 16 throughput 2.50575e+10 txBytes 21800 qlen 1090 time 0.199794 normpower 1.00381
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.199794 normpower 1.00381
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.199794 normpower 1.00381
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.199794 normpower 1.00381
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.199794 normpower 1.00381
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.199794 normpower 1.00381
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.199794 normpower 1.00381
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.199794 normpower 1.00381
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.199794 normpower 1.00381
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.199794 normpower 1.00381
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.199794 normpower 1.00381
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.199794 normpower 1.00381
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.199794 normpower 1.00381
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.199794 normpower 1.00381
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.199794 normpower 1.00381
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.199794 normpower 1.00381
+ToR 0 Total 0 throughput 2.50575e+10 buffer 1090 time 0.199794
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.199801 normpower 4.84895e-310
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.199801 normpower 4.84895e-310
+ToR 0 Port 2 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199801 normpower 4.84895e-310
+ToR 0 Port 3 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199801 normpower 4.84895e-310
+ToR 0 Port 4 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199801 normpower 4.84895e-310
+ToR 0 Port 5 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199801 normpower 4.84895e-310
+ToR 0 Port 6 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199801 normpower 4.84895e-310
+ToR 0 Port 7 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199801 normpower 4.84895e-310
+ToR 0 Port 8 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199801 normpower 4.84895e-310
+ToR 0 Port 9 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199801 normpower 4.84895e-310
+ToR 0 Port 10 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199801 normpower 4.84895e-310
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.199801 normpower 4.84895e-310
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.199801 normpower 4.84895e-310
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.199801 normpower 4.84895e-310
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.199801 normpower 4.84895e-310
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.199801 normpower 4.84895e-310
+ToR 0 Port 16 throughput 2.50575e+10 txBytes 21800 qlen 0 time 0.199801 normpower 0.952184
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.199801 normpower 0.952184
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.199801 normpower 0.952184
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.199801 normpower 0.952184
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.199801 normpower 0.952184
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.199801 normpower 0.952184
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.199801 normpower 0.952184
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.199801 normpower 0.952184
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.199801 normpower 0.952184
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.199801 normpower 0.952184
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.199801 normpower 0.952184
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.199801 normpower 0.952184
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.199801 normpower 0.952184
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.199801 normpower 0.952184
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.199801 normpower 0.952184
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.199801 normpower 0.952184
+ToR 0 Total 0 throughput 2.50575e+10 buffer 0 time 0.199801
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.199808 normpower 4.84895e-310
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.199808 normpower 4.84895e-310
+ToR 0 Port 2 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199808 normpower 4.84895e-310
+ToR 0 Port 3 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199808 normpower 4.84895e-310
+ToR 0 Port 4 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199808 normpower 4.84895e-310
+ToR 0 Port 5 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199808 normpower 4.84895e-310
+ToR 0 Port 6 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199808 normpower 4.84895e-310
+ToR 0 Port 7 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199808 normpower 4.84895e-310
+ToR 0 Port 8 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199808 normpower 4.84895e-310
+ToR 0 Port 9 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199808 normpower 4.84895e-310
+ToR 0 Port 10 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199808 normpower 4.84895e-310
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.199808 normpower 4.84895e-310
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.199808 normpower 4.84895e-310
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.199808 normpower 4.84895e-310
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.199808 normpower 4.84895e-310
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.199808 normpower 4.84895e-310
+ToR 0 Port 16 throughput 2.38046e+10 txBytes 20710 qlen 1090 time 0.199808 normpower 1.00381
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.199808 normpower 1.00381
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.199808 normpower 1.00381
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.199808 normpower 1.00381
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.199808 normpower 1.00381
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.199808 normpower 1.00381
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.199808 normpower 1.00381
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.199808 normpower 1.00381
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.199808 normpower 1.00381
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.199808 normpower 1.00381
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.199808 normpower 1.00381
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.199808 normpower 1.00381
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.199808 normpower 1.00381
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.199808 normpower 1.00381
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.199808 normpower 1.00381
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.199808 normpower 1.00381
+ToR 0 Total 0 throughput 2.38046e+10 buffer 1090 time 0.199808
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.199815 normpower 4.84895e-310
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.199815 normpower 4.84895e-310
+ToR 0 Port 2 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199815 normpower 4.84895e-310
+ToR 0 Port 3 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199815 normpower 4.84895e-310
+ToR 0 Port 4 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199815 normpower 4.84895e-310
+ToR 0 Port 5 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199815 normpower 4.84895e-310
+ToR 0 Port 6 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199815 normpower 4.84895e-310
+ToR 0 Port 7 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199815 normpower 4.84895e-310
+ToR 0 Port 8 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199815 normpower 4.84895e-310
+ToR 0 Port 9 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199815 normpower 4.84895e-310
+ToR 0 Port 10 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199815 normpower 4.84895e-310
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.199815 normpower 4.84895e-310
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.199815 normpower 4.84895e-310
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.199815 normpower 4.84895e-310
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.199815 normpower 4.84895e-310
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.199815 normpower 4.84895e-310
+ToR 0 Port 16 throughput 2.50575e+10 txBytes 21800 qlen 1090 time 0.199815 normpower 1.00381
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.199815 normpower 1.00381
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.199815 normpower 1.00381
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.199815 normpower 1.00381
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.199815 normpower 1.00381
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.199815 normpower 1.00381
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.199815 normpower 1.00381
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.199815 normpower 1.00381
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.199815 normpower 1.00381
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.199815 normpower 1.00381
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.199815 normpower 1.00381
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.199815 normpower 1.00381
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.199815 normpower 1.00381
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.199815 normpower 1.00381
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.199815 normpower 1.00381
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.199815 normpower 1.00381
+ToR 0 Total 0 throughput 2.50575e+10 buffer 1090 time 0.199815
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.199822 normpower 4.84895e-310
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.199822 normpower 4.84895e-310
+ToR 0 Port 2 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199822 normpower 4.84895e-310
+ToR 0 Port 3 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199822 normpower 4.84895e-310
+ToR 0 Port 4 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199822 normpower 4.84895e-310
+ToR 0 Port 5 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199822 normpower 4.84895e-310
+ToR 0 Port 6 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199822 normpower 4.84895e-310
+ToR 0 Port 7 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199822 normpower 4.84895e-310
+ToR 0 Port 8 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199822 normpower 4.84895e-310
+ToR 0 Port 9 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199822 normpower 4.84895e-310
+ToR 0 Port 10 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199822 normpower 4.84895e-310
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.199822 normpower 4.84895e-310
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.199822 normpower 4.84895e-310
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.199822 normpower 4.84895e-310
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.199822 normpower 4.84895e-310
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.199822 normpower 4.84895e-310
+ToR 0 Port 16 throughput 2.50575e+10 txBytes 21800 qlen 1090 time 0.199822 normpower 1.00381
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.199822 normpower 1.00381
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.199822 normpower 1.00381
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.199822 normpower 1.00381
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.199822 normpower 1.00381
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.199822 normpower 1.00381
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.199822 normpower 1.00381
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.199822 normpower 1.00381
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.199822 normpower 1.00381
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.199822 normpower 1.00381
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.199822 normpower 1.00381
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.199822 normpower 1.00381
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.199822 normpower 1.00381
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.199822 normpower 1.00381
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.199822 normpower 1.00381
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.199822 normpower 1.00381
+ToR 0 Total 0 throughput 2.50575e+10 buffer 1090 time 0.199822
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.199829 normpower 4.84895e-310
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.199829 normpower 4.84895e-310
+ToR 0 Port 2 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199829 normpower 4.84895e-310
+ToR 0 Port 3 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199829 normpower 4.84895e-310
+ToR 0 Port 4 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199829 normpower 4.84895e-310
+ToR 0 Port 5 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199829 normpower 4.84895e-310
+ToR 0 Port 6 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199829 normpower 4.84895e-310
+ToR 0 Port 7 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199829 normpower 4.84895e-310
+ToR 0 Port 8 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199829 normpower 4.84895e-310
+ToR 0 Port 9 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199829 normpower 4.84895e-310
+ToR 0 Port 10 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199829 normpower 4.84895e-310
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.199829 normpower 4.84895e-310
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.199829 normpower 4.84895e-310
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.199829 normpower 4.84895e-310
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.199829 normpower 4.84895e-310
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.199829 normpower 4.84895e-310
+ToR 0 Port 16 throughput 2.50575e+10 txBytes 21800 qlen 2180 time 0.199829 normpower 1.05558
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.199829 normpower 1.05558
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.199829 normpower 1.05558
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.199829 normpower 1.05558
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.199829 normpower 1.05558
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.199829 normpower 1.05558
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.199829 normpower 1.05558
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.199829 normpower 1.05558
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.199829 normpower 1.05558
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.199829 normpower 1.05558
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.199829 normpower 1.05558
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.199829 normpower 1.05558
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.199829 normpower 1.05558
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.199829 normpower 1.05558
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.199829 normpower 1.05558
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.199829 normpower 1.05558
+ToR 0 Total 0 throughput 2.50575e+10 buffer 2180 time 0.199829
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.199836 normpower 4.84895e-310
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.199836 normpower 4.84895e-310
+ToR 0 Port 2 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199836 normpower 4.84895e-310
+ToR 0 Port 3 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199836 normpower 4.84895e-310
+ToR 0 Port 4 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199836 normpower 4.84895e-310
+ToR 0 Port 5 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199836 normpower 4.84895e-310
+ToR 0 Port 6 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199836 normpower 4.84895e-310
+ToR 0 Port 7 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199836 normpower 4.84895e-310
+ToR 0 Port 8 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199836 normpower 4.84895e-310
+ToR 0 Port 9 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199836 normpower 4.84895e-310
+ToR 0 Port 10 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199836 normpower 4.84895e-310
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.199836 normpower 4.84895e-310
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.199836 normpower 4.84895e-310
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.199836 normpower 4.84895e-310
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.199836 normpower 4.84895e-310
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.199836 normpower 4.84895e-310
+ToR 0 Port 16 throughput 2.50575e+10 txBytes 21800 qlen 0 time 0.199836 normpower 0.902069
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.199836 normpower 0.902069
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.199836 normpower 0.902069
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.199836 normpower 0.902069
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.199836 normpower 0.902069
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.199836 normpower 0.902069
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.199836 normpower 0.902069
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.199836 normpower 0.902069
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.199836 normpower 0.902069
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.199836 normpower 0.902069
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.199836 normpower 0.902069
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.199836 normpower 0.902069
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.199836 normpower 0.902069
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.199836 normpower 0.902069
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.199836 normpower 0.902069
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.199836 normpower 0.902069
+ToR 0 Total 0 throughput 2.50575e+10 buffer 0 time 0.199836
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.199842 normpower 1.97626e-322
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.199842 normpower 1.97626e-322
+ToR 0 Port 2 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199842 normpower 1.97626e-322
+ToR 0 Port 3 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199842 normpower 1.97626e-322
+ToR 0 Port 4 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199842 normpower 1.97626e-322
+ToR 0 Port 5 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199842 normpower 1.97626e-322
+ToR 0 Port 6 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199842 normpower 1.97626e-322
+ToR 0 Port 7 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199842 normpower 1.97626e-322
+ToR 0 Port 8 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199842 normpower 1.97626e-322
+ToR 0 Port 9 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199842 normpower 1.97626e-322
+ToR 0 Port 10 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199842 normpower 1.97626e-322
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.199842 normpower 1.97626e-322
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.199842 normpower 1.97626e-322
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.199842 normpower 1.97626e-322
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.199842 normpower 1.97626e-322
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.199842 normpower 1.97626e-322
+ToR 0 Port 16 throughput 2.50575e+10 txBytes 21800 qlen 1090 time 0.199842 normpower 1.054
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.199842 normpower 1.054
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.199842 normpower 1.054
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.199842 normpower 1.054
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.199842 normpower 1.054
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.199842 normpower 1.054
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.199842 normpower 1.054
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.199842 normpower 1.054
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.199842 normpower 1.054
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.199842 normpower 1.054
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.199842 normpower 1.054
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.199842 normpower 1.054
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.199842 normpower 1.054
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.199842 normpower 1.054
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.199842 normpower 1.054
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.199842 normpower 1.054
+ToR 0 Total 0 throughput 2.50575e+10 buffer 1090 time 0.199842
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.199849 normpower 1.97626e-322
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.199849 normpower 1.97626e-322
+ToR 0 Port 2 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199849 normpower 1.97626e-322
+ToR 0 Port 3 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199849 normpower 1.97626e-322
+ToR 0 Port 4 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199849 normpower 1.97626e-322
+ToR 0 Port 5 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199849 normpower 1.97626e-322
+ToR 0 Port 6 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199849 normpower 1.97626e-322
+ToR 0 Port 7 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199849 normpower 1.97626e-322
+ToR 0 Port 8 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199849 normpower 1.97626e-322
+ToR 0 Port 9 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199849 normpower 1.97626e-322
+ToR 0 Port 10 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199849 normpower 1.97626e-322
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.199849 normpower 1.97626e-322
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.199849 normpower 1.97626e-322
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.199849 normpower 1.97626e-322
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.199849 normpower 1.97626e-322
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.199849 normpower 1.97626e-322
+ToR 0 Port 16 throughput 2.50575e+10 txBytes 21800 qlen 1090 time 0.199849 normpower 1.00381
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.199849 normpower 1.00381
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.199849 normpower 1.00381
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.199849 normpower 1.00381
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.199849 normpower 1.00381
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.199849 normpower 1.00381
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.199849 normpower 1.00381
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.199849 normpower 1.00381
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.199849 normpower 1.00381
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.199849 normpower 1.00381
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.199849 normpower 1.00381
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.199849 normpower 1.00381
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.199849 normpower 1.00381
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.199849 normpower 1.00381
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.199849 normpower 1.00381
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.199849 normpower 1.00381
+ToR 0 Total 0 throughput 2.50575e+10 buffer 1090 time 0.199849
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.199856 normpower 6.95297e-310
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.199856 normpower 6.95297e-310
+ToR 0 Port 2 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199856 normpower 6.95297e-310
+ToR 0 Port 3 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199856 normpower 6.95297e-310
+ToR 0 Port 4 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199856 normpower 6.95297e-310
+ToR 0 Port 5 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199856 normpower 6.95297e-310
+ToR 0 Port 6 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199856 normpower 6.95297e-310
+ToR 0 Port 7 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199856 normpower 6.95297e-310
+ToR 0 Port 8 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199856 normpower 6.95297e-310
+ToR 0 Port 9 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199856 normpower 6.95297e-310
+ToR 0 Port 10 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199856 normpower 6.95297e-310
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.199856 normpower 6.95297e-310
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.199856 normpower 6.95297e-310
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.199856 normpower 6.95297e-310
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.199856 normpower 6.95297e-310
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.199856 normpower 6.95297e-310
+ToR 0 Port 16 throughput 2.38046e+10 txBytes 20710 qlen 0 time 0.199856 normpower 0.902069
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.199856 normpower 0.902069
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.199856 normpower 0.902069
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.199856 normpower 0.902069
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.199856 normpower 0.902069
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.199856 normpower 0.902069
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.199856 normpower 0.902069
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.199856 normpower 0.902069
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.199856 normpower 0.902069
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.199856 normpower 0.902069
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.199856 normpower 0.902069
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.199856 normpower 0.902069
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.199856 normpower 0.902069
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.199856 normpower 0.902069
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.199856 normpower 0.902069
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.199856 normpower 0.902069
+ToR 0 Total 0 throughput 2.38046e+10 buffer 0 time 0.199856
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.199863 normpower 4.84895e-310
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.199863 normpower 4.84895e-310
+ToR 0 Port 2 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199863 normpower 4.84895e-310
+ToR 0 Port 3 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199863 normpower 4.84895e-310
+ToR 0 Port 4 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199863 normpower 4.84895e-310
+ToR 0 Port 5 throughput 1.01149e+08 txBytes 88 qlen 0 time 0.199863 normpower 4.84895e-310
+ToR 0 Port 6 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199863 normpower 4.84895e-310
+ToR 0 Port 7 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199863 normpower 4.84895e-310
+ToR 0 Port 8 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199863 normpower 4.84895e-310
+ToR 0 Port 9 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199863 normpower 4.84895e-310
+ToR 0 Port 10 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199863 normpower 4.84895e-310
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.199863 normpower 4.84895e-310
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.199863 normpower 4.84895e-310
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.199863 normpower 4.84895e-310
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.199863 normpower 4.84895e-310
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.199863 normpower 4.84895e-310
+ToR 0 Port 16 throughput 2.50575e+10 txBytes 21800 qlen 1090 time 0.199863 normpower 1.054
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.199863 normpower 1.054
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.199863 normpower 1.054
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.199863 normpower 1.054
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.199863 normpower 1.054
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.199863 normpower 1.054
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.199863 normpower 1.054
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.199863 normpower 1.054
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.199863 normpower 1.054
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.199863 normpower 1.054
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.199863 normpower 1.054
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.199863 normpower 1.054
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.199863 normpower 1.054
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.199863 normpower 1.054
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.199863 normpower 1.054
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.199863 normpower 1.054
+ToR 0 Total 0 throughput 2.50575e+10 buffer 1090 time 0.199863
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.19987 normpower 4.84895e-310
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.19987 normpower 4.84895e-310
+ToR 0 Port 2 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.19987 normpower 4.84895e-310
+ToR 0 Port 3 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.19987 normpower 4.84895e-310
+ToR 0 Port 4 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.19987 normpower 4.84895e-310
+ToR 0 Port 5 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.19987 normpower 4.84895e-310
+ToR 0 Port 6 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.19987 normpower 4.84895e-310
+ToR 0 Port 7 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.19987 normpower 4.84895e-310
+ToR 0 Port 8 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.19987 normpower 4.84895e-310
+ToR 0 Port 9 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.19987 normpower 4.84895e-310
+ToR 0 Port 10 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.19987 normpower 4.84895e-310
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.19987 normpower 4.84895e-310
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.19987 normpower 4.84895e-310
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.19987 normpower 4.84895e-310
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.19987 normpower 4.84895e-310
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.19987 normpower 4.84895e-310
+ToR 0 Port 16 throughput 2.50575e+10 txBytes 21800 qlen 0 time 0.19987 normpower 0.952184
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.19987 normpower 0.952184
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.19987 normpower 0.952184
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.19987 normpower 0.952184
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.19987 normpower 0.952184
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.19987 normpower 0.952184
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.19987 normpower 0.952184
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.19987 normpower 0.952184
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.19987 normpower 0.952184
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.19987 normpower 0.952184
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.19987 normpower 0.952184
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.19987 normpower 0.952184
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.19987 normpower 0.952184
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.19987 normpower 0.952184
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.19987 normpower 0.952184
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.19987 normpower 0.952184
+ToR 0 Total 0 throughput 2.50575e+10 buffer 0 time 0.19987
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.199877 normpower 4.84895e-310
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.199877 normpower 4.84895e-310
+ToR 0 Port 2 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199877 normpower 4.84895e-310
+ToR 0 Port 3 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199877 normpower 4.84895e-310
+ToR 0 Port 4 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199877 normpower 4.84895e-310
+ToR 0 Port 5 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199877 normpower 4.84895e-310
+ToR 0 Port 6 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199877 normpower 4.84895e-310
+ToR 0 Port 7 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199877 normpower 4.84895e-310
+ToR 0 Port 8 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199877 normpower 4.84895e-310
+ToR 0 Port 9 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199877 normpower 4.84895e-310
+ToR 0 Port 10 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199877 normpower 4.84895e-310
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.199877 normpower 4.84895e-310
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.199877 normpower 4.84895e-310
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.199877 normpower 4.84895e-310
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.199877 normpower 4.84895e-310
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.199877 normpower 4.84895e-310
+ToR 0 Port 16 throughput 2.50575e+10 txBytes 21800 qlen 1090 time 0.199877 normpower 1.054
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.199877 normpower 1.054
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.199877 normpower 1.054
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.199877 normpower 1.054
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.199877 normpower 1.054
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.199877 normpower 1.054
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.199877 normpower 1.054
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.199877 normpower 1.054
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.199877 normpower 1.054
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.199877 normpower 1.054
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.199877 normpower 1.054
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.199877 normpower 1.054
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.199877 normpower 1.054
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.199877 normpower 1.054
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.199877 normpower 1.054
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.199877 normpower 1.054
+ToR 0 Total 0 throughput 2.50575e+10 buffer 1090 time 0.199877
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.199884 normpower 4.84895e-310
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.199884 normpower 4.84895e-310
+ToR 0 Port 2 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199884 normpower 4.84895e-310
+ToR 0 Port 3 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199884 normpower 4.84895e-310
+ToR 0 Port 4 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199884 normpower 4.84895e-310
+ToR 0 Port 5 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199884 normpower 4.84895e-310
+ToR 0 Port 6 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199884 normpower 4.84895e-310
+ToR 0 Port 7 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199884 normpower 4.84895e-310
+ToR 0 Port 8 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199884 normpower 4.84895e-310
+ToR 0 Port 9 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199884 normpower 4.84895e-310
+ToR 0 Port 10 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199884 normpower 4.84895e-310
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.199884 normpower 4.84895e-310
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.199884 normpower 4.84895e-310
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.199884 normpower 4.84895e-310
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.199884 normpower 4.84895e-310
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.199884 normpower 4.84895e-310
+ToR 0 Port 16 throughput 2.50575e+10 txBytes 21800 qlen 1090 time 0.199884 normpower 1.00381
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.199884 normpower 1.00381
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.199884 normpower 1.00381
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.199884 normpower 1.00381
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.199884 normpower 1.00381
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.199884 normpower 1.00381
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.199884 normpower 1.00381
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.199884 normpower 1.00381
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.199884 normpower 1.00381
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.199884 normpower 1.00381
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.199884 normpower 1.00381
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.199884 normpower 1.00381
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.199884 normpower 1.00381
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.199884 normpower 1.00381
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.199884 normpower 1.00381
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.199884 normpower 1.00381
+ToR 0 Total 0 throughput 2.50575e+10 buffer 1090 time 0.199884
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.199891 normpower 4.84895e-310
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.199891 normpower 4.84895e-310
+ToR 0 Port 2 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199891 normpower 4.84895e-310
+ToR 0 Port 3 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199891 normpower 4.84895e-310
+ToR 0 Port 4 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199891 normpower 4.84895e-310
+ToR 0 Port 5 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199891 normpower 4.84895e-310
+ToR 0 Port 6 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199891 normpower 4.84895e-310
+ToR 0 Port 7 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199891 normpower 4.84895e-310
+ToR 0 Port 8 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199891 normpower 4.84895e-310
+ToR 0 Port 9 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199891 normpower 4.84895e-310
+ToR 0 Port 10 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199891 normpower 4.84895e-310
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.199891 normpower 4.84895e-310
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.199891 normpower 4.84895e-310
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.199891 normpower 4.84895e-310
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.199891 normpower 4.84895e-310
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.199891 normpower 4.84895e-310
+ToR 0 Port 16 throughput 2.50575e+10 txBytes 21800 qlen 1090 time 0.199891 normpower 1.00381
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.199891 normpower 1.00381
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.199891 normpower 1.00381
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.199891 normpower 1.00381
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.199891 normpower 1.00381
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.199891 normpower 1.00381
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.199891 normpower 1.00381
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.199891 normpower 1.00381
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.199891 normpower 1.00381
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.199891 normpower 1.00381
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.199891 normpower 1.00381
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.199891 normpower 1.00381
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.199891 normpower 1.00381
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.199891 normpower 1.00381
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.199891 normpower 1.00381
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.199891 normpower 1.00381
+ToR 0 Total 0 throughput 2.50575e+10 buffer 1090 time 0.199891
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.199898 normpower 1.97626e-322
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.199898 normpower 1.97626e-322
+ToR 0 Port 2 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199898 normpower 1.97626e-322
+ToR 0 Port 3 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199898 normpower 1.97626e-322
+ToR 0 Port 4 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199898 normpower 1.97626e-322
+ToR 0 Port 5 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199898 normpower 1.97626e-322
+ToR 0 Port 6 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199898 normpower 1.97626e-322
+ToR 0 Port 7 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199898 normpower 1.97626e-322
+ToR 0 Port 8 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199898 normpower 1.97626e-322
+ToR 0 Port 9 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199898 normpower 1.97626e-322
+ToR 0 Port 10 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199898 normpower 1.97626e-322
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.199898 normpower 1.97626e-322
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.199898 normpower 1.97626e-322
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.199898 normpower 1.97626e-322
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.199898 normpower 1.97626e-322
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.199898 normpower 1.97626e-322
+ToR 0 Port 16 throughput 2.50575e+10 txBytes 21800 qlen 2180 time 0.199898 normpower 1.05558
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.199898 normpower 1.05558
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.199898 normpower 1.05558
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.199898 normpower 1.05558
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.199898 normpower 1.05558
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.199898 normpower 1.05558
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.199898 normpower 1.05558
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.199898 normpower 1.05558
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.199898 normpower 1.05558
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.199898 normpower 1.05558
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.199898 normpower 1.05558
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.199898 normpower 1.05558
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.199898 normpower 1.05558
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.199898 normpower 1.05558
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.199898 normpower 1.05558
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.199898 normpower 1.05558
+ToR 0 Total 0 throughput 2.50575e+10 buffer 2180 time 0.199898
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.199905 normpower 4.84896e-310
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.199905 normpower 4.84896e-310
+ToR 0 Port 2 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199905 normpower 4.84896e-310
+ToR 0 Port 3 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199905 normpower 4.84896e-310
+ToR 0 Port 4 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199905 normpower 4.84896e-310
+ToR 0 Port 5 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199905 normpower 4.84896e-310
+ToR 0 Port 6 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199905 normpower 4.84896e-310
+ToR 0 Port 7 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199905 normpower 4.84896e-310
+ToR 0 Port 8 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199905 normpower 4.84896e-310
+ToR 0 Port 9 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199905 normpower 4.84896e-310
+ToR 0 Port 10 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199905 normpower 4.84896e-310
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.199905 normpower 4.84896e-310
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.199905 normpower 4.84896e-310
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.199905 normpower 4.84896e-310
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.199905 normpower 4.84896e-310
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.199905 normpower 4.84896e-310
+ToR 0 Port 16 throughput 2.50575e+10 txBytes 21800 qlen 1090 time 0.199905 normpower 0.953617
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.199905 normpower 0.953617
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.199905 normpower 0.953617
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.199905 normpower 0.953617
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.199905 normpower 0.953617
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.199905 normpower 0.953617
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.199905 normpower 0.953617
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.199905 normpower 0.953617
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.199905 normpower 0.953617
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.199905 normpower 0.953617
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.199905 normpower 0.953617
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.199905 normpower 0.953617
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.199905 normpower 0.953617
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.199905 normpower 0.953617
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.199905 normpower 0.953617
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.199905 normpower 0.953617
+ToR 0 Total 0 throughput 2.50575e+10 buffer 1090 time 0.199905
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.199912 normpower 4.84895e-310
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.199912 normpower 4.84895e-310
+ToR 0 Port 2 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199912 normpower 4.84895e-310
+ToR 0 Port 3 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199912 normpower 4.84895e-310
+ToR 0 Port 4 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199912 normpower 4.84895e-310
+ToR 0 Port 5 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199912 normpower 4.84895e-310
+ToR 0 Port 6 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199912 normpower 4.84895e-310
+ToR 0 Port 7 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199912 normpower 4.84895e-310
+ToR 0 Port 8 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199912 normpower 4.84895e-310
+ToR 0 Port 9 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199912 normpower 4.84895e-310
+ToR 0 Port 10 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199912 normpower 4.84895e-310
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.199912 normpower 4.84895e-310
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.199912 normpower 4.84895e-310
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.199912 normpower 4.84895e-310
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.199912 normpower 4.84895e-310
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.199912 normpower 4.84895e-310
+ToR 0 Port 16 throughput 2.50575e+10 txBytes 21800 qlen 0 time 0.199912 normpower 0.952184
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.199912 normpower 0.952184
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.199912 normpower 0.952184
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.199912 normpower 0.952184
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.199912 normpower 0.952184
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.199912 normpower 0.952184
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.199912 normpower 0.952184
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.199912 normpower 0.952184
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.199912 normpower 0.952184
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.199912 normpower 0.952184
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.199912 normpower 0.952184
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.199912 normpower 0.952184
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.199912 normpower 0.952184
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.199912 normpower 0.952184
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.199912 normpower 0.952184
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.199912 normpower 0.952184
+ToR 0 Total 0 throughput 2.50575e+10 buffer 0 time 0.199912
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.199919 normpower 4.84895e-310
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.199919 normpower 4.84895e-310
+ToR 0 Port 2 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199919 normpower 4.84895e-310
+ToR 0 Port 3 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199919 normpower 4.84895e-310
+ToR 0 Port 4 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199919 normpower 4.84895e-310
+ToR 0 Port 5 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199919 normpower 4.84895e-310
+ToR 0 Port 6 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199919 normpower 4.84895e-310
+ToR 0 Port 7 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199919 normpower 4.84895e-310
+ToR 0 Port 8 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199919 normpower 4.84895e-310
+ToR 0 Port 9 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199919 normpower 4.84895e-310
+ToR 0 Port 10 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199919 normpower 4.84895e-310
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.199919 normpower 4.84895e-310
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.199919 normpower 4.84895e-310
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.199919 normpower 4.84895e-310
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.199919 normpower 4.84895e-310
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.199919 normpower 4.84895e-310
+ToR 0 Port 16 throughput 2.38046e+10 txBytes 20710 qlen 2180 time 0.199919 normpower 1.05558
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.199919 normpower 1.05558
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.199919 normpower 1.05558
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.199919 normpower 1.05558
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.199919 normpower 1.05558
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.199919 normpower 1.05558
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.199919 normpower 1.05558
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.199919 normpower 1.05558
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.199919 normpower 1.05558
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.199919 normpower 1.05558
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.199919 normpower 1.05558
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.199919 normpower 1.05558
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.199919 normpower 1.05558
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.199919 normpower 1.05558
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.199919 normpower 1.05558
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.199919 normpower 1.05558
+ToR 0 Total 0 throughput 2.38046e+10 buffer 2180 time 0.199919
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.199926 normpower 4.84895e-310
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.199926 normpower 4.84895e-310
+ToR 0 Port 2 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199926 normpower 4.84895e-310
+ToR 0 Port 3 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199926 normpower 4.84895e-310
+ToR 0 Port 4 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199926 normpower 4.84895e-310
+ToR 0 Port 5 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199926 normpower 4.84895e-310
+ToR 0 Port 6 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199926 normpower 4.84895e-310
+ToR 0 Port 7 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199926 normpower 4.84895e-310
+ToR 0 Port 8 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199926 normpower 4.84895e-310
+ToR 0 Port 9 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199926 normpower 4.84895e-310
+ToR 0 Port 10 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199926 normpower 4.84895e-310
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.199926 normpower 4.84895e-310
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.199926 normpower 4.84895e-310
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.199926 normpower 4.84895e-310
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.199926 normpower 4.84895e-310
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.199926 normpower 4.84895e-310
+ToR 0 Port 16 throughput 2.50575e+10 txBytes 21800 qlen 1090 time 0.199926 normpower 0.953617
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.199926 normpower 0.953617
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.199926 normpower 0.953617
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.199926 normpower 0.953617
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.199926 normpower 0.953617
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.199926 normpower 0.953617
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.199926 normpower 0.953617
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.199926 normpower 0.953617
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.199926 normpower 0.953617
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.199926 normpower 0.953617
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.199926 normpower 0.953617
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.199926 normpower 0.953617
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.199926 normpower 0.953617
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.199926 normpower 0.953617
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.199926 normpower 0.953617
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.199926 normpower 0.953617
+ToR 0 Total 0 throughput 2.50575e+10 buffer 1090 time 0.199926
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.199933 normpower 1.97626e-322
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.199933 normpower 1.97626e-322
+ToR 0 Port 2 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199933 normpower 1.97626e-322
+ToR 0 Port 3 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199933 normpower 1.97626e-322
+ToR 0 Port 4 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199933 normpower 1.97626e-322
+ToR 0 Port 5 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199933 normpower 1.97626e-322
+ToR 0 Port 6 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199933 normpower 1.97626e-322
+ToR 0 Port 7 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199933 normpower 1.97626e-322
+ToR 0 Port 8 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199933 normpower 1.97626e-322
+ToR 0 Port 9 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199933 normpower 1.97626e-322
+ToR 0 Port 10 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199933 normpower 1.97626e-322
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.199933 normpower 1.97626e-322
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.199933 normpower 1.97626e-322
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.199933 normpower 1.97626e-322
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.199933 normpower 1.97626e-322
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.199933 normpower 1.97626e-322
+ToR 0 Port 16 throughput 2.38046e+10 txBytes 20710 qlen 2180 time 0.199933 normpower 1.00532
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.199933 normpower 1.00532
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.199933 normpower 1.00532
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.199933 normpower 1.00532
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.199933 normpower 1.00532
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.199933 normpower 1.00532
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.199933 normpower 1.00532
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.199933 normpower 1.00532
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.199933 normpower 1.00532
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.199933 normpower 1.00532
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.199933 normpower 1.00532
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.199933 normpower 1.00532
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.199933 normpower 1.00532
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.199933 normpower 1.00532
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.199933 normpower 1.00532
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.199933 normpower 1.00532
+ToR 0 Total 0 throughput 2.38046e+10 buffer 2180 time 0.199933
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.19994 normpower 1.97626e-322
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.19994 normpower 1.97626e-322
+ToR 0 Port 2 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.19994 normpower 1.97626e-322
+ToR 0 Port 3 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.19994 normpower 1.97626e-322
+ToR 0 Port 4 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.19994 normpower 1.97626e-322
+ToR 0 Port 5 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.19994 normpower 1.97626e-322
+ToR 0 Port 6 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.19994 normpower 1.97626e-322
+ToR 0 Port 7 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.19994 normpower 1.97626e-322
+ToR 0 Port 8 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.19994 normpower 1.97626e-322
+ToR 0 Port 9 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.19994 normpower 1.97626e-322
+ToR 0 Port 10 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.19994 normpower 1.97626e-322
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.19994 normpower 1.97626e-322
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.19994 normpower 1.97626e-322
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.19994 normpower 1.97626e-322
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.19994 normpower 1.97626e-322
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.19994 normpower 1.97626e-322
+ToR 0 Port 16 throughput 2.50575e+10 txBytes 21800 qlen 1090 time 0.19994 normpower 0.953617
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.19994 normpower 0.953617
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.19994 normpower 0.953617
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.19994 normpower 0.953617
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.19994 normpower 0.953617
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.19994 normpower 0.953617
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.19994 normpower 0.953617
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.19994 normpower 0.953617
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.19994 normpower 0.953617
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.19994 normpower 0.953617
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.19994 normpower 0.953617
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.19994 normpower 0.953617
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.19994 normpower 0.953617
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.19994 normpower 0.953617
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.19994 normpower 0.953617
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.19994 normpower 0.953617
+ToR 0 Total 0 throughput 2.50575e+10 buffer 1090 time 0.19994
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.199947 normpower 4.84895e-310
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.199947 normpower 4.84895e-310
+ToR 0 Port 2 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199947 normpower 4.84895e-310
+ToR 0 Port 3 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199947 normpower 4.84895e-310
+ToR 0 Port 4 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199947 normpower 4.84895e-310
+ToR 0 Port 5 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199947 normpower 4.84895e-310
+ToR 0 Port 6 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199947 normpower 4.84895e-310
+ToR 0 Port 7 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199947 normpower 4.84895e-310
+ToR 0 Port 8 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199947 normpower 4.84895e-310
+ToR 0 Port 9 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199947 normpower 4.84895e-310
+ToR 0 Port 10 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199947 normpower 4.84895e-310
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.199947 normpower 4.84895e-310
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.199947 normpower 4.84895e-310
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.199947 normpower 4.84895e-310
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.199947 normpower 4.84895e-310
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.199947 normpower 4.84895e-310
+ToR 0 Port 16 throughput 2.50575e+10 txBytes 21800 qlen 0 time 0.199947 normpower 0.952184
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.199947 normpower 0.952184
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.199947 normpower 0.952184
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.199947 normpower 0.952184
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.199947 normpower 0.952184
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.199947 normpower 0.952184
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.199947 normpower 0.952184
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.199947 normpower 0.952184
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.199947 normpower 0.952184
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.199947 normpower 0.952184
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.199947 normpower 0.952184
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.199947 normpower 0.952184
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.199947 normpower 0.952184
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.199947 normpower 0.952184
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.199947 normpower 0.952184
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.199947 normpower 0.952184
+ToR 0 Total 0 throughput 2.50575e+10 buffer 0 time 0.199947
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.199954 normpower 1.97626e-322
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.199954 normpower 1.97626e-322
+ToR 0 Port 2 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199954 normpower 1.97626e-322
+ToR 0 Port 3 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199954 normpower 1.97626e-322
+ToR 0 Port 4 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199954 normpower 1.97626e-322
+ToR 0 Port 5 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199954 normpower 1.97626e-322
+ToR 0 Port 6 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199954 normpower 1.97626e-322
+ToR 0 Port 7 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199954 normpower 1.97626e-322
+ToR 0 Port 8 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199954 normpower 1.97626e-322
+ToR 0 Port 9 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199954 normpower 1.97626e-322
+ToR 0 Port 10 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199954 normpower 1.97626e-322
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.199954 normpower 1.97626e-322
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.199954 normpower 1.97626e-322
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.199954 normpower 1.97626e-322
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.199954 normpower 1.97626e-322
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.199954 normpower 1.97626e-322
+ToR 0 Port 16 throughput 2.50575e+10 txBytes 21800 qlen 0 time 0.199954 normpower 1.0023
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.199954 normpower 1.0023
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.199954 normpower 1.0023
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.199954 normpower 1.0023
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.199954 normpower 1.0023
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.199954 normpower 1.0023
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.199954 normpower 1.0023
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.199954 normpower 1.0023
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.199954 normpower 1.0023
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.199954 normpower 1.0023
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.199954 normpower 1.0023
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.199954 normpower 1.0023
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.199954 normpower 1.0023
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.199954 normpower 1.0023
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.199954 normpower 1.0023
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.199954 normpower 1.0023
+ToR 0 Total 0 throughput 2.50575e+10 buffer 0 time 0.199954
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.199961 normpower 4.84895e-310
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.199961 normpower 4.84895e-310
+ToR 0 Port 2 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199961 normpower 4.84895e-310
+ToR 0 Port 3 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199961 normpower 4.84895e-310
+ToR 0 Port 4 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199961 normpower 4.84895e-310
+ToR 0 Port 5 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199961 normpower 4.84895e-310
+ToR 0 Port 6 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199961 normpower 4.84895e-310
+ToR 0 Port 7 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199961 normpower 4.84895e-310
+ToR 0 Port 8 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199961 normpower 4.84895e-310
+ToR 0 Port 9 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199961 normpower 4.84895e-310
+ToR 0 Port 10 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199961 normpower 4.84895e-310
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.199961 normpower 4.84895e-310
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.199961 normpower 4.84895e-310
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.199961 normpower 4.84895e-310
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.199961 normpower 4.84895e-310
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.199961 normpower 4.84895e-310
+ToR 0 Port 16 throughput 2.50575e+10 txBytes 21800 qlen 2180 time 0.199961 normpower 1.10585
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.199961 normpower 1.10585
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.199961 normpower 1.10585
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.199961 normpower 1.10585
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.199961 normpower 1.10585
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.199961 normpower 1.10585
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.199961 normpower 1.10585
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.199961 normpower 1.10585
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.199961 normpower 1.10585
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.199961 normpower 1.10585
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.199961 normpower 1.10585
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.199961 normpower 1.10585
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.199961 normpower 1.10585
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.199961 normpower 1.10585
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.199961 normpower 1.10585
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.199961 normpower 1.10585
+ToR 0 Total 0 throughput 2.50575e+10 buffer 2180 time 0.199961
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.199968 normpower 4.84895e-310
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.199968 normpower 4.84895e-310
+ToR 0 Port 2 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199968 normpower 4.84895e-310
+ToR 0 Port 3 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199968 normpower 4.84895e-310
+ToR 0 Port 4 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199968 normpower 4.84895e-310
+ToR 0 Port 5 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199968 normpower 4.84895e-310
+ToR 0 Port 6 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199968 normpower 4.84895e-310
+ToR 0 Port 7 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199968 normpower 4.84895e-310
+ToR 0 Port 8 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199968 normpower 4.84895e-310
+ToR 0 Port 9 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199968 normpower 4.84895e-310
+ToR 0 Port 10 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199968 normpower 4.84895e-310
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.199968 normpower 4.84895e-310
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.199968 normpower 4.84895e-310
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.199968 normpower 4.84895e-310
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.199968 normpower 4.84895e-310
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.199968 normpower 4.84895e-310
+ToR 0 Port 16 throughput 2.50575e+10 txBytes 21800 qlen 1090 time 0.199968 normpower 0.953617
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.199968 normpower 0.953617
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.199968 normpower 0.953617
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.199968 normpower 0.953617
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.199968 normpower 0.953617
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.199968 normpower 0.953617
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.199968 normpower 0.953617
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.199968 normpower 0.953617
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.199968 normpower 0.953617
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.199968 normpower 0.953617
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.199968 normpower 0.953617
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.199968 normpower 0.953617
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.199968 normpower 0.953617
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.199968 normpower 0.953617
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.199968 normpower 0.953617
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.199968 normpower 0.953617
+ToR 0 Total 0 throughput 2.50575e+10 buffer 1090 time 0.199968
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.199975 normpower 4.84896e-310
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.199975 normpower 4.84896e-310
+ToR 0 Port 2 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199975 normpower 4.84896e-310
+ToR 0 Port 3 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199975 normpower 4.84896e-310
+ToR 0 Port 4 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199975 normpower 4.84896e-310
+ToR 0 Port 5 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199975 normpower 4.84896e-310
+ToR 0 Port 6 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199975 normpower 4.84896e-310
+ToR 0 Port 7 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199975 normpower 4.84896e-310
+ToR 0 Port 8 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199975 normpower 4.84896e-310
+ToR 0 Port 9 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199975 normpower 4.84896e-310
+ToR 0 Port 10 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199975 normpower 4.84896e-310
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.199975 normpower 4.84896e-310
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.199975 normpower 4.84896e-310
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.199975 normpower 4.84896e-310
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.199975 normpower 4.84896e-310
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.199975 normpower 4.84896e-310
+ToR 0 Port 16 throughput 2.50575e+10 txBytes 21800 qlen 3270 time 0.199975 normpower 1.10751
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.199975 normpower 1.10751
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.199975 normpower 1.10751
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.199975 normpower 1.10751
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.199975 normpower 1.10751
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.199975 normpower 1.10751
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.199975 normpower 1.10751
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.199975 normpower 1.10751
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.199975 normpower 1.10751
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.199975 normpower 1.10751
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.199975 normpower 1.10751
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.199975 normpower 1.10751
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.199975 normpower 1.10751
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.199975 normpower 1.10751
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.199975 normpower 1.10751
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.199975 normpower 1.10751
+ToR 0 Total 0 throughput 2.50575e+10 buffer 3270 time 0.199975
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.199982 normpower 4.84895e-310
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.199982 normpower 4.84895e-310
+ToR 0 Port 2 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199982 normpower 4.84895e-310
+ToR 0 Port 3 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199982 normpower 4.84895e-310
+ToR 0 Port 4 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199982 normpower 4.84895e-310
+ToR 0 Port 5 throughput 1.01149e+08 txBytes 88 qlen 0 time 0.199982 normpower 4.84895e-310
+ToR 0 Port 6 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199982 normpower 4.84895e-310
+ToR 0 Port 7 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199982 normpower 4.84895e-310
+ToR 0 Port 8 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199982 normpower 4.84895e-310
+ToR 0 Port 9 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199982 normpower 4.84895e-310
+ToR 0 Port 10 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199982 normpower 4.84895e-310
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.199982 normpower 4.84895e-310
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.199982 normpower 4.84895e-310
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.199982 normpower 4.84895e-310
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.199982 normpower 4.84895e-310
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.199982 normpower 4.84895e-310
+ToR 0 Port 16 throughput 2.50575e+10 txBytes 21800 qlen 2180 time 0.199982 normpower 0.955051
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.199982 normpower 0.955051
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.199982 normpower 0.955051
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.199982 normpower 0.955051
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.199982 normpower 0.955051
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.199982 normpower 0.955051
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.199982 normpower 0.955051
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.199982 normpower 0.955051
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.199982 normpower 0.955051
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.199982 normpower 0.955051
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.199982 normpower 0.955051
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.199982 normpower 0.955051
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.199982 normpower 0.955051
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.199982 normpower 0.955051
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.199982 normpower 0.955051
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.199982 normpower 0.955051
+ToR 0 Total 0 throughput 2.50575e+10 buffer 2180 time 0.199982
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.199989 normpower 6.95297e-310
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.199989 normpower 6.95297e-310
+ToR 0 Port 2 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199989 normpower 6.95297e-310
+ToR 0 Port 3 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199989 normpower 6.95297e-310
+ToR 0 Port 4 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199989 normpower 6.95297e-310
+ToR 0 Port 5 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199989 normpower 6.95297e-310
+ToR 0 Port 6 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199989 normpower 6.95297e-310
+ToR 0 Port 7 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199989 normpower 6.95297e-310
+ToR 0 Port 8 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199989 normpower 6.95297e-310
+ToR 0 Port 9 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199989 normpower 6.95297e-310
+ToR 0 Port 10 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199989 normpower 6.95297e-310
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.199989 normpower 6.95297e-310
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.199989 normpower 6.95297e-310
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.199989 normpower 6.95297e-310
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.199989 normpower 6.95297e-310
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.199989 normpower 6.95297e-310
+ToR 0 Port 16 throughput 2.38046e+10 txBytes 20710 qlen 2180 time 0.199989 normpower 0.955051
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.199989 normpower 0.955051
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.199989 normpower 0.955051
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.199989 normpower 0.955051
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.199989 normpower 0.955051
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.199989 normpower 0.955051
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.199989 normpower 0.955051
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.199989 normpower 0.955051
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.199989 normpower 0.955051
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.199989 normpower 0.955051
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.199989 normpower 0.955051
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.199989 normpower 0.955051
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.199989 normpower 0.955051
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.199989 normpower 0.955051
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.199989 normpower 0.955051
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.199989 normpower 0.955051
+ToR 0 Total 0 throughput 2.38046e+10 buffer 2180 time 0.199989
+ToR 0 Port 0 throughput 0 txBytes 0 qlen 0 time 0.199996 normpower 4.84895e-310
+ToR 0 Port 1 throughput 0 txBytes 0 qlen 0 time 0.199996 normpower 4.84895e-310
+ToR 0 Port 2 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199996 normpower 4.84895e-310
+ToR 0 Port 3 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199996 normpower 4.84895e-310
+ToR 0 Port 4 throughput 3.03448e+08 txBytes 264 qlen 0 time 0.199996 normpower 4.84895e-310
+ToR 0 Port 5 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199996 normpower 4.84895e-310
+ToR 0 Port 6 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199996 normpower 4.84895e-310
+ToR 0 Port 7 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199996 normpower 4.84895e-310
+ToR 0 Port 8 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199996 normpower 4.84895e-310
+ToR 0 Port 9 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199996 normpower 4.84895e-310
+ToR 0 Port 10 throughput 2.02299e+08 txBytes 176 qlen 0 time 0.199996 normpower 4.84895e-310
+ToR 0 Port 11 throughput 0 txBytes 0 qlen 0 time 0.199996 normpower 4.84895e-310
+ToR 0 Port 12 throughput 0 txBytes 0 qlen 0 time 0.199996 normpower 4.84895e-310
+ToR 0 Port 13 throughput 0 txBytes 0 qlen 0 time 0.199996 normpower 4.84895e-310
+ToR 0 Port 14 throughput 0 txBytes 0 qlen 0 time 0.199996 normpower 4.84895e-310
+ToR 0 Port 15 throughput 0 txBytes 0 qlen 0 time 0.199996 normpower 4.84895e-310
+ToR 0 Port 16 throughput 2.50575e+10 txBytes 21800 qlen 1090 time 0.199996 normpower 0.953617
+ToR 0 Port 17 throughput 0 txBytes 0 qlen 0 time 0.199996 normpower 0.953617
+ToR 0 Port 18 throughput 0 txBytes 0 qlen 0 time 0.199996 normpower 0.953617
+ToR 0 Port 19 throughput 0 txBytes 0 qlen 0 time 0.199996 normpower 0.953617
+ToR 0 Port 20 throughput 0 txBytes 0 qlen 0 time 0.199996 normpower 0.953617
+ToR 0 Port 21 throughput 0 txBytes 0 qlen 0 time 0.199996 normpower 0.953617
+ToR 0 Port 22 throughput 0 txBytes 0 qlen 0 time 0.199996 normpower 0.953617
+ToR 0 Port 23 throughput 0 txBytes 0 qlen 0 time 0.199996 normpower 0.953617
+ToR 0 Port 24 throughput 0 txBytes 0 qlen 0 time 0.199996 normpower 0.953617
+ToR 0 Port 25 throughput 0 txBytes 0 qlen 0 time 0.199996 normpower 0.953617
+ToR 0 Port 26 throughput 0 txBytes 0 qlen 0 time 0.199996 normpower 0.953617
+ToR 0 Port 27 throughput 0 txBytes 0 qlen 0 time 0.199996 normpower 0.953617
+ToR 0 Port 28 throughput 0 txBytes 0 qlen 0 time 0.199996 normpower 0.953617
+ToR 0 Port 29 throughput 0 txBytes 0 qlen 0 time 0.199996 normpower 0.953617
+ToR 0 Port 30 throughput 0 txBytes 0 qlen 0 time 0.199996 normpower 0.953617
+ToR 0 Port 31 throughput 0 txBytes 0 qlen 0 time 0.199996 normpower 0.953617
+ToR 0 Total 0 throughput 2.50575e+10 buffer 1090 time 0.199996
+3.11492

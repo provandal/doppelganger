@@ -1,0 +1,30 @@
+Doppelgänger
+Copyright 2026 Erik (provandal.dev)
+
+This product includes software developed at provandal.dev.
+
+==============================================================================
+Apache-2.0 / GPL-2.0 boundary
+==============================================================================
+
+The source code in this repository is licensed under the Apache License,
+Version 2.0 (see LICENSE).
+
+Built Docker images bundle NS-3 (https://www.nsnam.org/) and the
+inet-tub/ns3-datacenter RDMA additions, both licensed under the GNU General
+Public License, Version 2 (GPL-2.0). NS-3 source is sourced at Docker build
+time from https://github.com/provandal/ns3-datacenter (a pinned fork of
+https://github.com/inet-tub/ns3-datacenter).
+
+The Apache-2.0 source code in this repository does not link against,
+statically or dynamically, any GPL-licensed library. Doppelgänger
+communicates with NS-3 through subprocess invocation and text-file exchange
+- an arms-length boundary that does not produce a derivative work under
+GPL-2.0 (consistent with the FSF GPL FAQ on separate programs communicating
+through pipes, sockets, or files).
+
+The built Docker container is therefore a "mere aggregation" under
+GPL-2.0 Section 2: GPL-2.0 terms apply to NS-3 components within the
+container; Apache-2.0 terms apply to Doppelgänger components within the
+container. Each component's source is available at its respective
+upstream repository.

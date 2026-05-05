@@ -144,6 +144,199 @@ def microburst(
     )
 
 
+def asymmetric_path(
+    *,
+    leaves: int = 4,
+    spines: int = 4,
+    hosts_per_leaf: int = 4,
+    slow_spine_index: int = 0,
+    sim_duration_seconds: float = 0.2,
+    flow_start_seconds: float = 0.05,
+    flows_per_pair: int = 4,
+    packets_per_flow: int = 5_000,
+    priority_group: int = 3,
+) -> Scenario:
+    """Differential leaf↔spine link characteristics expose ECMP-hash variance.
+
+    Topology has one degraded ("slow") spine with reduced bandwidth and
+    increased delay. Flows are generated in source/destination pairs that
+    span leaves; ECMP hashing distributes flows across spines, so flows
+    landing on the slow spine experience materially worse FCT than flows
+    landing on healthy spines. The agent's job: notice the bimodal FCT
+    distribution and trace it to the slow spine via per-link counters.
+
+    The substrate's topology.txt format supports per-link bandwidth and
+    delay (verified against ``examples/PowerTCP/topology-256.txt`` and the
+    parser at ``powertcp-evaluation-burst.cc:838``); this scenario uses
+    that capability rather than scenario-runtime injection.
+    """
+    topology = Topology(
+        leaves=leaves,
+        spines=spines,
+        hosts_per_leaf=hosts_per_leaf,
+        slow_spine_indices=(slow_spine_index,),
+    )
+    num_hosts = topology.num_hosts
+
+    # Generate flows from leaf 0 hosts to leaf 1 hosts (and back), enough
+    # flows that ECMP distribution across spines becomes statistically
+    # visible.
+    flows: list[Flow] = []
+    for src_offset in range(hosts_per_leaf):
+        src = src_offset                               # leaf 0
+        dst = hosts_per_leaf + src_offset              # leaf 1
+        for k in range(flows_per_pair):
+            flows.append(Flow(
+                src=src,
+                dst=dst,
+                priority_group=priority_group,
+                dst_port=10_000 + src_offset * flows_per_pair + k,
+                packet_count=packets_per_flow,
+                start_time_seconds=flow_start_seconds,
+            ))
+
+    return Scenario(
+        name=f"asymmetric-path-{num_hosts}h",
+        topology=_PLACEHOLDER_REF,
+        custom_topology=topology,
+        custom_traffic=TrafficPattern(
+            flows=tuple(flows),
+            name=f"leaf0-to-leaf1-{flows_per_pair}-flows-per-pair",
+            description=(
+                f"{hosts_per_leaf}×{flows_per_pair} = "
+                f"{hosts_per_leaf * flows_per_pair} flows from leaf 0 to "
+                f"leaf 1, ECMP-distributed across {spines} spines (one "
+                f"of which is degraded)."
+            ),
+        ),
+        sim_duration_seconds=sim_duration_seconds,
+        intended_symptom=(
+            f"Bimodal FCT distribution among otherwise-identical flows; "
+            f"slower-mode flows correlate with hashing onto spine "
+            f"{slow_spine_index}."
+        ),
+        root_cause=(
+            f"Spine {slow_spine_index}'s leaf↔spine links are "
+            f"asymmetrically degraded "
+            f"(bandwidth {topology.slow_spine_link_bps:,} bps; delay "
+            f"{topology.slow_spine_link_delay}). ECMP-hashed flows landing "
+            f"on this spine experience worse performance with no "
+            f"flow-side cause."
+        ),
+        difficulty="advanced",
+    )
+
+
+def hash_polarization(
+    *,
+    leaves: int = 4,
+    spines: int = 4,
+    hosts_per_leaf: int = 4,
+    sim_duration_seconds: float = 0.2,
+    flow_start_seconds: float = 0.05,
+    packets_per_flow: int = 5_000,
+    polarized_dst_port_count: int = 2,
+    priority_group: int = 3,
+) -> Scenario:
+    """Flow population engineered to provoke ECMP hash imbalance.
+
+    Most ECMP implementations hash on the 5-tuple
+    (src_ip, dst_ip, proto, src_port, dst_port). This scenario clusters
+    ``dst_port`` across a small ``polarized_dst_port_count`` set
+    (default 2) for many flows; combined with the substrate's deterministic
+    ECMP, the result is per-link counter imbalance — some leaf↔spine
+    links carry far more traffic than others despite an identical
+    full-mesh topology.
+
+    This is the scenario-authorship variant of the failure class. The
+    agent's job: notice that per-link counters are asymmetric across
+    spines; trace the asymmetry to the dst_port distribution rather
+    than to a topology problem (since none exists).
+
+    Substrate ECMP hash details are implementation-defined; the exact
+    polarization pattern depends on what the substrate hashes. This
+    scenario produces *a* polarization-prone flow set, not a guaranteed
+    pattern. Empirical verification against the substrate's per-link
+    counters is part of Stage 1's outstanding investigation backlog
+    (Doppelgänger v0.2 §10).
+    """
+    topology = Topology(leaves=leaves, spines=spines, hosts_per_leaf=hosts_per_leaf)
+    num_hosts = topology.num_hosts
+
+    # Each pair (leaf0_host_i, leaf1_host_i) gets several flows on a
+    # small set of dst_ports, repeated to make the bias statistically
+    # visible.
+    flows: list[Flow] = []
+    flow_count = 0
+    repetitions_per_pair = 4
+    for src_offset in range(hosts_per_leaf):
+        src = src_offset                                # leaf 0
+        dst = hosts_per_leaf + src_offset               # leaf 1
+        for k in range(repetitions_per_pair):
+            dst_port_offset = k % polarized_dst_port_count
+            flows.append(Flow(
+                src=src,
+                dst=dst,
+                priority_group=priority_group,
+                dst_port=10_000 + dst_port_offset,
+                packet_count=packets_per_flow,
+                start_time_seconds=flow_start_seconds,
+            ))
+            flow_count += 1
+
+    return Scenario(
+        name=f"hash-polarization-{num_hosts}h",
+        topology=_PLACEHOLDER_REF,
+        custom_topology=topology,
+        custom_traffic=TrafficPattern(
+            flows=tuple(flows),
+            name=(
+                f"clustered-dst-port-{polarized_dst_port_count}-ports-"
+                f"{flow_count}-flows"
+            ),
+            description=(
+                f"{flow_count} flows from leaf 0 to leaf 1 with dst_port "
+                f"clustered to {polarized_dst_port_count} values, expected "
+                f"to provoke ECMP hash imbalance."
+            ),
+        ),
+        sim_duration_seconds=sim_duration_seconds,
+        intended_symptom=(
+            f"Per-link counter asymmetry across leaf↔spine links: a "
+            f"subset of links carries materially more traffic than "
+            f"others despite a uniform topology and identical link "
+            f"capacity."
+        ),
+        root_cause=(
+            f"Flow-population bias: {flow_count} flows share a small "
+            f"set of {polarized_dst_port_count} dst_ports, producing "
+            f"ECMP hash collisions onto a subset of leaf↔spine links."
+        ),
+        difficulty="advanced",
+    )
+
+
+# -----------------------------------------------------------------------
+# Note on link_flap (Doppelgänger v0.2 §5.2 failure class, NOT shipped here)
+# -----------------------------------------------------------------------
+#
+# The substrate (provandal/ns3-datacenter at SHA 4dd55d8...) has a
+# LINK_DOWN config knob in config-burst.txt — three numbers `time_ns
+# node_a node_b`. Reading powertcp-evaluation-burst.cc shows it parses
+# these into link_down_time / link_down_A / link_down_B, logs them, and
+# *never references them again*. The link-flap mechanism is not wired
+# up in this substrate variant; setting LINK_DOWN to non-zero values
+# produces no link transition.
+#
+# Shipping a `link_flap()` factory that emits LINK_DOWN with non-zero
+# values would falsely claim functionality the substrate does not
+# provide. This is left out deliberately. Adding link-flap support
+# requires a substrate-side change (schedule a NetDevice::SetDown call
+# at link_down_time) and is filed against Doppelgänger v0.2 §10's
+# substrate-investigation backlog.
+# -----------------------------------------------------------------------
+
+
 def pfc_storm(
     *,
     leaves: int = 4,

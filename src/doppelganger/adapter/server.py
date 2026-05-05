@@ -25,6 +25,8 @@ from doppelganger.driver.types import CompletionStatus, PerFlowRecord
 from doppelganger.eval.comparison import compare_runs as _compare_runs
 from doppelganger.eval.comparison import summarize_run
 from doppelganger.scenarios.builtin import (
+    asymmetric_path,
+    hash_polarization,
     microburst,
     pfc_storm,
     spike_burst_baseline,
@@ -41,6 +43,8 @@ BUILTIN_SCENARIO_FACTORIES: dict[str, Callable[[], Scenario]] = {
     "spike-burst-silent-drops": lambda: spike_burst_silent_drops(rate=0.001),
     "microburst": microburst,
     "pfc-storm": pfc_storm,
+    "asymmetric-path": asymmetric_path,
+    "hash-polarization": hash_polarization,
 }
 
 

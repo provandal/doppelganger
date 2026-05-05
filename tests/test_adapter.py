@@ -52,8 +52,11 @@ def test_envelope_confidence_always_high():
 # --------------------------------------------------- scenario registry
 
 def test_factory_registry_has_all_named_scenarios():
-    expected = {"spike-burst-baseline", "spike-burst-silent-drops",
-                "microburst", "pfc-storm"}
+    expected = {
+        "spike-burst-baseline", "spike-burst-silent-drops",
+        "microburst", "pfc-storm",
+        "asymmetric-path", "hash-polarization",
+    }
     assert set(BUILTIN_SCENARIO_FACTORIES) == expected
 
 

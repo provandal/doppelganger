@@ -12,9 +12,11 @@ import pytest
 from doppelganger.scenarios import (
     OPEN_LOOP_PACKETS,
     Scenario,
+    asymmetric_path,
     compile_scenario,
     compile_topology,
     compile_traffic,
+    hash_polarization,
     microburst,
     pfc_storm,
 )
@@ -158,3 +160,80 @@ def test_pfc_storm_compiles_end_to_end(tmp_path):
 def test_pfc_storm_rejects_target_outside_leaf_zero():
     with pytest.raises(ValueError, match="storm_target_host"):
         pfc_storm(leaves=4, spines=4, hosts_per_leaf=4, storm_target_host=10)
+
+
+# ----------------------------------------------------------- asymmetric_path
+
+def test_asymmetric_path_marks_slow_spine_in_topology():
+    s = asymmetric_path(spines=4, slow_spine_index=2)
+    assert s.custom_topology.slow_spine_indices == (2,)
+
+
+def test_asymmetric_path_compiles_with_degraded_links(tmp_path):
+    """Compiled topology must have visibly different params for slow-spine links."""
+    s = asymmetric_path(leaves=2, spines=2, hosts_per_leaf=2, slow_spine_index=0)
+
+    topo_path = compile_topology(s.custom_topology, tmp_path / "topology.txt")
+    text = topo_path.read_text(encoding="utf-8")
+    # Slow spine has degraded bandwidth (10 Gbps default, vs 100 Gbps healthy)
+    assert "10000000000.0" in text
+    assert "100000000000.0" in text
+
+
+def test_asymmetric_path_flow_set_spans_two_leaves():
+    """Flows must run between hosts on different leaves so they actually traverse spines."""
+    s = asymmetric_path(leaves=4, spines=4, hosts_per_leaf=4)
+    hosts_per_leaf = s.custom_topology.hosts_per_leaf
+    leaf_0_hosts = set(range(hosts_per_leaf))
+    leaf_1_hosts = set(range(hosts_per_leaf, 2 * hosts_per_leaf))
+    for f in s.custom_traffic.flows:
+        assert f.src in leaf_0_hosts
+        assert f.dst in leaf_1_hosts
+
+
+def test_asymmetric_path_compiles_end_to_end(tmp_path):
+    s = asymmetric_path()
+    config = compile_scenario(s, tmp_path / "config-burst.txt")
+    topo = compile_topology(s.custom_topology, tmp_path / "topology.txt")
+    traffic = compile_traffic(s.custom_traffic, tmp_path / "flow.txt")
+    assert config.exists() and topo.exists() and traffic.exists()
+
+
+# --------------------------------------------------------- hash_polarization
+
+def test_hash_polarization_clusters_dst_ports():
+    """The polarization comes from clustered dst_ports."""
+    s = hash_polarization(polarized_dst_port_count=2)
+    ports = {f.dst_port for f in s.custom_traffic.flows}
+    assert len(ports) == 2
+
+
+def test_hash_polarization_uses_uniform_topology():
+    """Topology has no slow spines — the imbalance comes from the flow set."""
+    s = hash_polarization()
+    assert s.custom_topology.slow_spine_indices == ()
+
+
+def test_hash_polarization_flows_span_two_leaves():
+    s = hash_polarization(leaves=4, hosts_per_leaf=4)
+    hosts_per_leaf = s.custom_topology.hosts_per_leaf
+    leaf_0_hosts = set(range(hosts_per_leaf))
+    leaf_1_hosts = set(range(hosts_per_leaf, 2 * hosts_per_leaf))
+    for f in s.custom_traffic.flows:
+        assert f.src in leaf_0_hosts
+        assert f.dst in leaf_1_hosts
+
+
+def test_hash_polarization_compiles_end_to_end(tmp_path):
+    s = hash_polarization()
+    config = compile_scenario(s, tmp_path / "config-burst.txt")
+    topo = compile_topology(s.custom_topology, tmp_path / "topology.txt")
+    traffic = compile_traffic(s.custom_traffic, tmp_path / "flow.txt")
+    assert config.exists() and topo.exists() and traffic.exists()
+
+
+def test_hash_polarization_metadata_names_root_cause():
+    """Eval-set authors should see the polarization framing in scenario metadata."""
+    s = hash_polarization(polarized_dst_port_count=3)
+    assert "polarization" in s.name.lower() or "ECMP" in s.root_cause
+    assert "ECMP" in s.intended_symptom or "asymmetry" in s.intended_symptom.lower()

@@ -133,3 +133,69 @@ def test_zero_bandwidth_rejected(tmp_path):
     bad = Topology(leaves=1, spines=1, hosts_per_leaf=1, host_link_bps=0)
     with pytest.raises(TopologyCompileError, match="host_link_bps"):
         compile_topology(bad, tmp_path / "topology.txt")
+
+
+# --------------------------------------------------- slow-spine asymmetry
+
+def test_slow_spine_links_emit_degraded_params(tmp_path):
+    """Links to a slow spine must use slow-spine bandwidth/delay."""
+    topo = Topology(
+        leaves=2,
+        spines=2,
+        hosts_per_leaf=2,
+        slow_spine_indices=(0,),  # spine 0 is degraded
+        slow_spine_link_bps=10_000_000_000,
+        slow_spine_link_delay="50us",
+    )
+    out = compile_topology(topo, tmp_path / "topology.txt")
+    parsed = _parse(out.read_text(encoding="utf-8"))
+
+    # Spines start at id (leaves * hosts_per_leaf) + leaves = 4 + 2 = 6
+    slow_spine_id = 6
+    healthy_spine_id = 7
+
+    leaf_ids = {4, 5}
+    slow_links = [link for link in parsed["links"]
+                  if int(link[0]) in leaf_ids and int(link[1]) == slow_spine_id]
+    healthy_links = [link for link in parsed["links"]
+                     if int(link[0]) in leaf_ids and int(link[1]) == healthy_spine_id]
+
+    assert len(slow_links) == 2  # one per leaf
+    assert all(link[2] == "10000000000.0" for link in slow_links)
+    assert all(link[3] == "50us" for link in slow_links)
+
+    # Healthy-spine links keep the default 100 Gbps / 5us
+    assert len(healthy_links) == 2
+    assert all(link[2] == "100000000000.0" for link in healthy_links)
+    assert all(link[3] == "5us" for link in healthy_links)
+
+
+def test_no_slow_spines_emits_uniform_links(tmp_path):
+    """When slow_spine_indices is empty, every leaf↔spine link uses the default params."""
+    topo = Topology(leaves=2, spines=2, hosts_per_leaf=2)
+    out = compile_topology(topo, tmp_path / "topology.txt")
+    parsed = _parse(out.read_text(encoding="utf-8"))
+
+    # All leaf↔spine links should have identical params
+    leaf_spine_links = [link for link in parsed["links"]
+                        if 4 <= int(link[0]) < 6 and int(link[1]) >= 6]
+    bws = {link[2] for link in leaf_spine_links}
+    assert bws == {"100000000000.0"}
+
+
+def test_slow_spine_index_out_of_range_rejected(tmp_path):
+    bad = Topology(
+        leaves=2, spines=2, hosts_per_leaf=2,
+        slow_spine_indices=(5,),  # only 2 spines; index 5 invalid
+    )
+    with pytest.raises(TopologyCompileError, match="slow_spine_indices"):
+        compile_topology(bad, tmp_path / "topology.txt")
+
+
+def test_zero_slow_spine_bandwidth_rejected(tmp_path):
+    bad = Topology(
+        leaves=1, spines=1, hosts_per_leaf=1,
+        slow_spine_link_bps=0,
+    )
+    with pytest.raises(TopologyCompileError, match="slow_spine_link_bps"):
+        compile_topology(bad, tmp_path / "topology.txt")

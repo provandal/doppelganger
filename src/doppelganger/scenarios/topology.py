@@ -59,6 +59,20 @@ class Topology:
         Per-link error rate at the topology level (scenario-level
         ``link_error_rate`` lives on the Scenario, not here).
         Default: ``0`` (substrate-format string).
+    slow_spine_indices:
+        Tuple of spine indices (0-based, where 0 is the first spine in
+        ID order) whose leaf↔spine links use degraded parameters. Empty
+        tuple = no asymmetry. Used by the asymmetric-path failure class
+        to create per-spine-path performance differences that ECMP hashing
+        exposes as flow-level FCT variance.
+    slow_spine_link_bps:
+        Bandwidth for links connecting a slow spine. Default 10 Gbps —
+        materially below the 100 Gbps default for healthy spines, so
+        ECMP-hashed flows landing on the slow spine see clear FCT
+        degradation.
+    slow_spine_link_delay:
+        Delay for links connecting a slow spine. Default ``"50us"`` —
+        10× the healthy spine delay.
     """
 
     leaves: int
@@ -69,6 +83,9 @@ class Topology:
     spine_link_bps: int = 100_000_000_000
     spine_link_delay: str = "5us"
     error_rate: str = "0"
+    slow_spine_indices: tuple[int, ...] = ()
+    slow_spine_link_bps: int = 10_000_000_000
+    slow_spine_link_delay: str = "50us"
 
     @property
     def num_hosts(self) -> int:
@@ -130,16 +147,24 @@ def compile_topology(topology: Topology, output_path: Path) -> Path:
             f"{topology.host_link_delay} {topology.error_rate}"
         )
 
-    # Leaf↔spine links: full mesh
+    # Leaf↔spine links: full mesh. Degraded ("slow") spines emit links
+    # with downgraded bandwidth/delay so ECMP-hashed flows landing on
+    # those spines see materially worse FCT.
     bw_spine = _format_bps(topology.spine_link_bps)
+    bw_slow = _format_bps(topology.slow_spine_link_bps)
     first_spine = topology.first_spine_id()
+    slow_spines = set(topology.slow_spine_indices)
     for leaf_offset in range(topology.leaves):
         leaf_id = first_leaf + leaf_offset
         for spine_offset in range(topology.spines):
             spine_id = first_spine + spine_offset
+            if spine_offset in slow_spines:
+                bw, delay = bw_slow, topology.slow_spine_link_delay
+            else:
+                bw, delay = bw_spine, topology.spine_link_delay
             lines.append(
-                f"{leaf_id} {spine_id} {bw_spine} "
-                f"{topology.spine_link_delay} {topology.error_rate}"
+                f"{leaf_id} {spine_id} {bw} "
+                f"{delay} {topology.error_rate}"
             )
 
     output_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -163,6 +188,17 @@ def _validate(topology: Topology) -> None:
         raise TopologyCompileError(
             f"spine_link_bps must be positive, got {topology.spine_link_bps}"
         )
+    if topology.slow_spine_link_bps <= 0:
+        raise TopologyCompileError(
+            f"slow_spine_link_bps must be positive, got "
+            f"{topology.slow_spine_link_bps}"
+        )
+    for idx in topology.slow_spine_indices:
+        if not 0 <= idx < topology.spines:
+            raise TopologyCompileError(
+                f"slow_spine_indices entry {idx} out of range "
+                f"[0, {topology.spines})"
+            )
 
 
 def _format_bps(bps: int) -> str:

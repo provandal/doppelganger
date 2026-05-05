@@ -18,6 +18,8 @@ See ``Doppelganger_Design_v0.2.md`` §5.3 (scenario authorship) and §9.1
 
 from doppelganger.scenarios.builtin import (
     SPIKE_BURST_256,
+    asymmetric_path,
+    hash_polarization,
     microburst,
     pfc_storm,
     spike_burst_baseline,
@@ -59,4 +61,6 @@ __all__ = [
     "spike_burst_silent_drops",
     "microburst",
     "pfc_storm",
+    "asymmetric_path",
+    "hash_polarization",
 ]

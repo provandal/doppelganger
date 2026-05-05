@@ -28,6 +28,8 @@ from doppelganger.scenarios import (
     compile_scenario,
     compile_topology,
     compile_traffic,
+    microburst,
+    pfc_storm,
     spike_burst_baseline,
     spike_burst_silent_drops,
 )
@@ -55,6 +57,8 @@ __all__ = [
     "SPIKE_BURST_256",
     "spike_burst_baseline",
     "spike_burst_silent_drops",
+    "microburst",
+    "pfc_storm",
     "ComparisonResult",
     "FctDistribution",
     "RunSummary",

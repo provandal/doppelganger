@@ -18,6 +18,8 @@ See ``Doppelganger_Design_v0.2.md`` §5.3 (scenario authorship) and §9.1
 
 from doppelganger.scenarios.builtin import (
     SPIKE_BURST_256,
+    microburst,
+    pfc_storm,
     spike_burst_baseline,
     spike_burst_silent_drops,
 )
@@ -55,4 +57,6 @@ __all__ = [
     "SPIKE_BURST_256",
     "spike_burst_baseline",
     "spike_burst_silent_drops",
+    "microburst",
+    "pfc_storm",
 ]

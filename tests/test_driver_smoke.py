@@ -23,6 +23,7 @@ from doppelganger.scenarios import (
     Scenario,
     spike_burst_baseline,
 )
+from doppelganger.scenarios.types import TopologyRef
 
 
 # --------------------------------------------------------------------- parser
@@ -113,6 +114,36 @@ def test_driver_rejects_non_string_non_scenario_input(tmp_path):
     )
     with pytest.raises(DriverError, match="must be a str or Scenario"):
         driver.run_scenario(42)  # type: ignore[arg-type]
+
+
+def test_driver_passes_algorithm_matching_scenario_cc_mode(tmp_path):
+    """The Driver must emit --algorithm=<cc_mode> so the substrate's silent
+    override (cc_mode = algorithm at line 717) becomes a no-op.
+
+    Default Scenario cc_mode is 3; this test also covers a custom value.
+    """
+    driver = Driver(traces_root=tmp_path)
+    default = spike_burst_baseline()
+    _, sim_cmd, _, _ = driver._prepare_run(default, run_id="default-cc")
+    assert "--algorithm=3" in sim_cmd
+
+    custom_cc = Scenario(
+        name="custom-cc",
+        topology=SPIKE_BURST_256,
+        cc_mode=8,
+    )
+    _, sim_cmd, _, _ = driver._prepare_run(custom_cc, run_id="custom-cc")
+    assert "--algorithm=8" in sim_cmd
+
+
+def test_driver_does_not_pass_algorithm_for_builtin_string_scenario(tmp_path):
+    """The built-in 'spike-burst' string scenario uses the substrate's bundled
+    config-burst.txt; CC_MODE there is 3 which matches the cmd-line default.
+    Don't add --algorithm to that path; leave the existing behavior alone.
+    """
+    driver = Driver(traces_root=tmp_path)
+    _, sim_cmd, _, _ = driver._prepare_run("spike-burst", run_id="builtin")
+    assert "--algorithm" not in sim_cmd
 
 
 def test_driver_compiles_scenario_before_image_check(tmp_path):

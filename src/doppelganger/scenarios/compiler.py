@@ -164,14 +164,18 @@ def compile_scenario(scenario: Scenario, output_path: Path) -> Path:
     lines.append(f"KMIN_MAP {_format_int_speed_map(scenario.kmin_map)}")
     lines.append(f"PMAX_MAP {_format_float_speed_map(scenario.pmax_map)}")
 
-    # Buffer + qlen monitoring
+    # Buffer + qlen monitoring. The substrate parses these as nanoseconds.
+    # The spike's bundled config used hardcoded 2e9 / 2.01e9 ns (= 2.0 s
+    # window) — past any reasonable SIMULATOR_STOP_TIME, which is one of
+    # the reasons qlen.txt comes up empty. The substrate-side issue
+    # (monitor_buffer is never initially scheduled) was the deeper cause;
+    # see provandal/ns3-datacenter master for the kickoff fix. Even with
+    # the kickoff in place, sane values here are required.
     lines.append(f"BUFFER_SIZE {scenario.buffer_size}")
     lines.append("QLEN_MON_FILE mix/qlen.txt")
-    # Doppelgänger v0.2 §10 flags QLEN_MON_START past SIMULATOR_STOP_TIME as
-    # the bug that empties qlen.txt. We preserve the spike's exact values
-    # for now; the qlen-monitoring fix is its own Stage 1 backlog item.
-    lines.append("QLEN_MON_START 2000000000")
-    lines.append("QLEN_MON_END 2010000000")
+    qlen_end_ns = int(scenario.sim_duration_seconds * 1_000_000_000)
+    lines.append("QLEN_MON_START 0")
+    lines.append(f"QLEN_MON_END {qlen_end_ns}")
 
     output_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     return output_path

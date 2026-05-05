@@ -64,6 +64,18 @@ def test_baseline_compiles_without_error(tmp_path):
     assert out.read_text(encoding="utf-8").startswith("ENABLE_QCN 1\n")
 
 
+# Keys the compiler deliberately diverges from the spike's hand-typed
+# baseline + injected configs. Each entry has a documented reason.
+_DELIBERATELY_DIVERGED_KEYS = {
+    # Spike hardcoded 2e9 / 2.01e9 ns (= 2.0–2.01 s); past any reasonable
+    # SIMULATOR_STOP_TIME (the spike's own config has 0.2). The compiler
+    # now derives these from sim_duration_seconds. Substrate-side
+    # fix lands the kickoff that actually consumes these values.
+    "QLEN_MON_START",
+    "QLEN_MON_END",
+}
+
+
 def test_baseline_matches_spike_known_good_semantically(tmp_path):
     """The compiled baseline must agree key-by-key with the spike's baseline.
 
@@ -71,6 +83,8 @@ def test_baseline_matches_spike_known_good_semantically(tmp_path):
     scenario diverges from the spike's known-good config, we don't know
     whether the substrate will still validate the file. Exact-match on the
     fields that exist in both is the contract.
+
+    Two keys deliberately diverge — see ``_DELIBERATELY_DIVERGED_KEYS``.
     """
     if not SPIKE_BASELINE_PATH.exists():
         pytest.skip(f"spike baseline config not present at {SPIKE_BASELINE_PATH}")
@@ -80,11 +94,13 @@ def test_baseline_matches_spike_known_good_semantically(tmp_path):
     spike_keys = _parse_config(SPIKE_BASELINE_PATH.read_text(encoding="utf-8"))
     compiled_keys = _parse_config(compiled.read_text(encoding="utf-8"))
 
-    # Every key the spike has, the compiled output has, with the same value.
+    # Every key the spike has, the compiled output has, with the same value
+    # — except for the small set of keys we deliberately fixed.
     mismatches = {
         k: (spike_keys[k], compiled_keys.get(k))
         for k in spike_keys
-        if compiled_keys.get(k) != spike_keys[k]
+        if k not in _DELIBERATELY_DIVERGED_KEYS
+        and compiled_keys.get(k) != spike_keys[k]
     }
     assert not mismatches, (
         f"Compiled baseline diverges from spike baseline on keys: {mismatches}"
@@ -141,11 +157,12 @@ def test_silent_drops_matches_spike_injected_config(tmp_path):
         float(spike_keys["ERROR_RATE_PER_LINK"])
     )
 
-    # String comparison for everything else.
+    # String comparison for everything else, modulo deliberately-fixed keys.
+    excluded = {"ERROR_RATE_PER_LINK"} | _DELIBERATELY_DIVERGED_KEYS
     mismatches = {
         k: (spike_keys[k], compiled_keys.get(k))
         for k in spike_keys
-        if k != "ERROR_RATE_PER_LINK" and compiled_keys.get(k) != spike_keys[k]
+        if k not in excluded and compiled_keys.get(k) != spike_keys[k]
     }
     assert not mismatches, (
         f"Compiled silent-drops diverges from spike injected on keys: {mismatches}"
@@ -258,6 +275,38 @@ def test_custom_traffic_redirects_flow_file(tmp_path):
     assert keys["FLOW_FILE"] == "/traces/flow.txt"
     # TOPOLOGY_FILE stays at the bundled path
     assert keys["TOPOLOGY_FILE"] == SPIKE_BURST_256.topology_path
+
+
+# --------------------------------------------- QLEN monitoring window
+
+def test_qlen_window_derives_from_sim_duration(tmp_path):
+    """QLEN_MON_END must be sim_duration_seconds * 1e9 ns; START must be 0.
+
+    The substrate's monitor_buffer self-rescheduling stops when
+    Simulator::Now() >= qlen_mon_end. With qlen_mon_end set to the full
+    sim duration, monitoring runs for the whole sim once the substrate-
+    side kickoff fix is in place.
+    """
+    s = Scenario(
+        name="qlen-window-test",
+        topology=SPIKE_BURST_256,
+        sim_duration_seconds=0.5,
+    )
+    keys = _parse_config(
+        compile_scenario(s, tmp_path / "c.txt").read_text(encoding="utf-8")
+    )
+    assert keys["QLEN_MON_START"] == "0"
+    assert keys["QLEN_MON_END"] == "500000000"  # 0.5s in ns
+
+
+def test_qlen_window_short_sim(tmp_path):
+    s = Scenario(
+        name="short", topology=SPIKE_BURST_256, sim_duration_seconds=0.05,
+    )
+    keys = _parse_config(
+        compile_scenario(s, tmp_path / "c.txt").read_text(encoding="utf-8")
+    )
+    assert keys["QLEN_MON_END"] == "50000000"  # 0.05s in ns; still within sim
 
 
 def test_both_custom_redirects_both_paths(tmp_path):

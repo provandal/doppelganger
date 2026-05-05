@@ -210,9 +210,16 @@ class Driver:
 
             compiled_path = trace_dir / _COMPILED_CONFIG_NAME
             compile_scenario(scenario, compiled_path)
+            # The substrate's powertcp-evaluation-burst has a known footgun
+            # at line 717 of its main(): `cc_mode = algorithm;` unconditionally
+            # overrides whatever CC_MODE the config-burst.txt set, with the
+            # cmd-line --algorithm default of 3. Pass --algorithm explicitly
+            # so the override matches scenario.cc_mode rather than silently
+            # collapsing to 3.
             sim_command = (
                 f"./waf --run 'powertcp-evaluation-burst "
-                f"--conf=/traces/{_COMPILED_CONFIG_NAME}'"
+                f"--conf=/traces/{_COMPILED_CONFIG_NAME} "
+                f"--algorithm={scenario.cc_mode}'"
             )
             return scenario_name, sim_command, compiled_path, trace_dir
 

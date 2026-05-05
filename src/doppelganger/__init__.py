@@ -7,6 +7,13 @@ from doppelganger.driver import (
     PerFlowRecord,
     SimulationResult,
 )
+from doppelganger.eval import (
+    ComparisonResult,
+    FctDistribution,
+    RunSummary,
+    compare_runs,
+    summarize_run,
+)
 from doppelganger.scenarios import (
     SPIKE_BURST_256,
     Scenario,
@@ -32,4 +39,9 @@ __all__ = [
     "SPIKE_BURST_256",
     "spike_burst_baseline",
     "spike_burst_silent_drops",
+    "ComparisonResult",
+    "FctDistribution",
+    "RunSummary",
+    "compare_runs",
+    "summarize_run",
 ]

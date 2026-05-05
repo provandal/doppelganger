@@ -21,10 +21,17 @@ classifiers = [
     "Operating System :: Microsoft :: Windows",
 ]
 
+dependencies = [
+    "mcp>=1.0",
+]
+
 [project.optional-dependencies]
 dev = [
     "pytest>=7.4",
 ]
+
+[project.scripts]
+doppelganger-adapter = "doppelganger.adapter.__main__:main"
 
 [project.urls]
 Homepage = "https://github.com/provandal/doppelganger"

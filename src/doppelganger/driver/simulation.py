@@ -7,12 +7,21 @@ artifacts (config files in, trace files out) — no Python bindings, no live
 binding, no shared memory. Doppelgänger v0.2 §9.5 covers why this boundary
 matters for the GPL-2.0 / Apache-2.0 license model.
 
-v0.1 ships one built-in scenario: ``"spike-burst"`` — runs the substrate's
-bundled ``examples/PowerTCP/config-burst.txt`` example. The scenario name maps
-to the scenario the 2026-05-02 fork spike validated end-to-end. Topology
-compilation (turning a Python topology declaration into ``config-burst.txt``
-format) is a separate later commit; for now, the spike's bundled config is the
-one path that works.
+``Driver.run_scenario`` accepts two input shapes:
+
+* **Built-in scenario name** (``str``). Runs the substrate's bundled
+  ``examples/PowerTCP/config-burst.txt`` via the substrate's own example
+  binary. ``"spike-burst"`` is the one built-in name today; it reproduces
+  the 2026-05-02 fork spike's end-to-end run.
+* **Scenario object** (``doppelganger.scenarios.Scenario``). The Driver
+  compiles the Scenario into a ``config-burst.txt`` file inside the
+  per-run trace directory, bind-mounts it into the substrate container,
+  and invokes the simulator with ``--conf=`` pointing at the compiled
+  config.
+
+The Scenario path is what enables failure-injection variants (silent drops
+via ``link_error_rate``, simulation-duration tuning, ECN/buffer knobs).
+The built-in name path stays available as the simplest possible smoke test.
 """
 
 from __future__ import annotations
@@ -22,22 +31,31 @@ import subprocess
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Union
 
 from doppelganger.driver.parsers.fct import parse_fct_file
 from doppelganger.driver.types import PerFlowRecord
+from doppelganger.scenarios.compiler import compile_scenario
+from doppelganger.scenarios.types import Scenario
 
 DEFAULT_SUBSTRATE_IMAGE = "doppelganger-substrate"
 SUBSTRATE_NS3_DIR = "/opt/ns3-datacenter/simulator/ns-3.39"
 
-# Scenario registry. Each entry is the shell command run inside the substrate
-# container; trace files are expected to land in ``mix/`` relative to the NS-3 root.
+# Built-in scenario shell commands. Each runs against the substrate's bundled
+# example config; trace files land in ``mix/`` relative to the NS-3 root.
 _BUILTIN_SCENARIOS: dict[str, str] = {
     "spike-burst": (
-        "mkdir -p mix && "
         "./waf --run 'powertcp-evaluation-burst "
         "--conf=examples/PowerTCP/config-burst.txt'"
     ),
 }
+
+# When the Driver runs a Scenario object, the compiled config-burst.txt is
+# written here inside the bind-mounted trace directory. The substrate sees
+# it at the same path (the bind mount maps host trace_dir → /traces).
+_COMPILED_CONFIG_NAME = "config-burst.txt"
+
+ScenarioInput = Union[str, Scenario]
 
 
 @dataclass
@@ -50,6 +68,7 @@ class SimulationResult:
     stdout: str = ""
     stderr: str = ""
     wall_clock_seconds: float = 0.0
+    compiled_config_path: Path | None = None
 
 
 class DriverError(RuntimeError):
@@ -81,16 +100,22 @@ class Driver:
         """Return the names of built-in scenarios this Driver knows how to run."""
         return list(_BUILTIN_SCENARIOS)
 
-    def run_scenario(self, scenario: str, run_id: str | None = None) -> SimulationResult:
+    def run_scenario(
+        self,
+        scenario: ScenarioInput,
+        run_id: str | None = None,
+    ) -> SimulationResult:
         """Run a scenario end-to-end and return parsed Per-Flow Records.
 
         Parameters
         ----------
         scenario:
-            Name of a built-in scenario (see :py:meth:`list_scenarios`).
+            Either the name of a built-in scenario (str; see
+            :py:meth:`list_scenarios`) or a :class:`Scenario` object that
+            the Driver compiles into ``config-burst.txt`` for this run.
         run_id:
             Optional label for the run's trace directory. Defaults to
-            ``"<scenario>-<unix-timestamp>"``.
+            ``"<scenario-name>-<unix-timestamp>"``.
 
         Raises
         ------
@@ -98,21 +123,15 @@ class Driver:
             If the substrate image is not present locally, if the simulation
             subprocess returns non-zero, or if no trace files are produced.
         """
-        if scenario not in _BUILTIN_SCENARIOS:
-            raise DriverError(
-                f"Unknown scenario {scenario!r}. "
-                f"Known: {sorted(_BUILTIN_SCENARIOS)}"
-            )
+        scenario_name, sim_command, compiled_config_path, trace_dir = (
+            self._prepare_run(scenario, run_id)
+        )
 
         self._verify_image_present()
 
-        run_id = run_id or f"{scenario}-{int(time.time())}"
-        trace_dir = self.traces_root / run_id
-        trace_dir.mkdir(parents=True, exist_ok=True)
-
-        sim_command = _BUILTIN_SCENARIOS[scenario]
         full_command = (
             f"cd {SUBSTRATE_NS3_DIR} && "
+            f"mkdir -p mix && "
             f"{sim_command} && "
             f"cp mix/* /traces/ 2>/dev/null || true"
         )
@@ -140,12 +159,54 @@ class Driver:
         flows = parse_fct_file(fct_path) if fct_path.exists() else []
 
         return SimulationResult(
-            scenario=scenario,
+            scenario=scenario_name,
             trace_dir=trace_dir,
             flows=flows,
             stdout=completed.stdout,
             stderr=completed.stderr,
             wall_clock_seconds=elapsed,
+            compiled_config_path=compiled_config_path,
+        )
+
+    def _prepare_run(
+        self,
+        scenario: ScenarioInput,
+        run_id: str | None,
+    ) -> tuple[str, str, Path | None, Path]:
+        """Resolve scenario input → (name, shell command, compiled-config path, trace dir)."""
+        if isinstance(scenario, str):
+            if scenario not in _BUILTIN_SCENARIOS:
+                raise DriverError(
+                    f"Unknown scenario {scenario!r}. "
+                    f"Known: {sorted(_BUILTIN_SCENARIOS)}"
+                )
+            scenario_name = scenario
+            run_id = run_id or f"{scenario_name}-{int(time.time())}"
+            trace_dir = self.traces_root / run_id
+            trace_dir.mkdir(parents=True, exist_ok=True)
+            return (
+                scenario_name,
+                _BUILTIN_SCENARIOS[scenario],
+                None,
+                trace_dir,
+            )
+
+        if isinstance(scenario, Scenario):
+            scenario_name = scenario.name
+            run_id = run_id or f"{scenario_name}-{int(time.time())}"
+            trace_dir = self.traces_root / run_id
+            trace_dir.mkdir(parents=True, exist_ok=True)
+
+            compiled_path = trace_dir / _COMPILED_CONFIG_NAME
+            compile_scenario(scenario, compiled_path)
+            sim_command = (
+                f"./waf --run 'powertcp-evaluation-burst "
+                f"--conf=/traces/{_COMPILED_CONFIG_NAME}'"
+            )
+            return scenario_name, sim_command, compiled_path, trace_dir
+
+        raise DriverError(
+            f"scenario must be a str or Scenario, got {type(scenario).__name__}"
         )
 
     def _verify_image_present(self) -> None:

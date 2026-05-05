@@ -320,7 +320,7 @@ def hash_polarization(
 # Note on link_flap (Doppelgänger v0.2 §5.2 failure class, NOT shipped here)
 # -----------------------------------------------------------------------
 #
-# The substrate (provandal/ns3-datacenter at SHA bff3b9c...) has a
+# The substrate (provandal/ns3-datacenter at SHA 9881be1...) has a
 # LINK_DOWN config knob in config-burst.txt — three numbers `time_ns
 # node_a node_b`. Reading powertcp-evaluation-burst.cc shows it parses
 # these into link_down_time / link_down_A / link_down_B, logs them, and

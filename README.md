@@ -11,7 +11,7 @@ This split keeps the Driver reusable (e.g., by ProtoViz) and keeps an arms-lengt
 
 ## Status
 
-Stage 1 implementation as of 2026-05-05. The 2026-05-02 fork spike (see [`spike/decision_memo.md`](spike/decision_memo.md)) committed to `inet-tub/ns3-datacenter` (NS-3.39) as the upstream substrate; we maintain a pinned fork at [`provandal/ns3-datacenter`](https://github.com/provandal/ns3-datacenter). The Dockerfile currently pins SHA `bff3b9ca3d2559e696c4bd37a64fa77b426174bd`, which includes the upstream HEAD validated by the spike (`4dd55d8…`), the top-level GPL-2.0 LICENSE clarification (`6aeea1c`), and the 2026-05-05 trace-output gap fixes for `pfc.txt` / `mix.tr` / `qlen.txt` (`bff3b9c`).
+Stage 1 implementation as of 2026-05-05. The 2026-05-02 fork spike (see [`spike/decision_memo.md`](spike/decision_memo.md)) committed to `inet-tub/ns3-datacenter` (NS-3.39) as the upstream substrate; we maintain a pinned fork at [`provandal/ns3-datacenter`](https://github.com/provandal/ns3-datacenter). The Dockerfile currently pins SHA `9881be120a7863e2072f641f89ffa6532c585829`, which includes the upstream HEAD validated by the spike (`4dd55d8…`), the top-level GPL-2.0 LICENSE clarification (`6aeea1c`), the 2026-05-05 trace-output gap fixes for `pfc.txt` / `mix.tr` / `qlen.txt` (`bff3b9c`), and the dropped `argv[2]` filename mutation on `TRACE_OUTPUT_FILE` (`9881be1`).
 
 See [`docs/Doppelganger_Design_v0.2.md`](docs/Doppelganger_Design_v0.2.md) for the canonical design document. The legacy `.docx` and `.txt` extraction files in `docs/` are historical artifacts at v0.1.
 

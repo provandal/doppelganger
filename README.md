@@ -11,9 +11,9 @@ This split keeps the Driver reusable (e.g., by ProtoViz) and keeps an arms-lengt
 
 ## Status
 
-Design phase as of 2026-05. The 2026-05-02 fork spike (see [`spike/decision_memo.md`](spike/decision_memo.md)) committed to `inet-tub/ns3-datacenter` (NS-3.39) as the upstream substrate, pinned at SHA `4dd55d89a46e742e505a92dc7873f82ded6db638`. We mirror that pin at [`provandal/ns3-datacenter`](https://github.com/provandal/ns3-datacenter).
+Stage 1 implementation as of 2026-05-05. The 2026-05-02 fork spike (see [`spike/decision_memo.md`](spike/decision_memo.md)) committed to `inet-tub/ns3-datacenter` (NS-3.39) as the upstream substrate; we maintain a pinned fork at [`provandal/ns3-datacenter`](https://github.com/provandal/ns3-datacenter). The Dockerfile currently pins SHA `bff3b9ca3d2559e696c4bd37a64fa77b426174bd`, which includes the upstream HEAD validated by the spike (`4dd55d8…`), the top-level GPL-2.0 LICENSE clarification (`6aeea1c`), and the 2026-05-05 trace-output gap fixes for `pfc.txt` / `mix.tr` / `qlen.txt` (`bff3b9c`).
 
-See [`docs/Doppelganger_Design_v0.1.docx`](docs/Doppelganger_Design_v0.1.docx) for the design document and `docs/dopp.txt` for the plain-text extraction.
+See [`docs/Doppelganger_Design_v0.2.md`](docs/Doppelganger_Design_v0.2.md) for the canonical design document. The legacy `.docx` and `.txt` extraction files in `docs/` are historical artifacts at v0.1.
 
 ## Layout
 

@@ -1,5 +1,8 @@
 # Doppelgänger NS-3 substrate: provandal/ns3-datacenter (fork of inet-tub/ns3-datacenter, NS-3.39)
-# Pinned at SHA 4dd55d89a46e742e505a92dc7873f82ded6db638 (validated by 2026-05-02 fork spike).
+# Pinned at SHA bff3b9ca3d2559e696c4bd37a64fa77b426174bd
+#   - 4dd55d8: upstream master HEAD validated by 2026-05-02 fork spike
+#   - 6aeea1c: top-level LICENSE clarification (GPL-2.0)
+#   - bff3b9c: pfc.txt / mix.tr / qlen.txt trace-output gaps fixed (2026-05-05)
 #
 # To build:
 #   docker build -t doppelganger-substrate -f docker/substrate.Dockerfile .
@@ -63,13 +66,14 @@ RUN pip3 install --no-cache-dir \
 
 WORKDIR /opt
 
-# Clone ns3-datacenter from the provandal pinned fork at the spike-validated SHA.
-# provandal/ns3-datacenter is a fork of inet-tub/ns3-datacenter; pinning here ensures
-# reproducible builds against the exact commit that the 2026-05-02 spike validated.
-# (Master HEAD on inet-tub has been this SHA since 2025-06-15; matches what the spike ran.)
+# Clone ns3-datacenter from the provandal pinned fork at the SHA that
+# includes the 2026-05-05 trace-output gap fixes (pfc.txt / mix.tr /
+# qlen.txt monitoring). Pinning ensures reproducible builds; see the
+# header comment for the chain of SHAs and what each adds. Re-pinning
+# requires re-validation against the failing scenarios.
 RUN git clone https://github.com/provandal/ns3-datacenter.git \
  && cd ns3-datacenter \
- && git checkout 4dd55d89a46e742e505a92dc7873f82ded6db638
+ && git checkout bff3b9ca3d2559e696c4bd37a64fa77b426174bd
 WORKDIR /opt/ns3-datacenter
 
 # The repo structure is `simulator/ns-3.39/` per its README

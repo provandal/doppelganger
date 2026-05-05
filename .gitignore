@@ -36,3 +36,11 @@ spike/build_*.log
 
 # Docker image tarballs
 *.tar
+
+# Pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Driver runtime traces (per-run output dirs from Driver.run_scenario, repo-root only)
+/traces/

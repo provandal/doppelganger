@@ -1,18 +1,14 @@
-# Candidate Dockerfile for inet-tub/ns3-datacenter (NS-3.39, Waf base)
-# Primary candidate per _reviews/05_doppelganger_v0.2_updates_pending.md
-#
-# STARTING POINT, NOT A VERIFIED RECIPE. Expect to debug.
-# Educated guess based on the repo README signals; package list inferred from NS-3.39 build requirements
-# and the repo's documented dependencies (numpy, matplotlib, cycler).
+# Doppelgänger NS-3 substrate: provandal/ns3-datacenter (fork of inet-tub/ns3-datacenter, NS-3.39)
+# Pinned at SHA 4dd55d89a46e742e505a92dc7873f82ded6db638 (validated by 2026-05-02 fork spike).
 #
 # To build:
-#   docker build -t doppelganger-spike-inet-tub -f inet-tub.Dockerfile .
+#   docker build -t doppelganger-substrate -f docker/substrate.Dockerfile .
 #
-# To run:
-#   docker run -it --rm -v $(pwd):/work doppelganger-spike-inet-tub bash
+# To run interactively:
+#   docker run -it --rm -v $(pwd):/work doppelganger-substrate bash
 #
-# Expected build time on cold cache: 20–40 minutes (mostly NS-3.39 compile).
-# Expected image size: 4–6 GB.
+# Spike-validated cold-cache build: ~5 minutes wall-clock; image size ~1.23 GB.
+# (Pre-spike 20–40 min / 4–6 GB estimates were too pessimistic.)
 
 FROM ubuntu:22.04
 

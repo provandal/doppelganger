@@ -36,6 +36,8 @@ from typing import Union
 from doppelganger.driver.parsers.fct import parse_fct_file
 from doppelganger.driver.types import PerFlowRecord
 from doppelganger.scenarios.compiler import compile_scenario
+from doppelganger.scenarios.topology import compile_topology
+from doppelganger.scenarios.traffic import compile_traffic
 from doppelganger.scenarios.types import Scenario
 
 DEFAULT_SUBSTRATE_IMAGE = "doppelganger-substrate"
@@ -196,6 +198,15 @@ class Driver:
             run_id = run_id or f"{scenario_name}-{int(time.time())}"
             trace_dir = self.traces_root / run_id
             trace_dir.mkdir(parents=True, exist_ok=True)
+
+            # Compile any custom topology / traffic into the trace dir.
+            # The substrate sees them at /traces/topology.txt and
+            # /traces/flow.txt via the bind mount; the config-burst.txt
+            # compiler emits TOPOLOGY_FILE / FLOW_FILE pointing there.
+            if scenario.custom_topology is not None:
+                compile_topology(scenario.custom_topology, trace_dir / "topology.txt")
+            if scenario.custom_traffic is not None:
+                compile_traffic(scenario.custom_traffic, trace_dir / "flow.txt")
 
             compiled_path = trace_dir / _COMPILED_CONFIG_NAME
             compile_scenario(scenario, compiled_path)

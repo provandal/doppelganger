@@ -15,7 +15,10 @@ set compiles to a config semantically identical to the spike baseline.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Sequence
+from typing import Optional, Sequence
+
+from doppelganger.scenarios.topology import Topology
+from doppelganger.scenarios.traffic import TrafficPattern
 
 
 @dataclass(frozen=True)
@@ -87,6 +90,15 @@ class Scenario:
 
     name: str
     topology: TopologyRef
+
+    # Optional custom topology / traffic. When present, the Driver
+    # compiles them into the per-run trace dir and the emitted
+    # config-burst.txt's TOPOLOGY_FILE / FLOW_FILE point at the compiled
+    # files (``/traces/topology.txt`` / ``/traces/flow.txt`` in the
+    # substrate container). When None, the substrate-bundled paths from
+    # ``topology`` (TopologyRef) are used unchanged.
+    custom_topology: Optional[Topology] = None
+    custom_traffic: Optional[TrafficPattern] = None
 
     # Knobs that vary scenario-to-scenario
     sim_duration_seconds: float = 0.2

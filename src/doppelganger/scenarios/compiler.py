@@ -24,6 +24,13 @@ class ScenarioCompileError(ValueError):
     """Raised when a Scenario cannot be compiled (invalid field values)."""
 
 
+# Paths a custom topology/traffic file gets written to inside the
+# bind-mounted trace dir. The container sees them at ``/traces/...``;
+# the substrate's parser opens them via the same string.
+CUSTOM_TOPOLOGY_PATH_IN_CONTAINER = "/traces/topology.txt"
+CUSTOM_FLOW_PATH_IN_CONTAINER = "/traces/flow.txt"
+
+
 # Rate-control / window / feedback block. Spike-validated defaults; same
 # order as the spike's baseline config.txt. Promote a key to a Scenario
 # field when a scenario needs to vary it.
@@ -96,9 +103,22 @@ def compile_scenario(scenario: Scenario, output_path: Path) -> Path:
     lines.append("PACKET_PAYLOAD_SIZE 1000")
     lines.append("")
 
-    # Topology / file paths
-    lines.append(f"TOPOLOGY_FILE {scenario.topology.topology_path}")
-    lines.append(f"FLOW_FILE {scenario.topology.flow_path}")
+    # Topology / file paths. Custom topology/traffic override the
+    # bundled paths; the Driver will have written compiled files into
+    # the bind-mounted trace dir at the paths below before invoking the
+    # substrate.
+    topology_file = (
+        CUSTOM_TOPOLOGY_PATH_IN_CONTAINER
+        if scenario.custom_topology is not None
+        else scenario.topology.topology_path
+    )
+    flow_file = (
+        CUSTOM_FLOW_PATH_IN_CONTAINER
+        if scenario.custom_traffic is not None
+        else scenario.topology.flow_path
+    )
+    lines.append(f"TOPOLOGY_FILE {topology_file}")
+    lines.append(f"FLOW_FILE {flow_file}")
     lines.append("TRACE_FILE mix/trace.txt")
     lines.append("TRACE_OUTPUT_FILE mix/mix.tr")
     lines.append("FCT_OUTPUT_FILE mix/fct.txt")

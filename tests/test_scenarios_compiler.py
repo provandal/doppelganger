@@ -14,8 +14,11 @@ import pytest
 
 from doppelganger.scenarios import (
     SPIKE_BURST_256,
+    Flow,
     Scenario,
     ScenarioCompileError,
+    Topology,
+    TrafficPattern,
     compile_scenario,
     spike_burst_baseline,
     spike_burst_silent_drops,
@@ -220,3 +223,55 @@ def test_empty_kmax_map_rejected(tmp_path):
     bad = Scenario(name="bad", topology=SPIKE_BURST_256, kmax_map=())
     with pytest.raises(ScenarioCompileError, match="kmax_map"):
         compile_scenario(bad, tmp_path / "c.txt")
+
+
+# --------------------------------------------- custom topology / traffic
+
+def test_custom_topology_redirects_topology_file(tmp_path):
+    """When custom_topology is set, TOPOLOGY_FILE must point at /traces/topology.txt."""
+    s = Scenario(
+        name="custom-topo",
+        topology=SPIKE_BURST_256,  # ignored when custom_topology is set
+        custom_topology=Topology(leaves=2, spines=1, hosts_per_leaf=2),
+    )
+    keys = _parse_config(
+        compile_scenario(s, tmp_path / "c.txt").read_text(encoding="utf-8")
+    )
+    assert keys["TOPOLOGY_FILE"] == "/traces/topology.txt"
+    # FLOW_FILE stays at the bundled path because custom_traffic is None
+    assert keys["FLOW_FILE"] == SPIKE_BURST_256.flow_path
+
+
+def test_custom_traffic_redirects_flow_file(tmp_path):
+    """When custom_traffic is set, FLOW_FILE must point at /traces/flow.txt."""
+    s = Scenario(
+        name="custom-traffic",
+        topology=SPIKE_BURST_256,
+        custom_traffic=TrafficPattern(flows=(
+            Flow(src=0, dst=1, priority_group=3, dst_port=10000,
+                 packet_count=1000, start_time_seconds=0.1),
+        )),
+    )
+    keys = _parse_config(
+        compile_scenario(s, tmp_path / "c.txt").read_text(encoding="utf-8")
+    )
+    assert keys["FLOW_FILE"] == "/traces/flow.txt"
+    # TOPOLOGY_FILE stays at the bundled path
+    assert keys["TOPOLOGY_FILE"] == SPIKE_BURST_256.topology_path
+
+
+def test_both_custom_redirects_both_paths(tmp_path):
+    s = Scenario(
+        name="custom-both",
+        topology=SPIKE_BURST_256,
+        custom_topology=Topology(leaves=1, spines=1, hosts_per_leaf=2),
+        custom_traffic=TrafficPattern(flows=(
+            Flow(src=0, dst=1, priority_group=3, dst_port=10000,
+                 packet_count=1000, start_time_seconds=0.1),
+        )),
+    )
+    keys = _parse_config(
+        compile_scenario(s, tmp_path / "c.txt").read_text(encoding="utf-8")
+    )
+    assert keys["TOPOLOGY_FILE"] == "/traces/topology.txt"
+    assert keys["FLOW_FILE"] == "/traces/flow.txt"

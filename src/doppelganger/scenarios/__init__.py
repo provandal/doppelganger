@@ -25,6 +25,18 @@ from doppelganger.scenarios.compiler import (
     ScenarioCompileError,
     compile_scenario,
 )
+from doppelganger.scenarios.topology import (
+    Topology,
+    TopologyCompileError,
+    compile_topology,
+)
+from doppelganger.scenarios.traffic import (
+    OPEN_LOOP_PACKETS,
+    Flow,
+    TrafficCompileError,
+    TrafficPattern,
+    compile_traffic,
+)
 from doppelganger.scenarios.types import Scenario, TopologyRef
 
 __all__ = [
@@ -32,6 +44,14 @@ __all__ = [
     "TopologyRef",
     "compile_scenario",
     "ScenarioCompileError",
+    "Topology",
+    "compile_topology",
+    "TopologyCompileError",
+    "Flow",
+    "TrafficPattern",
+    "compile_traffic",
+    "TrafficCompileError",
+    "OPEN_LOOP_PACKETS",
     "SPIKE_BURST_256",
     "spike_burst_baseline",
     "spike_burst_silent_drops",

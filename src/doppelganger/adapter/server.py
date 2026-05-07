@@ -32,6 +32,7 @@ from doppelganger.scenarios.builtin import (
     spike_burst_baseline,
     spike_burst_silent_drops,
 )
+from doppelganger.scenarios.topology import Topology
 from doppelganger.scenarios.types import Scenario
 
 # Scenario factories exposed by name through the MCP surface. Each entry
@@ -83,6 +84,105 @@ def _flow_to_dict(flow: PerFlowRecord) -> dict[str, Any]:
         "standalone_fct_ns": flow.standalone_fct_ns,
         "slowdown": flow.slowdown,
     }
+
+
+def _topology_to_dict(topology: Topology) -> dict[str, Any]:
+    """Render a Topology declaration into agent-facing structural facts.
+
+    Includes only fabric structure: dimensions, switch/host node IDs,
+    link parameters, asymmetry. Eval ground-truth metadata
+    (intended_symptom, root_cause, difficulty) lives on the parent
+    Scenario and is deliberately NOT exposed here — surfacing it would
+    re-leak the answer key the way the Stage 2 v1 prompt did.
+    """
+    first_leaf = topology.first_leaf_id()
+    first_spine = topology.first_spine_id()
+    leaf_switches = [
+        {
+            "index": leaf_offset,
+            "node_id": first_leaf + leaf_offset,
+            "host_ids": list(
+                range(
+                    leaf_offset * topology.hosts_per_leaf,
+                    (leaf_offset + 1) * topology.hosts_per_leaf,
+                )
+            ),
+        }
+        for leaf_offset in range(topology.leaves)
+    ]
+    spine_switches = [
+        {"index": spine_offset, "node_id": first_spine + spine_offset}
+        for spine_offset in range(topology.spines)
+    ]
+    slow_indices = list(topology.slow_spine_indices)
+    asymmetry = {
+        "present": bool(slow_indices),
+        "slow_spine_indices": slow_indices,
+        "slow_link_bps": topology.slow_spine_link_bps if slow_indices else None,
+        "slow_link_delay": topology.slow_spine_link_delay if slow_indices else None,
+    }
+    return {
+        "shape": "leaf-spine",
+        "leaves": topology.leaves,
+        "spines": topology.spines,
+        "hosts_per_leaf": topology.hosts_per_leaf,
+        "total_hosts": topology.num_hosts,
+        "leaf_switches": leaf_switches,
+        "spine_switches": spine_switches,
+        "host_link": {
+            "bps": topology.host_link_bps,
+            "delay": topology.host_link_delay,
+        },
+        "spine_link": {
+            "bps": topology.spine_link_bps,
+            "delay": topology.spine_link_delay,
+        },
+        "ecmp": "full-mesh leaf-to-spine",
+        "asymmetry": asymmetry,
+    }
+
+
+def _scenario_to_topology_payload(
+    scenario: Scenario, scenario_name: str
+) -> dict[str, Any]:
+    """Build the get_topology data payload for a scenario.
+
+    Custom-topology scenarios get full structural detail. Scenarios
+    pinned to a substrate-bundled topology file (spike-burst*) return a
+    degraded payload that names the file path — the structural detail
+    isn't available without parsing the substrate's topology.txt and
+    that's not load-bearing for any current eval.
+    """
+    if scenario.custom_topology is not None:
+        payload = _topology_to_dict(scenario.custom_topology)
+        payload["scenario"] = scenario_name
+        payload["congestion_control"] = {
+            "cc_mode": scenario.cc_mode,
+            "name": _cc_mode_name(scenario.cc_mode),
+            "qcn_enabled": scenario.enable_qcn,
+            "buffer_size_mb": scenario.buffer_size,
+        }
+        return payload
+    return {
+        "scenario": scenario_name,
+        "shape": "substrate-bundled",
+        "topology_file": scenario.topology.topology_path,
+        "flow_file": scenario.topology.flow_path,
+        "description": scenario.topology.description,
+        "introspection": (
+            "structural-detail-not-available: this scenario references a "
+            "substrate-bundled topology file; structured fields are not "
+            "exposed by the v0.1 Adapter."
+        ),
+    }
+
+
+def _cc_mode_name(cc_mode: int) -> str:
+    """Map the substrate's CC_MODE integer to a name. Same mapping the
+    spike's config-burst.txt uses; v0.1 covers the modes that scenarios
+    actually set today.
+    """
+    return {3: "DCQCN", 8: "TIMELY", 11: "PowerTCP"}.get(cc_mode, f"cc_mode={cc_mode}")
 
 
 def _summary_to_dict(summary) -> dict[str, Any]:
@@ -197,6 +297,44 @@ def build_server(
             },
             source=f"driver.run_scenario({name!r})",
             observed_at_ns=None,  # per-flow observed_at is in the records
+        )
+
+    @server.tool()
+    def get_topology(name: str) -> dict[str, Any]:
+        """Return the topology declaration of a named scenario.
+
+        Reports fabric structure only: dimensions, switch and host node
+        IDs, link parameters, asymmetry, and CC mode. Eval ground-truth
+        metadata (intended_symptom, root_cause) is deliberately omitted
+        — this tool is callable by an agent during eval, and surfacing
+        the answer key here would re-leak it.
+
+        Parameters
+        ----------
+        name:
+            One of the names returned by ``list_scenarios``.
+
+        Returns the response envelope; ``data.shape`` is ``"leaf-spine"``
+        for scenarios with a custom topology declaration, or
+        ``"substrate-bundled"`` for spike-burst* scenarios that point at
+        a substrate-shipped topology file (structural detail not
+        introspected in v0.1).
+        """
+        if name == "spike-burst":
+            scenario = spike_burst_baseline()
+        elif name in BUILTIN_SCENARIO_FACTORIES:
+            scenario = BUILTIN_SCENARIO_FACTORIES[name]()
+        else:
+            raise ValueError(
+                f"Unknown scenario {name!r}. "
+                f"Call list_scenarios for the available set."
+            )
+        payload = _scenario_to_topology_payload(scenario, name)
+        return envelope(
+            payload,
+            source=f"adapter.scenario_topology({name!r})",
+            observed_at_ns=None,
+            staleness_class="fresh",
         )
 
     @server.tool()

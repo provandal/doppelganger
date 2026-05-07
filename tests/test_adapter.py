@@ -119,11 +119,23 @@ def test_get_topology_microburst_returns_full_structure():
     assert payload["hosts_per_leaf"] == 8
     assert payload["total_hosts"] == 16
 
-    # Per-leaf host_ids should partition all 16 hosts contiguously
+    # Per-leaf hosts should partition all 16 hosts contiguously, with IPs
+    # following the substrate's node_id_to_ip convention: id N → 11.0.N.1
+    # (within a /16 block — fourth octet = 1, third octet = id mod 256).
     leaves = payload["leaf_switches"]
     assert len(leaves) == 2
-    assert leaves[0]["host_ids"] == list(range(0, 8))
-    assert leaves[1]["host_ids"] == list(range(8, 16))
+    assert [h["id"] for h in leaves[0]["hosts"]] == list(range(0, 8))
+    assert [h["id"] for h in leaves[1]["hosts"]] == list(range(8, 16))
+    # Spot-check IPs at the leaf boundary — the bug we're guarding against
+    # is the agent assuming 11.0.0.x → host_id x or any other naive scheme.
+    leaf0_ips = [h["ip"] for h in leaves[0]["hosts"]]
+    leaf1_ips = [h["ip"] for h in leaves[1]["hosts"]]
+    assert leaf0_ips[0] == "11.0.0.1"   # host_id 0
+    assert leaf0_ips[1] == "11.0.1.1"   # host_id 1
+    assert leaf0_ips[7] == "11.0.7.1"   # host_id 7
+    assert leaf1_ips[0] == "11.0.8.1"   # host_id 8
+    assert leaf1_ips[7] == "11.0.15.1"  # host_id 15
+
     # Leaf node IDs come right after the hosts
     assert leaves[0]["node_id"] == 16
     assert leaves[1]["node_id"] == 17
@@ -141,6 +153,45 @@ def test_get_topology_microburst_returns_full_structure():
     assert cc["cc_mode"] == 3
     assert cc["name"] == "DCQCN"
     assert cc["qcn_enabled"] is True
+
+    # Top-level convention string for cross-scenario reuse
+    assert "11." in payload["host_ip_convention"]
+    assert "node_id_to_ip" in payload["host_ip_convention"]
+
+
+def test_host_id_to_ip_matches_substrate_node_id_to_ip():
+    """The Python mirror of the substrate's node_id_to_ip must match
+    its formula exactly. Source:
+    ``examples/PowerTCP/powertcp-evaluation-burst.cc`` line 170::
+
+        Ipv4Address(0x0b000001 + ((id / 256) * 0x00010000)
+                                + ((id % 256) * 0x00000100));
+
+    If this drifts, every harness-side IP-to-host bridging breaks
+    silently — the agent gets wrong topology, but the eval still runs.
+    """
+    from doppelganger.adapter.server import _host_id_to_ip
+
+    # Spot-check across the byte boundaries that the substrate's
+    # divmod-by-256 formula crosses.
+    cases = [
+        (0, "11.0.0.1"),
+        (1, "11.0.1.1"),
+        (7, "11.0.7.1"),
+        (8, "11.0.8.1"),
+        (15, "11.0.15.1"),
+        (255, "11.0.255.1"),
+        (256, "11.1.0.1"),
+        (257, "11.1.1.1"),
+        (511, "11.1.255.1"),
+        (512, "11.2.0.1"),
+    ]
+    for host_id, expected_ip in cases:
+        actual = _host_id_to_ip(host_id)
+        assert actual == expected_ip, (
+            f"host_id {host_id}: substrate's node_id_to_ip would produce "
+            f"{expected_ip}, our mirror produced {actual!r}"
+        )
 
 
 def test_get_topology_pfc_storm_reflects_task8_defaults():

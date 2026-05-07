@@ -86,14 +86,53 @@ def _flow_to_dict(flow: PerFlowRecord) -> dict[str, Any]:
     }
 
 
+def _host_id_to_ip(host_id: int) -> str:
+    """Mirror the substrate's ``node_id_to_ip`` function in Python.
+
+    Substrate source (``examples/PowerTCP/powertcp-evaluation-burst.cc``,
+    line 170 of the pinned fork)::
+
+        Ipv4Address(0x0b000001 + ((id / 256) * 0x00010000)
+                                + ((id % 256) * 0x00000100));
+
+    Which decodes to ``11.<(id // 256) % 256>.<id % 256>.1`` — the
+    fourth octet is always 1 (anchor), the third octet equals
+    ``id % 256``, the second octet equals ``id // 256``. This is the
+    canonical mapping for every scenario the substrate runs;
+    surfacing it on the topology payload lets the agent bridge from
+    a help-ticket IP (e.g., "11.0.0.1") to the host_id used by the
+    rest of the topology data without having to guess.
+    """
+    second_octet = (host_id // 256) % 256
+    third_octet = host_id % 256
+    return f"11.{second_octet}.{third_octet}.1"
+
+
+HOST_IP_CONVENTION = (
+    "Host with substrate id N has IP 11.<(N // 256) % 256>.<N % 256>.1. "
+    "The fourth octet is always 1 (anchor). The third octet equals "
+    "N mod 256 (so within a /16 block, the third octet equals the "
+    "host_id). The second octet is N // 256 (only nonzero for fabrics "
+    "with more than 256 hosts). Pinned by the substrate's "
+    "node_id_to_ip function in examples/PowerTCP/"
+    "powertcp-evaluation-burst.cc; same convention across all scenarios."
+)
+
+
 def _topology_to_dict(topology: Topology) -> dict[str, Any]:
     """Render a Topology declaration into agent-facing structural facts.
 
     Includes only fabric structure: dimensions, switch/host node IDs,
+    per-host IPs (per the substrate's ``node_id_to_ip`` convention),
     link parameters, asymmetry. Eval ground-truth metadata
     (intended_symptom, root_cause, difficulty) lives on the parent
     Scenario and is deliberately NOT exposed here — surfacing it would
     re-leak the answer key the way the Stage 2 v1 prompt did.
+
+    Each leaf entry exposes ``hosts: [{id, ip}, ...]`` rather than the
+    earlier ``host_ids: [...]`` so the agent can bridge a help-ticket
+    IP to a host_id in one step. The top-level ``host_ip_convention``
+    field documents the underlying mapping for cross-scenario reuse.
     """
     first_leaf = topology.first_leaf_id()
     first_spine = topology.first_spine_id()
@@ -101,12 +140,13 @@ def _topology_to_dict(topology: Topology) -> dict[str, Any]:
         {
             "index": leaf_offset,
             "node_id": first_leaf + leaf_offset,
-            "host_ids": list(
-                range(
+            "hosts": [
+                {"id": host_id, "ip": _host_id_to_ip(host_id)}
+                for host_id in range(
                     leaf_offset * topology.hosts_per_leaf,
                     (leaf_offset + 1) * topology.hosts_per_leaf,
                 )
-            ),
+            ],
         }
         for leaf_offset in range(topology.leaves)
     ]
@@ -127,6 +167,7 @@ def _topology_to_dict(topology: Topology) -> dict[str, Any]:
         "spines": topology.spines,
         "hosts_per_leaf": topology.hosts_per_leaf,
         "total_hosts": topology.num_hosts,
+        "host_ip_convention": HOST_IP_CONVENTION,
         "leaf_switches": leaf_switches,
         "spine_switches": spine_switches,
         "host_link": {

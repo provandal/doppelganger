@@ -113,7 +113,6 @@ def test_get_topology_microburst_returns_full_structure():
     scenario = BUILTIN_SCENARIO_FACTORIES["microburst"]()
     payload = _scenario_to_topology_payload(scenario, "microburst")
 
-    assert payload["scenario"] == "microburst"
     assert payload["shape"] == "leaf-spine"
     assert payload["leaves"] == 2
     assert payload["spines"] == 4
@@ -179,7 +178,6 @@ def test_get_topology_substrate_bundled_scenario_returns_degraded_payload():
     scenario = BUILTIN_SCENARIO_FACTORIES["spike-burst-baseline"]()
     payload = _scenario_to_topology_payload(scenario, "spike-burst-baseline")
 
-    assert payload["scenario"] == "spike-burst-baseline"
     assert payload["shape"] == "substrate-bundled"
     assert payload["topology_file"].endswith("topology-256.txt")
     assert "introspection" in payload
@@ -189,9 +187,16 @@ def test_get_topology_substrate_bundled_scenario_returns_degraded_payload():
 
 
 def test_get_topology_payload_does_not_leak_eval_ground_truth():
-    """intended_symptom and root_cause are eval-time ground truth and
-    must NOT appear in the agent-facing topology payload — that's the
-    Stage 2 v1 mistake (system prompt enumerated failure classes)."""
+    """intended_symptom, root_cause, AND scenario_name are eval-time
+    ground truth and must NOT appear in the agent-facing topology
+    payload — that's the Stage 2 v1 mistake (system prompt enumerated
+    failure classes) and the Stage 3 first-pass mistake (scenario name
+    in the topology data; the model read it back as 'declared scenario:
+    microburst' rather than deducing the symptom from structure).
+
+    Fabrics are not named after their failure modes. An SRE querying
+    their fabric topology does not get back a "scenario: foo" label.
+    """
     for name in ("microburst", "pfc-storm", "asymmetric-path", "hash-polarization"):
         scenario = BUILTIN_SCENARIO_FACTORIES[name]()
         payload = _scenario_to_topology_payload(scenario, name)
@@ -201,3 +206,16 @@ def test_get_topology_payload_does_not_leak_eval_ground_truth():
         assert "intended_symptom" not in payload, f"{name} payload leaks intended_symptom"
         assert "root_cause" not in payload, f"{name} payload leaks root_cause"
         assert "difficulty" not in payload, f"{name} payload leaks difficulty"
+        # The substrate scenario name must NOT appear — also leaked the
+        # answer key in the Stage 3 first-pass live run on 2026-05-07.
+        assert "scenario" not in payload, (
+            f"{name} payload leaks the scenario name (answer key); "
+            f"the model reads it as 'declared scenario: {name}'"
+        )
+        # And no field whose value is the scenario name in disguise
+        for key, value in payload.items():
+            if isinstance(value, str):
+                assert value != name, (
+                    f"{name} payload field {key!r} == scenario name; "
+                    f"likely leaks the answer key"
+                )

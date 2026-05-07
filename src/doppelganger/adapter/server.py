@@ -152,10 +152,18 @@ def _scenario_to_topology_payload(
     degraded payload that names the file path — the structural detail
     isn't available without parsing the substrate's topology.txt and
     that's not load-bearing for any current eval.
+
+    Critically: ``scenario_name`` is NOT included in the data. An SRE
+    querying their fabric's topology doesn't receive a "scenario:
+    microburst" label — fabrics aren't named after their failure
+    modes. Surfacing the substrate scenario name here would re-leak
+    the answer key the way Stage 2 v1's failure-class enumeration in
+    the system prompt did. The name still appears in the response
+    envelope's ``source`` field (operator-side trace metadata, not
+    agent-visible).
     """
     if scenario.custom_topology is not None:
         payload = _topology_to_dict(scenario.custom_topology)
-        payload["scenario"] = scenario_name
         payload["congestion_control"] = {
             "cc_mode": scenario.cc_mode,
             "name": _cc_mode_name(scenario.cc_mode),
@@ -164,7 +172,6 @@ def _scenario_to_topology_payload(
         }
         return payload
     return {
-        "scenario": scenario_name,
         "shape": "substrate-bundled",
         "topology_file": scenario.topology.topology_path,
         "flow_file": scenario.topology.flow_path,

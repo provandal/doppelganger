@@ -339,10 +339,22 @@ def hash_polarization(
 # -----------------------------------------------------------------------
 
 
+_PFC_STORM_MISCONFIGURED_KMIN: tuple[tuple[int, float], ...] = (
+    (25_000_000_000, 5_000),
+    (50_000_000_000, 5_000),
+    (100_000_000_000, 5_000),
+)
+_PFC_STORM_MISCONFIGURED_KMAX: tuple[tuple[int, float], ...] = (
+    (25_000_000_000, 10_000),
+    (50_000_000_000, 10_000),
+    (100_000_000_000, 10_000),
+)
+
+
 def pfc_storm(
     *,
     leaves: int = 4,
-    spines: int = 4,
+    spines: int = 1,
     hosts_per_leaf: int = 4,
     sim_duration_seconds: float = 0.5,
     storm_start_seconds: float = 0.05,
@@ -350,25 +362,63 @@ def pfc_storm(
     victim_packets: int = 5_000,
     storm_target_host: int = 0,
     priority_group: int = 3,
+    ecn_misconfigured: bool = True,
 ) -> Scenario:
-    """Persistent congestion → PFC pause propagation → victim flow stalls.
+    """Sustained incast + ECN misconfiguration → PFC pause counters elevated.
 
-    Two flow populations:
+    The scenario was originally designed to demonstrate fabric-level PFC
+    propagation (a victim flow stalled despite sharing no endpoints with
+    the storm). Empirical investigation on 2026-05-06 against the pinned
+    substrate (provandal/ns3-datacenter at 9881be1) found that the
+    "victim drag" effect requires either alpha tuning or a Cyclic Buffer
+    Dependency to manifest — neither is achievable through scenario
+    knobs alone with this substrate. See the journal entry for the full
+    finding.
 
-    * **Storm:** every host *not on the storm target's leaf* sends to
-      ``storm_target_host`` (default host 0 on leaf 0) starting at
-      ``storm_start_seconds``, open-loop (``OPEN_LOOP_PACKETS``). This
-      permanently saturates the target's leaf-host link; PFC pause frames
-      back up through the leaf, then through spines.
-    * **Victim:** a single flow between two hosts on different non-target
-      leaves, started later (``victim_start_seconds``). The victim's
-      flow path crosses spines that are PFC-paused on their links to the
-      storm-receiving leaf; the victim experiences elevated FCT or
-      fails to complete.
+    What this scenario *does* demonstrate, validated end-to-end:
 
-    The pedagogical lesson is: a flow with no shared endpoints with the
-    storm still gets dragged in, because PFC propagation makes congestion
-    a fabric-level phenomenon, not a link-level one.
+    1. With DCQCN reacting normally (default ECN thresholds), 12 sustained
+       senders into a single-host bottleneck produce **zero PFC events** —
+       ECN-CN marks throttle senders within an RTT, before per-ingress
+       queue depth approaches the PFC headroom threshold. This matches
+       production-RoCE experience (NVIDIA RTTCC and similar): reactive
+       CC suppresses PFC by design.
+    2. With ``KMIN`` misconfigured above the per-port buffer capacity
+       (the default ``ecn_misconfigured=True``), ECN can never mark.
+       DCQCN runs blind. The storm saturates the bottleneck and PFC
+       pause frames fire on the leaf↔spine link to the storm target —
+       on the order of 30K+ events in a 0.5s simulation.
+
+    The pedagogical diagnostic this teaches: **PFC counters elevated +
+    ECN-CN counters near zero** is a configuration symptom, not a traffic
+    symptom. The right next step is to pull the ECN threshold config and
+    check ``KMIN`` against actual buffer capacity. "Too much traffic"
+    is the wrong root-cause hypothesis — DCQCN handles oversubscription
+    correctly when configured.
+
+    Set ``ecn_misconfigured=False`` to run the same topology and traffic
+    with default ECN thresholds; this produces the contrast case (PFC
+    counters near zero) and demonstrates that DCQCN does its job under
+    sustained incast.
+
+    Note on multi-hop PFC propagation: with the substrate's Dynamic
+    Threshold (alpha=1/8 hardcoded in
+    ``examples/PowerTCP/powertcp-evaluation-burst.cc``), per-ingress
+    queue depth at transit spines stays at ~1/3 of the threshold under
+    evenly-distributed traffic — DT is anti-monopoly by design. PFC
+    therefore propagates one hop only in this configuration. Multi-hop
+    propagation requires either lower alpha (a substrate change) or a
+    CBD-inducing topology+traffic pattern; both are deferred.
+
+    Note on the default ``spines=1``: a single transit spine forces all
+    storm flows onto a single leaf↔spine ingress port at the target
+    leaf, defeating the DT alpha-based fairness that would otherwise
+    spread per-ingress accumulation across 4 ECMP'd ports and keep each
+    below threshold. With ``spines=4`` (a realistic leaf-spine fabric)
+    the same scenario produces zero PFC events for the same reason
+    multi-hop propagation doesn't occur. ``spines=1`` is the smallest
+    topology that lets the demonstration run; broader fabric scenarios
+    are deferred until alpha tuning or CBD scenarios land.
     """
     if storm_target_host >= hosts_per_leaf:
         # Constrain target to leaf 0 for simplicity in this v0.1 scenario.
@@ -415,11 +465,51 @@ def pfc_storm(
         start_time_seconds=victim_start_seconds,
     )
 
-    return Scenario(
-        name=f"pfc-storm-{num_hosts}h",
-        topology=_PLACEHOLDER_REF,
-        custom_topology=topology,
-        custom_traffic=TrafficPattern(
+    if ecn_misconfigured:
+        scenario_name = f"pfc-storm-{num_hosts}h"
+        intended_symptom = (
+            f"PFC pause counters are elevated on the leaf↔spine link to "
+            f"the storm target (leaf {storm_target_host // hosts_per_leaf}); "
+            f"ECN-CN (congestion notification) counters across the fabric "
+            f"are unexpectedly near zero despite sustained congestion. "
+            f"Storm flows are completing slower than line rate but the "
+            f"victim flow is largely unaffected (single-hop PFC propagation)."
+        )
+        root_cause = (
+            f"ECN threshold misconfiguration: KMIN set above per-port "
+            f"buffer capacity, so DCQCN can never mark packets and "
+            f"senders never receive CNPs to reduce rate. With CC blind "
+            f"to congestion, the storm saturates leaf "
+            f"{storm_target_host // hosts_per_leaf}'s ingress queue past "
+            f"the PFC headroom threshold and PAUSE frames fire on that "
+            f"link. The diagnostic giveaway is the PFC-elevated + "
+            f"ECN-CN-near-zero pattern: ECN config has KMIN larger than "
+            f"the actual buffer can hold."
+        )
+        kmin_map = _PFC_STORM_MISCONFIGURED_KMIN
+        kmax_map = _PFC_STORM_MISCONFIGURED_KMAX
+    else:
+        scenario_name = f"pfc-storm-{num_hosts}h-cc-working"
+        intended_symptom = (
+            f"PFC pause counters at or near zero across all switches; "
+            f"victim flow ({victim_src} → {victim_dst}) completes within "
+            f"~1x of its standalone FCT. ECN-CN counters are elevated, "
+            f"showing DCQCN is throttling storm senders in steady state."
+        )
+        root_cause = (
+            f"(no fault — contrast case demonstrating that DCQCN with "
+            f"correctly configured ECN thresholds prevents PFC propagation "
+            f"under sustained {len(storm_sources)}:1 incast.)"
+        )
+        # Use Scenario's defaults — no overrides.
+        kmin_map = None  # type: ignore[assignment]
+        kmax_map = None  # type: ignore[assignment]
+
+    scenario_kwargs = {
+        "name": scenario_name,
+        "topology": _PLACEHOLDER_REF,
+        "custom_topology": topology,
+        "custom_traffic": TrafficPattern(
             flows=storm_flows + (victim_flow,),
             name=f"storm-to-host-{storm_target_host}-victim-leaf1-to-leaf2",
             description=(
@@ -429,17 +519,20 @@ def pfc_storm(
                 f"t={victim_start_seconds}s."
             ),
         ),
-        sim_duration_seconds=sim_duration_seconds,
-        intended_symptom=(
-            f"Victim flow (host {victim_src} → host {victim_dst}) shows "
-            f"FCT far above its standalone time, or fails to complete; "
-            f"PFC pause counters are elevated across all spines, not just "
-            f"on storm-direct links."
-        ),
-        root_cause=(
-            f"PFC pause propagation from host {storm_target_host}'s leaf "
-            f"upstream through spines stalls flows that share transit "
-            f"switches even when they share no endpoints with the storm."
-        ),
-        difficulty="advanced",
-    )
+        "sim_duration_seconds": sim_duration_seconds,
+        "intended_symptom": intended_symptom,
+        "root_cause": root_cause,
+        "difficulty": "advanced",
+    }
+    if kmin_map is not None:
+        scenario_kwargs["kmin_map"] = kmin_map
+        scenario_kwargs["kmax_map"] = kmax_map
+    if ecn_misconfigured:
+        # KMIN above per-port buffer means ECN never marks (so DCQCN never
+        # sees CNPs and never reduces rate). ENABLE_QCN stays 1 so DCQCN's
+        # AI/HAI rate-increase loop still runs — without that, senders are
+        # stuck at MIN_RATE and never reach line rate. MIN_RATE is bumped
+        # to 25Gb/s so 12 storm senders saturate the 100Gb/s bottleneck
+        # from t=0 rather than waiting for the ramp.
+        scenario_kwargs["min_rate_override"] = "25Gb/s"
+    return Scenario(**scenario_kwargs)

@@ -106,6 +106,19 @@ class Scenario:
     cc_mode: int = 3
     buffer_size: int = 4
 
+    # ENABLE_QCN gates the substrate's DCQCN rate-control reaction. False
+    # disables QCN entirely (senders ignore congestion signals); True (the
+    # spike-validated default) leaves DCQCN active. Used by PFC-storm
+    # variants to demonstrate what happens when CC fails to react.
+    enable_qcn: bool = True
+
+    # Override the spike's MIN_RATE default (100Mb/s). Used by the PFC-storm
+    # scenario to start senders at a rate high enough to saturate the
+    # bottleneck immediately, since the spike's MIN_RATE was chosen for
+    # baseline burst experiments where slow ramp was desirable. None
+    # leaves the spike default in place.
+    min_rate_override: Optional[str] = None
+
     kmax_map: EcnSpeedMap = field(default_factory=lambda: tuple(_DEFAULT_KMAX))
     kmin_map: EcnSpeedMap = field(default_factory=lambda: tuple(_DEFAULT_KMIN))
     pmax_map: EcnSpeedMap = field(default_factory=lambda: tuple(_DEFAULT_PMAX))

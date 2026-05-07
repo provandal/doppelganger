@@ -97,7 +97,7 @@ def compile_scenario(scenario: Scenario, output_path: Path) -> Path:
     lines: list[str] = []
 
     # Top: queue / PFC enable
-    lines.append("ENABLE_QCN 1")
+    lines.append(f"ENABLE_QCN {1 if scenario.enable_qcn else 0}")
     lines.append("USE_DYNAMIC_PFC_THRESHOLD 1")
     lines.append("")
     lines.append("PACKET_PAYLOAD_SIZE 1000")
@@ -132,7 +132,10 @@ def compile_scenario(scenario: Scenario, output_path: Path) -> Path:
     # Congestion control
     lines.append(f"CC_MODE {scenario.cc_mode}")
     for key, value in _RATE_CONTROL_BLOCK:
-        lines.append(f"{key} {value}")
+        if key == "MIN_RATE" and scenario.min_rate_override is not None:
+            lines.append(f"MIN_RATE {scenario.min_rate_override}")
+        else:
+            lines.append(f"{key} {value}")
     lines.append("")
 
     # Failure injection: per-link error rate, then static link-down triple

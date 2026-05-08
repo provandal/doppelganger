@@ -48,6 +48,7 @@ BUILTIN_SCENARIO_FACTORIES: dict[str, Callable[[], Scenario]] = {
     "spike-burst-silent-drops": lambda: spike_burst_silent_drops(rate=0.001),
     "microburst": microburst,
     "pfc-storm": pfc_storm,
+    "pfc-storm-realistic": lambda: pfc_storm(background_pairs_per_leaf=2),
     "asymmetric-path": asymmetric_path,
     "hash-polarization": hash_polarization,
 }

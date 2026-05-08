@@ -55,7 +55,7 @@ def test_envelope_confidence_always_high():
 def test_factory_registry_has_all_named_scenarios():
     expected = {
         "spike-burst-baseline", "spike-burst-silent-drops",
-        "microburst", "pfc-storm",
+        "microburst", "pfc-storm", "pfc-storm-realistic",
         "asymmetric-path", "hash-polarization",
     }
     assert set(BUILTIN_SCENARIO_FACTORIES) == expected
@@ -399,6 +399,56 @@ def test_get_fabric_counters_payload_carries_both_classes_in_every_record(tmp_pa
                 f"field {f} must be an int (zero is data, not absence); "
                 f"got {type(rec[f]).__name__}"
             )
+
+
+@pytest.mark.requires_substrate
+def test_pfc_storm_realistic_distributes_volumetric_activity(tmp_path):
+    """Stage 5a-realistic. The point of layered background traffic is
+    that under healthy ECN config the fabric baseline is *populated* —
+    the agent has to find the storm port among many ports doing real
+    work, not against a 2-row payload that pre-aggregates asymmetry by
+    omission. ECN marks may still concentrate on the storm path (they
+    are the load-bearing congestion-shaping signal) but the volumetric
+    distribution must broaden materially vs the toy scenario.
+
+    Asserts the rollup populates rx_packets on >= 8 distinct
+    (switch_id, if_index) pairs under healthy config — the toy
+    pfc_storm without background typically populates 2-3.
+    """
+    from doppelganger.driver.counters import aggregate_counters
+    from doppelganger.driver.parsers.counters import parse_counters_file
+    from doppelganger.driver.parsers.ecn import parse_ecn_file
+    from doppelganger.driver.parsers.pfc import parse_pfc_file
+    from doppelganger.driver.simulation import Driver
+    from doppelganger.scenarios.builtin import pfc_storm
+
+    if not _substrate_image_present():
+        pytest.skip("doppelganger-substrate image not built locally")
+
+    driver = Driver(traces_root=tmp_path)
+    result = driver.run_scenario(
+        pfc_storm(
+            ecn_misconfigured=False,
+            background_pairs_per_leaf=2,
+        ),
+        run_id="realistic-healthy",
+    )
+    pfc = parse_pfc_file(result.trace_dir / "pfc.txt")
+    ecn = parse_ecn_file(result.trace_dir / "ecn.txt")
+    rollup = parse_counters_file(result.trace_dir / "counters.txt")
+    topo = pfc_storm(background_pairs_per_leaf=2).custom_topology
+    ports = aggregate_counters(pfc, ecn, rollup_rows=rollup, topology=topo)["ports"]
+
+    active = {
+        (r["node_id"], r["if_index"])
+        for r in ports
+        if r["rx_packets"] > 0
+    }
+    assert len(active) >= 8, (
+        f"realistic scenario should produce rx activity on >= 8 distinct "
+        f"ports under healthy config; got {len(active)} active pairs: "
+        f"{sorted(active)}"
+    )
 
 
 @pytest.mark.requires_substrate

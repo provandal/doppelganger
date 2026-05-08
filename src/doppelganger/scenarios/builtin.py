@@ -363,6 +363,8 @@ def pfc_storm(
     storm_target_host: int = 0,
     priority_group: int = 3,
     ecn_misconfigured: bool = True,
+    background_pairs_per_leaf: int = 0,
+    background_start_offset_seconds: float = 0.02,
 ) -> Scenario:
     """Sustained incast + ECN misconfiguration → PFC pause counters elevated.
 
@@ -465,6 +467,48 @@ def pfc_storm(
         start_time_seconds=victim_start_seconds,
     )
 
+    # Background traffic (Stage 5a-realistic, 2026-05-09): cross-leaf flows
+    # across non-storm leaves so under healthy ECN config the fabric
+    # baseline shows ECN marks distributed across many ports — turning the
+    # storm-port-vs-baseline asymmetry from absolute (0 marks anywhere) to
+    # relative (storm port marks low against a populated mark distribution).
+    # All pairs avoid leaf 0 to keep the storm signal clean. Open-loop,
+    # starts before the storm so the baseline is established when storm
+    # fires. Uses dst_port range 30_000+ to not collide with storm/victim.
+    background_flows: list[Flow] = []
+    if background_pairs_per_leaf > 0 and leaves >= 3:
+        non_storm_leaves = list(range(1, leaves))  # skip leaf 0
+        bg_start = max(0.0, storm_start_seconds - background_start_offset_seconds)
+        bg_dst_port = 30_000
+        for leaf_idx, src_leaf in enumerate(non_storm_leaves):
+            # Rotate to a different non-storm leaf so traffic crosses spines.
+            dst_leaf = non_storm_leaves[(leaf_idx + 1) % len(non_storm_leaves)]
+            for pair in range(background_pairs_per_leaf):
+                src_host = src_leaf * hosts_per_leaf + pair
+                dst_host = dst_leaf * hosts_per_leaf + pair
+                if src_host == dst_host:
+                    continue
+                background_flows.append(Flow(
+                    src=src_host,
+                    dst=dst_host,
+                    priority_group=priority_group,
+                    dst_port=bg_dst_port,
+                    packet_count=OPEN_LOOP_PACKETS,
+                    start_time_seconds=bg_start,
+                ))
+                bg_dst_port += 1
+                # Reverse direction for the same pair so spine uplinks see
+                # both orientations and ECN marks distribute symmetrically.
+                background_flows.append(Flow(
+                    src=dst_host,
+                    dst=src_host,
+                    priority_group=priority_group,
+                    dst_port=bg_dst_port,
+                    packet_count=OPEN_LOOP_PACKETS,
+                    start_time_seconds=bg_start,
+                ))
+                bg_dst_port += 1
+
     if ecn_misconfigured:
         scenario_name = f"pfc-storm-{num_hosts}h"
         intended_symptom = (
@@ -510,13 +554,15 @@ def pfc_storm(
         "topology": _PLACEHOLDER_REF,
         "custom_topology": topology,
         "custom_traffic": TrafficPattern(
-            flows=storm_flows + (victim_flow,),
+            flows=storm_flows + (victim_flow,) + tuple(background_flows),
             name=f"storm-to-host-{storm_target_host}-victim-leaf1-to-leaf2",
             description=(
                 f"Open-loop incast to host {storm_target_host} from all "
                 f"{len(storm_sources)} off-leaf hosts; victim flow host "
                 f"{victim_src} → host {victim_dst} starts at "
-                f"t={victim_start_seconds}s."
+                f"t={victim_start_seconds}s; "
+                f"{len(background_flows)} cross-leaf background flows "
+                f"running for the duration."
             ),
         ),
         "sim_duration_seconds": sim_duration_seconds,

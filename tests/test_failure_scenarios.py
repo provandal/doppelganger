@@ -162,6 +162,127 @@ def test_pfc_storm_rejects_target_outside_leaf_zero():
         pfc_storm(leaves=4, spines=4, hosts_per_leaf=4, storm_target_host=10)
 
 
+# --------------------------------- pfc_storm: layered background traffic
+
+def test_pfc_storm_background_off_by_default():
+    """Default behavior unchanged: zero background flows."""
+    s = pfc_storm(leaves=4, spines=1, hosts_per_leaf=4)
+    storm_source_count = (4 - 1) * 4
+    assert len(s.custom_traffic.flows) == storm_source_count + 1  # storm + victim
+
+
+def test_pfc_storm_background_pairs_emit_cross_leaf_flows():
+    """Stage 5a-realistic. With background_pairs_per_leaf>0, generate
+    bidirectional cross-leaf flows across every non-storm leaf so the
+    fabric baseline shows ECN marks distributed across many ports."""
+    s = pfc_storm(
+        leaves=4, spines=1, hosts_per_leaf=4,
+        background_pairs_per_leaf=2,
+    )
+    storm_source_count = (4 - 1) * 4
+    # 3 non-storm leaves × 2 pairs × 2 directions = 12 background flows
+    background_count = (4 - 1) * 2 * 2
+    expected = storm_source_count + 1 + background_count
+    assert len(s.custom_traffic.flows) == expected
+
+
+def test_pfc_storm_background_avoids_leaf_zero():
+    """Background traffic must never cross leaf 0 — that's where the
+    storm target sits, and we want the storm signal isolated from
+    background."""
+    hosts_per_leaf = 4
+    s = pfc_storm(
+        leaves=4, spines=1, hosts_per_leaf=hosts_per_leaf,
+        background_pairs_per_leaf=2,
+    )
+    storm_source_count = (4 - 1) * hosts_per_leaf
+    background_flows = s.custom_traffic.flows[storm_source_count + 1:]
+    leaf_zero_hosts = set(range(hosts_per_leaf))
+    for f in background_flows:
+        assert f.src not in leaf_zero_hosts, (
+            f"background flow originates on leaf 0: {f}"
+        )
+        assert f.dst not in leaf_zero_hosts, (
+            f"background flow targets leaf 0: {f}"
+        )
+
+
+def test_pfc_storm_background_starts_before_storm():
+    """Background must be established before the storm fires so the
+    fabric already shows baseline ECN activity when the storm begins."""
+    storm_t = 0.05
+    offset = 0.02
+    s = pfc_storm(
+        leaves=4, spines=1, hosts_per_leaf=4,
+        storm_start_seconds=storm_t,
+        background_pairs_per_leaf=2,
+        background_start_offset_seconds=offset,
+    )
+    storm_source_count = (4 - 1) * 4
+    background_flows = s.custom_traffic.flows[storm_source_count + 1:]
+    assert background_flows  # sanity
+    for f in background_flows:
+        assert f.start_time_seconds <= storm_t - offset + 1e-9
+
+
+def test_pfc_storm_background_uses_open_loop():
+    """Background flows must run for the simulation duration so the
+    baseline persists through the storm period."""
+    s = pfc_storm(
+        leaves=4, spines=1, hosts_per_leaf=4,
+        background_pairs_per_leaf=2,
+    )
+    storm_source_count = (4 - 1) * 4
+    background_flows = s.custom_traffic.flows[storm_source_count + 1:]
+    for f in background_flows:
+        assert f.packet_count == OPEN_LOOP_PACKETS
+
+
+def test_pfc_storm_background_uses_distinct_dst_ports():
+    """Each background flow must have a unique dst_port so the substrate's
+    flow records don't collide. dst_ports are also distinct from storm
+    (10_000+) and victim (20_000) ranges."""
+    s = pfc_storm(
+        leaves=4, spines=1, hosts_per_leaf=4,
+        background_pairs_per_leaf=2,
+    )
+    storm_source_count = (4 - 1) * 4
+    background_flows = s.custom_traffic.flows[storm_source_count + 1:]
+    bg_ports = [f.dst_port for f in background_flows]
+    assert len(bg_ports) == len(set(bg_ports))
+    for p in bg_ports:
+        assert p >= 30_000
+
+
+def test_pfc_storm_background_disabled_when_too_few_leaves():
+    """The cross-leaf rotation needs at least 2 non-storm leaves to
+    create distinct src/dst pairs. With leaves<3 (one storm leaf + at
+    most one other) the rotation collapses; emit no background rather
+    than self-pair flows that contribute no useful signal."""
+    s = pfc_storm(
+        leaves=2, spines=1, hosts_per_leaf=4,
+        background_pairs_per_leaf=2,
+    )
+    storm_source_count = (2 - 1) * 4
+    # Only storm + victim — no background.
+    assert len(s.custom_traffic.flows) == storm_source_count + 1
+
+
+def test_pfc_storm_realistic_factory_emits_background():
+    """The pfc-storm-realistic registry entry must produce background
+    flows; otherwise the closing-test re-run measures the same fabric
+    shape as the Stage 5a Stage 5a closing test trace."""
+    from doppelganger.adapter.server import BUILTIN_SCENARIO_FACTORIES
+    s = BUILTIN_SCENARIO_FACTORIES["pfc-storm-realistic"]()
+    # 4 leaves default × 3 non-storm leaves × 2 pairs × 2 directions = 12 bg
+    storm_source_count = (4 - 1) * 4
+    expected_background = (4 - 1) * 2 * 2
+    assert (
+        len(s.custom_traffic.flows)
+        == storm_source_count + 1 + expected_background
+    )
+
+
 # ----------------------------------------------------------- asymmetric_path
 
 def test_asymmetric_path_marks_slow_spine_in_topology():

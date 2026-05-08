@@ -396,7 +396,8 @@ def build_server(
         counts are broken down by event direction (pause_sent, pause_rcvd,
         resume_sent, resume_rcvd); ECN-CN is the count of CE-stamps emitted
         at egress. Zero counts surface as ``0``, not as missing fields —
-        zero is data, not absence.
+        zero is data, not absence. No fabric-wide totals row is emitted;
+        callers compute aggregates from per-port records.
 
         The diagnostic surface this enables: PFC pause_sent elevated
         alongside ECN marks_sent ~0 on the same fabric is the
@@ -413,8 +414,8 @@ def build_server(
         run_id:
             Optional run identifier (used as the trace-dir name).
 
-        Returns the response envelope; ``data.totals`` is the sum across
-        all ports, ``data.ports`` is the per-(node_id, if_index) detail.
+        Returns the response envelope; ``data.ports`` is a list of
+        per-(node_id, if_index) records.
         """
         if name == "spike-burst":
             result = driver.run_scenario("spike-burst", run_id=run_id)
@@ -438,7 +439,6 @@ def build_server(
                 "scenario": result.scenario,
                 "run_id": result.trace_dir.name,
                 "trace_dir": str(result.trace_dir),
-                "totals": aggregate["totals"],
                 "ports": aggregate["ports"],
             },
             source=f"driver.run_scenario({name!r})+counters_aggregate",

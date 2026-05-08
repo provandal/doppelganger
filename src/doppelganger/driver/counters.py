@@ -49,16 +49,18 @@ def aggregate_counters(
     pfc_events: list[PfcEvent],
     ecn_events: list[EcnMarkEvent],
 ) -> dict[str, Any]:
-    """Roll parsed events into per-port counter records + totals.
+    """Roll parsed events into per-port counter records.
 
-    Returns a dict with two keys:
+    Returns ``{"ports": [...]}``: a list of per-``(node_id, if_index)``
+    records, sorted stably. Each record always includes all PFC and ECN
+    counter fields, zero-filled when no events fired.
 
-    * ``ports`` — list of per-``(node_id, if_index)`` records, sorted
-      stably. Each record always includes all PFC and ECN counter fields,
-      zero-filled when no events fired.
-    * ``totals`` — sum across all ports for each counter class. Useful
-      for at-a-glance asymmetry checks before drilling into per-port
-      detail.
+    Deliberately does NOT emit a fabric-wide totals row. Stage 5a's
+    closing test (2026-05-08) found that pre-aggregating totals handed
+    the agent a one-line answer key: the model literally read off
+    ``totals.ecn_marks_sent: 0`` as "the smoking gun." Forcing the
+    agent to compute aggregates from per-port records preserves the
+    investigative discipline the eval is designed to surface.
     """
     ports: dict[tuple[int, int], dict[str, Any]] = {}
 
@@ -82,12 +84,4 @@ def aggregate_counters(
 
     port_records = sorted(ports.values(), key=lambda r: (r["node_id"], r["if_index"]))
 
-    totals = {
-        "pfc_pause_sent": sum(r["pfc_pause_sent"] for r in port_records),
-        "pfc_pause_rcvd": sum(r["pfc_pause_rcvd"] for r in port_records),
-        "pfc_resume_sent": sum(r["pfc_resume_sent"] for r in port_records),
-        "pfc_resume_rcvd": sum(r["pfc_resume_rcvd"] for r in port_records),
-        "ecn_marks_sent": sum(r["ecn_marks_sent"] for r in port_records),
-    }
-
-    return {"ports": port_records, "totals": totals}
+    return {"ports": port_records}

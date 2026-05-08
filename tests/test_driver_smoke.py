@@ -174,16 +174,22 @@ def test_ecn_parser_handles_empty_file(tmp_path):
 
 # ------------------------------------------------------------ counter aggregator
 
-def test_aggregate_counters_empty_inputs_yield_empty_ports_and_zero_totals():
+def test_aggregate_counters_empty_inputs_yield_empty_ports():
     result = aggregate_counters([], [])
     assert result["ports"] == []
-    assert result["totals"] == {
-        "pfc_pause_sent": 0,
-        "pfc_pause_rcvd": 0,
-        "pfc_resume_sent": 0,
-        "pfc_resume_rcvd": 0,
-        "ecn_marks_sent": 0,
-    }
+
+
+def test_aggregate_counters_does_not_emit_a_totals_row():
+    """Per the Stage 5a closing-test finding (2026-05-08): pre-aggregating
+    fabric-wide totals leaks the asymmetry diagnostic. The agent should
+    have to scan/sum per-port records to see whether ECN marks fired
+    anywhere — that's investigative discipline the eval is designed to
+    surface."""
+    result = aggregate_counters([], [])
+    assert "totals" not in result
+    pfc = [PfcEvent(timestamp_ns=1, node_id=1, node_type=1, if_index=2, event_type=2)]
+    ecn = [EcnMarkEvent(timestamp_ns=2, switch_id=3, if_index=4, q_index=0)]
+    assert "totals" not in aggregate_counters(pfc, ecn)
 
 
 def test_aggregate_counters_pfc_only_zero_fills_ecn_field():
@@ -241,9 +247,6 @@ def test_aggregate_counters_combines_pfc_and_ecn_on_same_switch_different_ports(
     assert by_port[17]["pfc_pause_sent"] == 0
     assert by_port[34]["pfc_pause_sent"] == 1
     assert by_port[34]["ecn_marks_sent"] == 0
-
-    assert result["totals"]["pfc_pause_sent"] == 1
-    assert result["totals"]["ecn_marks_sent"] == 2
 
 
 def test_aggregate_counters_every_port_record_has_every_field():

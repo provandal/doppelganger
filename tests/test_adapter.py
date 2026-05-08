@@ -306,28 +306,30 @@ def test_get_fabric_counters_asymmetry_inverts_with_ecn_config_only(tmp_path):
     )
     healthy_pfc = parse_pfc_file(healthy.trace_dir / "pfc.txt")
     healthy_ecn = parse_ecn_file(healthy.trace_dir / "ecn.txt")
-    healthy_totals = aggregate_counters(healthy_pfc, healthy_ecn)["totals"]
+    healthy_ports = aggregate_counters(healthy_pfc, healthy_ecn)["ports"]
 
     misconfig = driver.run_scenario(
         pfc_storm(ecn_misconfigured=True), run_id="asymmetry-misconfig"
     )
     misconfig_pfc = parse_pfc_file(misconfig.trace_dir / "pfc.txt")
     misconfig_ecn = parse_ecn_file(misconfig.trace_dir / "ecn.txt")
-    misconfig_totals = aggregate_counters(misconfig_pfc, misconfig_ecn)["totals"]
+    misconfig_ports = aggregate_counters(misconfig_pfc, misconfig_ecn)["ports"]
+
+    healthy_ecn_total = sum(p["ecn_marks_sent"] for p in healthy_ports)
+    misconfig_ecn_total = sum(p["ecn_marks_sent"] for p in misconfig_ports)
+    misconfig_pfc_total = sum(p["pfc_pause_sent"] for p in misconfig_ports)
 
     # Healthy ECN config: DCQCN throttles via marks before PFC headroom
-    assert healthy_totals["ecn_marks_sent"] > 0, (
-        f"healthy DCQCN must emit CE-stamps; got {healthy_totals['ecn_marks_sent']}"
+    assert healthy_ecn_total > 0, (
+        f"healthy DCQCN must emit CE-stamps; got {healthy_ecn_total}"
     )
     # Misconfigured ECN: ShouldSendCN always returns false → zero marks
-    assert misconfig_totals["ecn_marks_sent"] == 0, (
-        f"KMIN above buffer must produce zero CE-stamps; "
-        f"got {misconfig_totals['ecn_marks_sent']}"
+    assert misconfig_ecn_total == 0, (
+        f"KMIN above buffer must produce zero CE-stamps; got {misconfig_ecn_total}"
     )
     # Misconfigured ECN: queues build past PFC headroom → pauses fire
-    assert misconfig_totals["pfc_pause_sent"] > 0, (
-        f"ECN misconfig must push past PFC headroom; "
-        f"got {misconfig_totals['pfc_pause_sent']}"
+    assert misconfig_pfc_total > 0, (
+        f"ECN misconfig must push past PFC headroom; got {misconfig_pfc_total}"
     )
 
 
@@ -351,14 +353,16 @@ def test_get_fabric_counters_pfc_storm_ecn_misconfigured_inverts_asymmetry(tmp_p
     tool = server._tool_manager._tools["get_fabric_counters"]  # type: ignore[attr-defined]
     response = tool.fn(name="pfc-storm", run_id="counters-pfc-storm")
 
-    totals = response["data"]["totals"]
-    assert totals["ecn_marks_sent"] == 0, (
-        "ECN misconfig (KMIN above capacity) must produce zero CE-stamps; "
-        f"got {totals['ecn_marks_sent']}"
+    ports = response["data"]["ports"]
+    ecn_total = sum(p["ecn_marks_sent"] for p in ports)
+    pfc_total = sum(p["pfc_pause_sent"] for p in ports)
+    assert ecn_total == 0, (
+        f"ECN misconfig (KMIN above capacity) must produce zero CE-stamps; "
+        f"got {ecn_total}"
     )
-    assert totals["pfc_pause_sent"] > 0, (
-        "ECN misconfig must still push queues past PFC headroom; "
-        f"got pfc_pause_sent={totals['pfc_pause_sent']}"
+    assert pfc_total > 0, (
+        f"ECN misconfig must still push queues past PFC headroom; "
+        f"got pfc_pause_sent={pfc_total}"
     )
 
 

@@ -123,6 +123,7 @@ def compile_scenario(scenario: Scenario, output_path: Path) -> Path:
     lines.append("TRACE_OUTPUT_FILE mix/mix.tr")
     lines.append("FCT_OUTPUT_FILE mix/fct.txt")
     lines.append("PFC_OUTPUT_FILE mix/pfc.txt")
+    lines.append("ECN_OUTPUT_FILE mix/ecn.txt")
     lines.append("")
 
     # Simulation duration

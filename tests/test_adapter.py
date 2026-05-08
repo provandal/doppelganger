@@ -97,6 +97,7 @@ def test_server_registers_expected_tools():
     assert "list_scenarios" in tool_names
     assert "run_scenario" in tool_names
     assert "get_topology" in tool_names
+    assert "get_fabric_counters" in tool_names
     assert "compare_runs" in tool_names
 
 
@@ -270,3 +271,137 @@ def test_get_topology_payload_does_not_leak_eval_ground_truth():
                     f"{name} payload field {key!r} == scenario name; "
                     f"likely leaks the answer key"
                 )
+
+
+# ---------------------------------------------- get_fabric_counters end-to-end (gated)
+
+@pytest.mark.requires_substrate
+def test_get_fabric_counters_asymmetry_inverts_with_ecn_config_only(tmp_path):
+    """Direct demonstration that the PFC vs ECN-CN asymmetry is driven
+    by the ECN config, not by the workload. Same `pfc_storm` topology
+    and traffic, run twice — once with default ECN thresholds (DCQCN
+    engaged, ECN marks fire), once with KMIN bumped above buffer
+    capacity (DCQCN running blind, only PFC fires).
+
+    The inversion is the load-bearing pedagogical signal Stage 5b's
+    skill teaches the agent to read. This test bypasses the MCP factory
+    registry because exposing a "pfc-storm-healthy" name there would
+    leak fault-class information through the manifest; the test invokes
+    the Driver directly with both ECN configurations and aggregates
+    counters from the trace files.
+    """
+    from doppelganger.driver.counters import aggregate_counters
+    from doppelganger.driver.parsers.ecn import parse_ecn_file
+    from doppelganger.driver.parsers.pfc import parse_pfc_file
+    from doppelganger.driver.simulation import Driver
+    from doppelganger.scenarios.builtin import pfc_storm
+
+    if not _substrate_image_present():
+        pytest.skip("doppelganger-substrate image not built locally")
+
+    driver = Driver(traces_root=tmp_path)
+
+    healthy = driver.run_scenario(
+        pfc_storm(ecn_misconfigured=False), run_id="asymmetry-healthy"
+    )
+    healthy_pfc = parse_pfc_file(healthy.trace_dir / "pfc.txt")
+    healthy_ecn = parse_ecn_file(healthy.trace_dir / "ecn.txt")
+    healthy_totals = aggregate_counters(healthy_pfc, healthy_ecn)["totals"]
+
+    misconfig = driver.run_scenario(
+        pfc_storm(ecn_misconfigured=True), run_id="asymmetry-misconfig"
+    )
+    misconfig_pfc = parse_pfc_file(misconfig.trace_dir / "pfc.txt")
+    misconfig_ecn = parse_ecn_file(misconfig.trace_dir / "ecn.txt")
+    misconfig_totals = aggregate_counters(misconfig_pfc, misconfig_ecn)["totals"]
+
+    # Healthy ECN config: DCQCN throttles via marks before PFC headroom
+    assert healthy_totals["ecn_marks_sent"] > 0, (
+        f"healthy DCQCN must emit CE-stamps; got {healthy_totals['ecn_marks_sent']}"
+    )
+    # Misconfigured ECN: ShouldSendCN always returns false → zero marks
+    assert misconfig_totals["ecn_marks_sent"] == 0, (
+        f"KMIN above buffer must produce zero CE-stamps; "
+        f"got {misconfig_totals['ecn_marks_sent']}"
+    )
+    # Misconfigured ECN: queues build past PFC headroom → pauses fire
+    assert misconfig_totals["pfc_pause_sent"] > 0, (
+        f"ECN misconfig must push past PFC headroom; "
+        f"got {misconfig_totals['pfc_pause_sent']}"
+    )
+
+
+@pytest.mark.requires_substrate
+def test_get_fabric_counters_pfc_storm_ecn_misconfigured_inverts_asymmetry(tmp_path):
+    """ECN-misconfigured pfc_storm. KMIN bumped above buffer capacity →
+    ShouldSendCN always returns false → no CE-stamps. DCQCN runs blind,
+    queues build past PFC headroom → pause frames fire.
+
+    The asymmetry inverts: ECN marks_sent == 0 alongside PFC pause_sent
+    > 0 is the SRE-recognizable signature for ECN misconfiguration. The
+    skill at Stage 5b will read this exact asymmetry.
+    """
+    from doppelganger.adapter.server import build_server
+    from doppelganger.driver.simulation import Driver
+
+    if not _substrate_image_present():
+        pytest.skip("doppelganger-substrate image not built locally")
+
+    server = build_server(driver=Driver(traces_root=tmp_path))
+    tool = server._tool_manager._tools["get_fabric_counters"]  # type: ignore[attr-defined]
+    response = tool.fn(name="pfc-storm", run_id="counters-pfc-storm")
+
+    totals = response["data"]["totals"]
+    assert totals["ecn_marks_sent"] == 0, (
+        "ECN misconfig (KMIN above capacity) must produce zero CE-stamps; "
+        f"got {totals['ecn_marks_sent']}"
+    )
+    assert totals["pfc_pause_sent"] > 0, (
+        "ECN misconfig must still push queues past PFC headroom; "
+        f"got pfc_pause_sent={totals['pfc_pause_sent']}"
+    )
+
+
+@pytest.mark.requires_substrate
+def test_get_fabric_counters_payload_carries_both_classes_in_every_record(tmp_path):
+    """Constraint memory: PFC and ECN-CN must be in one payload, every
+    record. Even on a port that only saw one class of event, the other
+    class's counters must be present and zero — never absent. This is the
+    *structural* leak guard: the agent must not be able to read PFC
+    elevation without seeing the ECN counter alongside it."""
+    from doppelganger.adapter.server import build_server
+    from doppelganger.driver.simulation import Driver
+
+    if not _substrate_image_present():
+        pytest.skip("doppelganger-substrate image not built locally")
+
+    server = build_server(driver=Driver(traces_root=tmp_path))
+    tool = server._tool_manager._tools["get_fabric_counters"]  # type: ignore[attr-defined]
+    response = tool.fn(name="microburst", run_id="counters-leak-guard")
+
+    required = {
+        "pfc_pause_sent", "pfc_pause_rcvd",
+        "pfc_resume_sent", "pfc_resume_rcvd",
+        "ecn_marks_sent",
+    }
+    for rec in response["data"]["ports"]:
+        missing = required - rec.keys()
+        assert not missing, f"port record missing fields: {missing} on {rec!r}"
+        for f in required:
+            assert isinstance(rec[f], int), (
+                f"field {f} must be an int (zero is data, not absence); "
+                f"got {type(rec[f]).__name__}"
+            )
+
+
+def _substrate_image_present() -> bool:
+    """Local helper duplicated from conftest so the assertion message is
+    inline with the test (don't depend on fixture autouse for skip)."""
+    import shutil
+    import subprocess
+    if shutil.which("docker") is None:
+        return False
+    return subprocess.run(
+        ["docker", "image", "inspect", "doppelganger-substrate"],
+        capture_output=True,
+    ).returncode == 0

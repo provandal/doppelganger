@@ -19,7 +19,10 @@ from typing import Any, Callable
 
 from mcp.server.fastmcp import FastMCP
 
+from doppelganger.driver.counters import aggregate_counters
+from doppelganger.driver.parsers.ecn import parse_ecn_file
 from doppelganger.driver.parsers.fct import parse_fct_file
+from doppelganger.driver.parsers.pfc import parse_pfc_file
 from doppelganger.driver.simulation import Driver
 from doppelganger.driver.types import CompletionStatus, PerFlowRecord
 from doppelganger.eval.comparison import compare_runs as _compare_runs
@@ -381,6 +384,64 @@ def build_server(
         return envelope(
             payload,
             source=f"adapter.scenario_topology({name!r})",
+            observed_at_ns=None,
+            staleness_class="fresh",
+        )
+
+    @server.tool()
+    def get_fabric_counters(name: str, run_id: str | None = None) -> dict[str, Any]:
+        """Run a scenario and return per-port PFC + ECN-CN counter records.
+
+        Each port record carries BOTH counter classes side-by-side. PFC
+        counts are broken down by event direction (pause_sent, pause_rcvd,
+        resume_sent, resume_rcvd); ECN-CN is the count of CE-stamps emitted
+        at egress. Zero counts surface as ``0``, not as missing fields —
+        zero is data, not absence.
+
+        The diagnostic surface this enables: PFC pause_sent elevated
+        alongside ECN marks_sent ~0 on the same fabric is the
+        SRE-recognizable signature for DCQCN running blind (ECN
+        misconfiguration). Splitting these classes across separate tools
+        would let a caller observe one without the discriminator — the
+        constraint this tool's design enforces is that the agent always
+        sees both at once.
+
+        Parameters
+        ----------
+        name:
+            One of the names returned by ``list_scenarios``.
+        run_id:
+            Optional run identifier (used as the trace-dir name).
+
+        Returns the response envelope; ``data.totals`` is the sum across
+        all ports, ``data.ports`` is the per-(node_id, if_index) detail.
+        """
+        if name == "spike-burst":
+            result = driver.run_scenario("spike-burst", run_id=run_id)
+        elif name in BUILTIN_SCENARIO_FACTORIES:
+            scenario = BUILTIN_SCENARIO_FACTORIES[name]()
+            result = driver.run_scenario(scenario, run_id=run_id)
+        else:
+            raise ValueError(
+                f"Unknown scenario {name!r}. "
+                f"Call list_scenarios for the available set."
+            )
+
+        pfc_path = result.trace_dir / "pfc.txt"
+        ecn_path = result.trace_dir / "ecn.txt"
+        pfc_events = parse_pfc_file(pfc_path) if pfc_path.exists() else []
+        ecn_events = parse_ecn_file(ecn_path) if ecn_path.exists() else []
+        aggregate = aggregate_counters(pfc_events, ecn_events)
+
+        return envelope(
+            {
+                "scenario": result.scenario,
+                "run_id": result.trace_dir.name,
+                "trace_dir": str(result.trace_dir),
+                "totals": aggregate["totals"],
+                "ports": aggregate["ports"],
+            },
+            source=f"driver.run_scenario({name!r})+counters_aggregate",
             observed_at_ns=None,
             staleness_class="fresh",
         )

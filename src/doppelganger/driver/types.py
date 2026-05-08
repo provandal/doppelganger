@@ -69,3 +69,31 @@ class PerFlowRecord:
         if self.standalone_fct_ns == 0:
             return float("inf")
         return self.fct_ns / self.standalone_fct_ns
+
+
+@dataclass(frozen=True)
+class PfcEvent:
+    """One row from pfc.txt — per-PFC-frame event at a QbbNetDevice.
+
+    `event_type`: 0=resume_rcvd, 1=pause_rcvd, 2=pause_sent, 3=resume_sent.
+    """
+
+    timestamp_ns: int
+    node_id: int
+    node_type: int
+    if_index: int
+    event_type: int
+
+    @property
+    def is_pause(self) -> bool:
+        return self.event_type in (1, 2)
+
+
+@dataclass(frozen=True)
+class EcnMarkEvent:
+    """One row from ecn.txt — one CE-stamp event at a switch egress queue."""
+
+    timestamp_ns: int
+    switch_id: int
+    if_index: int
+    q_index: int

@@ -97,3 +97,25 @@ class EcnMarkEvent:
     switch_id: int
     if_index: int
     q_index: int
+
+
+@dataclass(frozen=True)
+class CounterRollupRow:
+    """One row from counters.txt — end-of-sim per-port volumetric counters.
+
+    Distinct shape from PfcEvent / EcnMarkEvent: those are per-event streams
+    (one row per pause / per CE-stamp), this is a single end-of-sim snapshot
+    of cumulative interface counters mirroring how real switches expose port
+    state via SNMP. Substrate emits one row per ``(switch_id, if_index)`` that
+    saw any activity during the run; ports with no activity are absent from
+    the file and zero-filled by the aggregator from the scenario topology.
+    """
+
+    switch_id: int
+    if_index: int
+    rx_packets: int
+    rx_bytes: int
+    tx_packets: int
+    tx_bytes: int
+    drops: int
+    qlen_peak_bytes: int

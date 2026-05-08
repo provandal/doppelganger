@@ -17,15 +17,22 @@ import pytest
 
 from doppelganger.driver import Driver, DriverError
 from doppelganger.driver.counters import aggregate_counters
+from doppelganger.driver.parsers.counters import parse_counters_file
 from doppelganger.driver.parsers.ecn import parse_ecn_file
 from doppelganger.driver.parsers.fct import parse_fct_file
 from doppelganger.driver.parsers.pfc import parse_pfc_file
-from doppelganger.driver.types import CompletionStatus, EcnMarkEvent, PfcEvent
+from doppelganger.driver.types import (
+    CompletionStatus,
+    CounterRollupRow,
+    EcnMarkEvent,
+    PfcEvent,
+)
 from doppelganger.scenarios import (
     SPIKE_BURST_256,
     Scenario,
     spike_burst_baseline,
 )
+from doppelganger.scenarios.topology import Topology
 from doppelganger.scenarios.types import TopologyRef
 
 
@@ -294,6 +301,217 @@ def test_aggregate_counters_ports_sorted_stably_by_node_then_port():
     ]
     keys = [(r["node_id"], r["if_index"]) for r in aggregate_counters(pfc, [])["ports"]]
     assert keys == [(200, 4), (200, 8), (300, 4)]
+
+
+# -------------------------------------------------------- counters.txt parser
+
+def test_parse_counters_file_parses_well_formed_rows(tmp_path):
+    counters = tmp_path / "counters.txt"
+    counters.write_text(
+        textwrap.dedent(
+            """\
+            128 1 67717 5959096 67717 5959096 0 0
+            128 17 198108 215937720 198106 215935540 5 237620
+            """
+        )
+    )
+    rows = parse_counters_file(counters)
+    assert len(rows) == 2
+    assert rows[0] == CounterRollupRow(
+        switch_id=128, if_index=1,
+        rx_packets=67717, rx_bytes=5959096,
+        tx_packets=67717, tx_bytes=5959096,
+        drops=0, qlen_peak_bytes=0,
+    )
+    assert rows[1].drops == 5
+    assert rows[1].qlen_peak_bytes == 237620
+
+
+def test_parse_counters_file_skips_malformed_lines(tmp_path):
+    counters = tmp_path / "counters.txt"
+    counters.write_text(
+        "header that should be ignored\n"
+        "128 1 67717 5959096 67717 5959096 0 0\n"
+        "256 4 too few\n"
+        "256 5 1 2 3 4 5 6 7 8 9 too many\n"
+        "256 6 abc def 1 2 3 4 5 6\n"
+    )
+    rows = parse_counters_file(counters)
+    assert len(rows) == 1
+    assert rows[0].switch_id == 128
+
+
+def test_parse_counters_file_empty_file_returns_empty_list(tmp_path):
+    counters = tmp_path / "counters.txt"
+    counters.write_text("")
+    assert parse_counters_file(counters) == []
+
+
+# ------------------------------------------ aggregator: volumetric + topology
+
+def test_aggregate_counters_volumetric_fields_default_zero_without_rollup():
+    """Stage 5a backward-compat: callers passing only PFC + ECN events get
+    the volumetric fields zero-filled. The structural-leak guarantee
+    extends to the new counter classes."""
+    pfc = [PfcEvent(timestamp_ns=1, node_id=128, node_type=1, if_index=2, event_type=2)]
+    rec = aggregate_counters(pfc, [])["ports"][0]
+    for f in ("rx_packets", "rx_bytes", "tx_packets", "tx_bytes",
+              "drops", "qlen_peak_bytes"):
+        assert rec[f] == 0
+
+
+def test_aggregate_counters_rollup_populates_volumetric_fields():
+    rollup = [
+        CounterRollupRow(
+            switch_id=128, if_index=17,
+            rx_packets=198108, rx_bytes=215937720,
+            tx_packets=198106, tx_bytes=215935540,
+            drops=5, qlen_peak_bytes=237620,
+        ),
+    ]
+    rec = aggregate_counters([], [], rollup_rows=rollup)["ports"][0]
+    assert rec["node_id"] == 128
+    assert rec["if_index"] == 17
+    assert rec["rx_packets"] == 198108
+    assert rec["rx_bytes"] == 215937720
+    assert rec["tx_packets"] == 198106
+    assert rec["drops"] == 5
+    assert rec["qlen_peak_bytes"] == 237620
+    # PFC and ECN remain zero because no events fed in
+    assert rec["pfc_pause_sent"] == 0
+    assert rec["ecn_marks_sent"] == 0
+
+
+def test_aggregate_counters_rollup_and_events_combine_on_same_port():
+    """The agent reads asymmetry across PFC, ECN, and volumetric on the
+    same record. When all three sources reference the same (node_id,
+    if_index), the aggregator must coalesce — not duplicate — into one
+    record carrying every counter class."""
+    pfc = [
+        PfcEvent(timestamp_ns=1, node_id=128, node_type=1, if_index=17, event_type=2),
+        PfcEvent(timestamp_ns=2, node_id=128, node_type=1, if_index=17, event_type=2),
+    ]
+    ecn = [EcnMarkEvent(timestamp_ns=3, switch_id=128, if_index=17, q_index=3)]
+    rollup = [
+        CounterRollupRow(
+            switch_id=128, if_index=17,
+            rx_packets=1000, rx_bytes=1_000_000,
+            tx_packets=999, tx_bytes=999_000,
+            drops=0, qlen_peak_bytes=42_000,
+        ),
+    ]
+    result = aggregate_counters(pfc, ecn, rollup_rows=rollup)
+    assert len(result["ports"]) == 1
+    rec = result["ports"][0]
+    assert rec["pfc_pause_sent"] == 2
+    assert rec["ecn_marks_sent"] == 1
+    assert rec["tx_packets"] == 999
+    assert rec["qlen_peak_bytes"] == 42_000
+
+
+def test_aggregate_counters_topology_zero_fills_all_switch_ports():
+    """Production-shape: a topology with N switch ports must produce N
+    records, even when only one port saw activity. Storm-vs-baseline
+    detection requires the agent to find the anomalous port among
+    zero-filled siblings — not against a 2-row payload that pre-aggregates
+    asymmetry by omission. (Stage 5a-realistic, 2026-05-09.)"""
+    topology = Topology(leaves=2, spines=1, hosts_per_leaf=4)
+    # Leaf has hosts_per_leaf + spines = 5 ports each (×2 leaves = 10).
+    # Spine has leaves = 2 ports (×1 spine = 2). Total = 12.
+    rollup = [
+        CounterRollupRow(
+            switch_id=topology.first_leaf_id(), if_index=3,
+            rx_packets=99, rx_bytes=99_000,
+            tx_packets=99, tx_bytes=99_000,
+            drops=0, qlen_peak_bytes=12_345,
+        ),
+    ]
+    result = aggregate_counters([], [], rollup_rows=rollup, topology=topology)
+    assert len(result["ports"]) == 12
+    # The one storm port is preserved with its volumetric values intact.
+    storm = next(
+        r for r in result["ports"]
+        if r["node_id"] == topology.first_leaf_id() and r["if_index"] == 3
+    )
+    assert storm["rx_packets"] == 99
+    assert storm["qlen_peak_bytes"] == 12_345
+    # Every other port reports zero across the volumetric fields.
+    quiet = [r for r in result["ports"] if not (
+        r["node_id"] == topology.first_leaf_id() and r["if_index"] == 3
+    )]
+    assert len(quiet) == 11
+    for r in quiet:
+        assert r["rx_packets"] == 0
+        assert r["tx_bytes"] == 0
+        assert r["drops"] == 0
+        assert r["qlen_peak_bytes"] == 0
+
+
+def test_aggregate_counters_topology_zero_fill_includes_spines():
+    """Spine switches must appear in the enumerated port set with one
+    if_index per leaf they connect to. Otherwise the agent could miss
+    asymmetry that surfaces only on spine uplinks."""
+    topology = Topology(leaves=4, spines=2, hosts_per_leaf=2)
+    result = aggregate_counters([], [], topology=topology)
+    spine_ids = {topology.first_spine_id(), topology.first_spine_id() + 1}
+    spine_ports = [r for r in result["ports"] if r["node_id"] in spine_ids]
+    assert len(spine_ports) == 2 * topology.leaves  # 2 spines × 4 ports
+    # Each spine port appears with if_index 1..leaves
+    by_spine = {}
+    for r in spine_ports:
+        by_spine.setdefault(r["node_id"], []).append(r["if_index"])
+    for spine_id, indices in by_spine.items():
+        assert sorted(indices) == [1, 2, 3, 4]
+
+
+def test_aggregate_counters_topology_rollup_outside_topology_still_emitted():
+    """If the rollup references a (switch_id, if_index) that the topology
+    enumeration doesn't include, the row is still emitted as a record —
+    substrate data is not silently dropped."""
+    topology = Topology(leaves=1, spines=1, hosts_per_leaf=1)
+    # leaf=2 ports, spine=1 port. Total enumerated = 3.
+    rollup = [
+        CounterRollupRow(
+            switch_id=999, if_index=42,  # node_id outside topology
+            rx_packets=7, rx_bytes=7_000,
+            tx_packets=7, tx_bytes=7_000,
+            drops=0, qlen_peak_bytes=0,
+        ),
+    ]
+    result = aggregate_counters([], [], rollup_rows=rollup, topology=topology)
+    assert len(result["ports"]) == 4  # 3 topology ports + 1 unexpected
+    extra = [r for r in result["ports"] if r["node_id"] == 999]
+    assert len(extra) == 1 and extra[0]["rx_packets"] == 7
+
+
+def test_aggregate_counters_every_port_record_has_every_counter_class():
+    """Asymmetry diagnostic depends on the agent seeing PFC + ECN +
+    volumetric in *every* record. With the new volumetric fields added in
+    Stage 5a-realistic, the structural enforcement extends to all 11
+    counter fields, regardless of which classes happened to populate."""
+    topology = Topology(leaves=1, spines=1, hosts_per_leaf=1)
+    pfc = [PfcEvent(timestamp_ns=1, node_id=200, node_type=0, if_index=1, event_type=1)]
+    ecn = [EcnMarkEvent(timestamp_ns=2, switch_id=300, if_index=5, q_index=0)]
+    rollup = [
+        CounterRollupRow(
+            switch_id=300, if_index=5,
+            rx_packets=1, rx_bytes=1, tx_packets=1, tx_bytes=1,
+            drops=0, qlen_peak_bytes=0,
+        ),
+    ]
+    result = aggregate_counters(pfc, ecn, rollup_rows=rollup, topology=topology)
+    required = {
+        "pfc_pause_sent", "pfc_pause_rcvd",
+        "pfc_resume_sent", "pfc_resume_rcvd",
+        "ecn_marks_sent",
+        "rx_packets", "rx_bytes",
+        "tx_packets", "tx_bytes",
+        "drops", "qlen_peak_bytes",
+    }
+    for rec in result["ports"]:
+        assert required.issubset(rec.keys())
+        for f in required:
+            assert isinstance(rec[f], int)
 
 
 # ----------------------------------------------------------------- driver api

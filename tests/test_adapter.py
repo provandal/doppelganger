@@ -387,6 +387,9 @@ def test_get_fabric_counters_payload_carries_both_classes_in_every_record(tmp_pa
         "pfc_pause_sent", "pfc_pause_rcvd",
         "pfc_resume_sent", "pfc_resume_rcvd",
         "ecn_marks_sent",
+        "rx_packets", "rx_bytes",
+        "tx_packets", "tx_bytes",
+        "drops", "qlen_peak_bytes",
     }
     for rec in response["data"]["ports"]:
         missing = required - rec.keys()
@@ -396,6 +399,52 @@ def test_get_fabric_counters_payload_carries_both_classes_in_every_record(tmp_pa
                 f"field {f} must be an int (zero is data, not absence); "
                 f"got {type(rec[f]).__name__}"
             )
+
+
+@pytest.mark.requires_substrate
+def test_get_fabric_counters_zero_fills_every_topology_switch_port(tmp_path):
+    """Stage 5a-realistic: topology-aware port enumeration must produce
+    ONE record per switch port the scenario topology declares — including
+    ports that saw no activity (zero-filled). Otherwise the agent gets a
+    sparse payload from which absolute asymmetry (0 vs N) is trivial to
+    spot; the realism goal is *relative* asymmetry against a populated
+    fabric baseline."""
+    from doppelganger.adapter.server import (
+        BUILTIN_SCENARIO_FACTORIES,
+        build_server,
+    )
+    from doppelganger.driver.simulation import Driver
+
+    if not _substrate_image_present():
+        pytest.skip("doppelganger-substrate image not built locally")
+
+    scenario = BUILTIN_SCENARIO_FACTORIES["microburst"]()
+    topo = scenario.custom_topology
+    assert topo is not None, "microburst should declare a custom topology"
+    expected_ports = (
+        topo.leaves * (topo.hosts_per_leaf + topo.spines)
+        + topo.spines * topo.leaves
+    )
+
+    server = build_server(driver=Driver(traces_root=tmp_path))
+    tool = server._tool_manager._tools["get_fabric_counters"]  # type: ignore[attr-defined]
+    response = tool.fn(name="microburst", run_id="counters-zero-fill")
+    ports = response["data"]["ports"]
+    assert len(ports) >= expected_ports, (
+        f"expected at least {expected_ports} port records (topology "
+        f"enumeration), got {len(ports)}"
+    )
+    # At least one port should be quiet (zero-filled) — otherwise the
+    # enumeration didn't actually add ports beyond observed.
+    quiet = [
+        r for r in ports
+        if r["rx_packets"] == 0 and r["tx_packets"] == 0
+        and r["pfc_pause_sent"] == 0 and r["ecn_marks_sent"] == 0
+    ]
+    assert len(quiet) > 0, (
+        "expected at least one zero-filled port from topology enumeration; "
+        "every emitted port had observed activity"
+    )
 
 
 def _substrate_image_present() -> bool:

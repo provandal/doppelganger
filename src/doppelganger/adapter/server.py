@@ -20,6 +20,7 @@ from typing import Any, Callable
 from mcp.server.fastmcp import FastMCP
 
 from doppelganger.driver.counters import aggregate_counters
+from doppelganger.driver.parsers.counters import parse_counters_file
 from doppelganger.driver.parsers.ecn import parse_ecn_file
 from doppelganger.driver.parsers.fct import parse_fct_file
 from doppelganger.driver.parsers.pfc import parse_pfc_file
@@ -417,10 +418,12 @@ def build_server(
         Returns the response envelope; ``data.ports`` is a list of
         per-(node_id, if_index) records.
         """
+        scenario_topology: Topology | None = None
         if name == "spike-burst":
             result = driver.run_scenario("spike-burst", run_id=run_id)
         elif name in BUILTIN_SCENARIO_FACTORIES:
             scenario = BUILTIN_SCENARIO_FACTORIES[name]()
+            scenario_topology = scenario.custom_topology
             result = driver.run_scenario(scenario, run_id=run_id)
         else:
             raise ValueError(
@@ -430,9 +433,15 @@ def build_server(
 
         pfc_path = result.trace_dir / "pfc.txt"
         ecn_path = result.trace_dir / "ecn.txt"
+        counters_path = result.trace_dir / "counters.txt"
         pfc_events = parse_pfc_file(pfc_path) if pfc_path.exists() else []
         ecn_events = parse_ecn_file(ecn_path) if ecn_path.exists() else []
-        aggregate = aggregate_counters(pfc_events, ecn_events)
+        rollup_rows = (
+            parse_counters_file(counters_path) if counters_path.exists() else []
+        )
+        aggregate = aggregate_counters(
+            pfc_events, ecn_events, rollup_rows, scenario_topology
+        )
 
         return envelope(
             {

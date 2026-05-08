@@ -5,9 +5,10 @@
 # this. Once changes land on provandal/ns3-datacenter, substrate.Dockerfile
 # gets re-pinned to the new upstream SHA.
 #
-# Active overlay: HarnessIT Stage 5a ECN counter emission (2026-05-08) —
-# adds EcnMark trace source on SwitchNode + get_ecn callback wiring +
-# ECN_OUTPUT_FILE config knob.
+# Active overlay: none. The base pin (640ea8d) now contains both the ECN
+# counter emission (Stage 5a, 2026-05-08) and the per-port counter rollup
+# (Stage 5a-realistic, 2026-05-09). Re-purpose this Dockerfile when the
+# next substrate-side iteration starts.
 #
 # Build (from doppelganger/ root):
 #   docker build -t doppelganger-substrate-dev \

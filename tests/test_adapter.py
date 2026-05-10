@@ -433,9 +433,18 @@ def test_get_fabric_counters_asymmetry_inverts_with_ecn_config_only(tmp_path):
     misconfig_ecn = parse_ecn_file(misconfig.trace_dir / "ecn.txt")
     misconfig_ports = aggregate_counters(misconfig_pfc, misconfig_ecn)["ports"]
 
-    healthy_ecn_total = sum(p["ecn_marks_sent"] for p in healthy_ports)
-    misconfig_ecn_total = sum(p["ecn_marks_sent"] for p in misconfig_ports)
-    misconfig_pfc_total = sum(p["pfc_pause_sent"] for p in misconfig_ports)
+    # SONiC-shape (2026-05-10): per-queue records — sum across queues per
+    # port, then across ports. Aggregates were deliberately removed from
+    # the response so the agent sums them itself; tests do the same.
+    healthy_ecn_total = sum(
+        q["ecn_marks_sent"] for p in healthy_ports for q in p["queues"]
+    )
+    misconfig_ecn_total = sum(
+        q["ecn_marks_sent"] for p in misconfig_ports for q in p["queues"]
+    )
+    misconfig_pfc_total = sum(
+        q["pfc_pause_sent"] for p in misconfig_ports for q in p["queues"]
+    )
 
     # Healthy ECN config: DCQCN throttles via marks before PFC headroom
     assert healthy_ecn_total > 0, (
@@ -472,8 +481,12 @@ def test_get_fabric_counters_pfc_storm_ecn_misconfigured_inverts_asymmetry(tmp_p
     response = tool.fn(name="pfc-storm", run_id="counters-pfc-storm")
 
     ports = response["data"]["ports"]
-    ecn_total = sum(p["ecn_marks_sent"] for p in ports)
-    pfc_total = sum(p["pfc_pause_sent"] for p in ports)
+    ecn_total = sum(
+        q["ecn_marks_sent"] for p in ports for q in p["queues"]
+    )
+    pfc_total = sum(
+        q["pfc_pause_sent"] for p in ports for q in p["queues"]
+    )
     assert ecn_total == 0, (
         f"ECN misconfig (KMIN above capacity) must produce zero CE-stamps; "
         f"got {ecn_total}"
@@ -501,22 +514,39 @@ def test_get_fabric_counters_payload_carries_both_classes_in_every_record(tmp_pa
     tool = server._tool_manager._tools["get_fabric_counters"]  # type: ignore[attr-defined]
     response = tool.fn(name="microburst", run_id="counters-leak-guard")
 
-    required = {
+    # SONiC-shape (2026-05-10): per-queue records under each port.
+    # Structural-leak guard now extends to all per-queue fields; the
+    # agent must always see PFC + ECN + volumetric + watermarks per
+    # priority queue, never just one class.
+    required_per_queue = {
+        "q_index",
+        "rx_packets", "rx_bytes", "tx_packets", "tx_bytes",
+        "dropped_packets", "qlen_peak_bytes", "pg_watermark_bytes",
         "pfc_pause_sent", "pfc_pause_rcvd",
         "pfc_resume_sent", "pfc_resume_rcvd",
         "ecn_marks_sent",
-        "rx_packets", "rx_bytes",
-        "tx_packets", "tx_bytes",
-        "drops", "qlen_peak_bytes",
+    }
+    required_port_top_level = {
+        "node_id", "if_index", "node_type",
+        "oper_status", "admin_status",
+        "speed_bps", "mtu_bytes",
+        "queues",
     }
     for rec in response["data"]["ports"]:
-        missing = required - rec.keys()
+        missing = required_port_top_level - rec.keys()
         assert not missing, f"port record missing fields: {missing} on {rec!r}"
-        for f in required:
-            assert isinstance(rec[f], int), (
-                f"field {f} must be an int (zero is data, not absence); "
-                f"got {type(rec[f]).__name__}"
-            )
+        assert len(rec["queues"]) == 8, (
+            f"port {rec['node_id']}/{rec['if_index']} has "
+            f"{len(rec['queues'])} queues; SONiC-shape requires 8"
+        )
+        for q in rec["queues"]:
+            missing_q = required_per_queue - q.keys()
+            assert not missing_q, f"queue record missing fields: {missing_q}"
+            for f in required_per_queue:
+                assert isinstance(q[f], int), (
+                    f"queue field {f} must be int (zero is data, not "
+                    f"absence); got {type(q[f]).__name__}"
+                )
 
 
 @pytest.mark.requires_substrate
@@ -557,10 +587,12 @@ def test_pfc_storm_realistic_distributes_volumetric_activity(tmp_path):
     topo = pfc_storm(background_pairs_per_leaf=2).custom_topology
     ports = aggregate_counters(pfc, ecn, rollup_rows=rollup, topology=topo)["ports"]
 
+    # SONiC-shape: a port is "active" if any of its 8 queues saw
+    # rx_packets. The substrate's RoCE traffic typically lands on q=3.
     active = {
         (r["node_id"], r["if_index"])
         for r in ports
-        if r["rx_packets"] > 0
+        if any(q["rx_packets"] > 0 for q in r["queues"])
     }
     assert len(active) >= 8, (
         f"realistic scenario should produce rx activity on >= 8 distinct "
@@ -602,16 +634,21 @@ def test_get_fabric_counters_zero_fills_every_topology_switch_port(tmp_path):
         f"expected at least {expected_ports} port records (topology "
         f"enumeration), got {len(ports)}"
     )
-    # At least one port should be quiet (zero-filled) — otherwise the
-    # enumeration didn't actually add ports beyond observed.
-    quiet = [
-        r for r in ports
-        if r["rx_packets"] == 0 and r["tx_packets"] == 0
-        and r["pfc_pause_sent"] == 0 and r["ecn_marks_sent"] == 0
-    ]
-    assert len(quiet) > 0, (
-        "expected at least one zero-filled port from topology enumeration; "
-        "every emitted port had observed activity"
+    # The cardinality check above already proves topology zero-fill is
+    # adding ports beyond observed (microburst's flow pattern wouldn't
+    # populate every leaf↔spine and host port absent enumeration). For
+    # the per-queue dimension: most ports see traffic only on q=3 (the
+    # RoCE/RDMA priority_group) — assert that at least one (port, queue)
+    # pair is zero-filled, even if every port is active on q=3.
+    quiet_queues = sum(
+        1 for r in ports for q in r["queues"]
+        if q["rx_packets"] == 0 and q["tx_packets"] == 0
+        and q["pfc_pause_sent"] == 0 and q["ecn_marks_sent"] == 0
+    )
+    assert quiet_queues > 0, (
+        "expected at least one zero-filled (port, queue) from topology "
+        "enumeration; every queue had observed activity, suggesting "
+        "the per-queue zero-fill collapsed"
     )
 
 

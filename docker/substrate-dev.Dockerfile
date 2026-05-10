@@ -5,10 +5,11 @@
 # this. Once changes land on provandal/ns3-datacenter, substrate.Dockerfile
 # gets re-pinned to the new upstream SHA.
 #
-# Active overlay: none. The base pin (640ea8d) now contains both the ECN
-# counter emission (Stage 5a, 2026-05-08) and the per-port counter rollup
-# (Stage 5a-realistic, 2026-05-09). Re-purpose this Dockerfile when the
-# next substrate-side iteration starts.
+# Active overlay: none. The base pin (5f2ff4f) now contains the SONiC
+# counter expansion (per-priority QbbPfcQ trace, 6-column pfc.txt,
+# per-(switch, port, queue) counters.txt with pg_watermark) along with
+# all earlier substrate fixes. Re-purpose this Dockerfile when the next
+# substrate-side iteration starts.
 #
 # Build (from doppelganger/ root):
 #   docker build -t doppelganger-substrate-dev \
@@ -33,6 +34,12 @@ COPY ${LOCAL_NS3}/simulator/ns-3.39/src/point-to-point/model/switch-node.h \
 
 COPY ${LOCAL_NS3}/simulator/ns-3.39/src/point-to-point/model/switch-node.cc \
      /opt/ns3-datacenter/simulator/ns-3.39/src/point-to-point/model/switch-node.cc
+
+COPY ${LOCAL_NS3}/simulator/ns-3.39/src/point-to-point/model/qbb-net-device.h \
+     /opt/ns3-datacenter/simulator/ns-3.39/src/point-to-point/model/qbb-net-device.h
+
+COPY ${LOCAL_NS3}/simulator/ns-3.39/src/point-to-point/model/qbb-net-device.cc \
+     /opt/ns3-datacenter/simulator/ns-3.39/src/point-to-point/model/qbb-net-device.cc
 
 WORKDIR /opt/ns3-datacenter/simulator/ns-3.39
 

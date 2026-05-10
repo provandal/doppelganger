@@ -89,12 +89,14 @@ def test_fct_parser_handles_empty_file(tmp_path):
 
 
 def test_pfc_parser_parses_well_formed_lines(tmp_path):
+    """Six-column pfc.txt format includes q_index (per-priority PFC,
+    SONiC alignment, 2026-05-10)."""
     sample = textwrap.dedent(
         """\
-        150037591 256 1 34 2
-        150038594 265 1 1 1
-        150085642 256 1 34 3
-        150086645 265 1 1 0
+        150037591 256 1 34 2 3
+        150038594 265 1 1 1 3
+        150085642 256 1 34 3 3
+        150086645 265 1 1 0 3
         """
     )
     pfc = tmp_path / "pfc.txt"
@@ -109,21 +111,25 @@ def test_pfc_parser_parses_well_formed_lines(tmp_path):
     assert pause_sent.node_type == 1  # switch
     assert pause_sent.if_index == 34
     assert pause_sent.event_type == 2
+    assert pause_sent.q_index == 3
     assert pause_sent.is_pause is True
 
     resume_rcvd = events[3]
     assert resume_rcvd.event_type == 0
+    assert resume_rcvd.q_index == 3
     assert resume_rcvd.is_pause is False
 
 
 def test_pfc_parser_skips_malformed_lines(tmp_path):
+    """Old 5-column format is now treated as malformed (skipped)."""
     pfc = tmp_path / "pfc.txt"
     pfc.write_text(
         "# header comment\n"
-        "150037591 256 1 34 2\n"
+        "150037591 256 1 34 2 3\n"        # well-formed, 6 cols
         "not enough cols\n"
-        "150085642 256 1 nondigit 3\n"
-        "150086645 265 1 1 0\n"
+        "150037591 256 1 34 2\n"          # old 5-col format → skipped
+        "150085642 256 1 nondigit 3 3\n"
+        "150086645 265 1 1 0 7\n"         # well-formed, 6 cols
     )
     assert len(parse_pfc_file(pfc)) == 2
 
@@ -179,47 +185,83 @@ def test_ecn_parser_handles_empty_file(tmp_path):
     assert parse_ecn_file(ecn) == []
 
 
-# ------------------------------------------------------------ counter aggregator
+# ----------------------------------- aggregator: SONiC-shaped per-queue records
+
+
+PORT_TOP_LEVEL_FIELDS = {
+    "node_id", "if_index", "node_type",
+    "oper_status", "admin_status",
+    "speed_bps", "mtu_bytes",
+    "queues",
+}
+QUEUE_FIELDS = {
+    "q_index",
+    "rx_packets", "rx_bytes", "tx_packets", "tx_bytes",
+    "dropped_packets", "qlen_peak_bytes", "pg_watermark_bytes",
+    "pfc_pause_sent", "pfc_pause_rcvd",
+    "pfc_resume_sent", "pfc_resume_rcvd",
+    "ecn_marks_sent",
+}
+
 
 def test_aggregate_counters_empty_inputs_yield_empty_ports():
     result = aggregate_counters([], [])
     assert result["ports"] == []
 
 
-def test_aggregate_counters_does_not_emit_a_totals_row():
-    """Per the Stage 5a closing-test finding (2026-05-08): pre-aggregating
-    fabric-wide totals leaks the asymmetry diagnostic. The agent should
-    have to scan/sum per-port records to see whether ECN marks fired
-    anywhere — that's investigative discipline the eval is designed to
-    surface."""
-    result = aggregate_counters([], [])
+def test_aggregate_counters_does_not_emit_aggregates():
+    """Per Erik's call (2026-05-10): port-level aggregates are themselves
+    a kind of tool use. Forcing the agent to sum across queues to get
+    "total port PFC count" or "total port throughput" preserves Stage 5b's
+    measurement of *naked* model behavior. No "totals" key, no
+    port-level rx/tx/pfc/ecn fields outside the per-queue array."""
+    pfc = [PfcEvent(timestamp_ns=1, node_id=1, node_type=1,
+                    if_index=2, event_type=2, q_index=3)]
+    ecn = [EcnMarkEvent(timestamp_ns=2, switch_id=3, if_index=4, q_index=3)]
+    result = aggregate_counters(pfc, ecn)
     assert "totals" not in result
-    pfc = [PfcEvent(timestamp_ns=1, node_id=1, node_type=1, if_index=2, event_type=2)]
-    ecn = [EcnMarkEvent(timestamp_ns=2, switch_id=3, if_index=4, q_index=0)]
-    assert "totals" not in aggregate_counters(pfc, ecn)
+    for rec in result["ports"]:
+        # Top-level fields are interface state + queues array only.
+        assert set(rec.keys()) == PORT_TOP_LEVEL_FIELDS
+        # Specifically, no port-level pre-aggregated counter fields.
+        for forbidden in ("pfc_pause_sent", "ecn_marks_sent",
+                          "rx_packets", "tx_packets",
+                          "rx_bytes", "tx_bytes",
+                          "drops", "dropped_packets",
+                          "qlen_peak_bytes", "pg_watermark_bytes"):
+            assert forbidden not in rec, (
+                f"port-level field {forbidden!r} leaks pre-aggregation; "
+                f"every counter must live inside the per-queue records"
+            )
 
 
-def test_aggregate_counters_pfc_only_zero_fills_ecn_field():
-    """A port with PFC events but no ECN marks must still expose
-    ``ecn_marks_sent: 0``. The asymmetry diagnostic depends on the agent
-    seeing both fields side-by-side; surfacing one as missing would let
-    the agent draw conclusions from a half-payload."""
+def test_aggregate_counters_pfc_lives_on_per_queue_record():
+    """Per-priority PFC: a pause on q=3 populates the q=3 record only,
+    leaves the other 7 queues' PFC fields at zero. SONiC-shape: PFC is
+    keyed by 802.1p priority, so per-queue is the natural granularity."""
     pfc = [
-        PfcEvent(timestamp_ns=1, node_id=256, node_type=1, if_index=34, event_type=2),
-        PfcEvent(timestamp_ns=2, node_id=256, node_type=1, if_index=34, event_type=3),
+        PfcEvent(timestamp_ns=1, node_id=256, node_type=1,
+                 if_index=34, event_type=2, q_index=3),
+        PfcEvent(timestamp_ns=2, node_id=256, node_type=1,
+                 if_index=34, event_type=3, q_index=3),
     ]
     result = aggregate_counters(pfc, [])
     assert len(result["ports"]) == 1
     rec = result["ports"][0]
-    assert rec["pfc_pause_sent"] == 1
-    assert rec["pfc_resume_sent"] == 1
-    assert rec["ecn_marks_sent"] == 0  # zero-filled, not missing
-    assert "ecn_marks_sent" in rec
+    assert len(rec["queues"]) == 8
+    q3 = rec["queues"][3]
+    assert q3["pfc_pause_sent"] == 1
+    assert q3["pfc_resume_sent"] == 1
+    assert q3["ecn_marks_sent"] == 0
+    for q in (0, 1, 2, 4, 5, 6, 7):
+        assert rec["queues"][q]["pfc_pause_sent"] == 0
+        assert rec["queues"][q]["pfc_resume_sent"] == 0
 
 
-def test_aggregate_counters_ecn_only_zero_fills_pfc_fields():
-    """Mirror of the PFC-only test: ECN-marked port must still expose
-    all four PFC counter fields as 0."""
+def test_aggregate_counters_ecn_lives_on_per_queue_record():
+    """Per-priority ECN: marks fire on the egress queue's priority. A
+    burst of 3 marks on q=3 lands on the q=3 record, not on a port-level
+    ecn_marks_sent field."""
     ecn = [
         EcnMarkEvent(timestamp_ns=1, switch_id=256, if_index=17, q_index=3),
         EcnMarkEvent(timestamp_ns=2, switch_id=256, if_index=17, q_index=3),
@@ -228,19 +270,20 @@ def test_aggregate_counters_ecn_only_zero_fills_pfc_fields():
     result = aggregate_counters([], ecn)
     assert len(result["ports"]) == 1
     rec = result["ports"][0]
-    assert rec["ecn_marks_sent"] == 3
-    for field in ("pfc_pause_sent", "pfc_pause_rcvd", "pfc_resume_sent", "pfc_resume_rcvd"):
-        assert rec[field] == 0
-        assert field in rec
+    q3 = rec["queues"][3]
+    assert q3["ecn_marks_sent"] == 3
+    for q in (0, 1, 2, 4, 5, 6, 7):
+        assert rec["queues"][q]["ecn_marks_sent"] == 0
 
 
 def test_aggregate_counters_combines_pfc_and_ecn_on_same_switch_different_ports():
-    """Real-world case: PFC pauses fire on the ingress port from the
-    sender; ECN marks fire on the egress port toward the receiver. They
-    typically appear on different ports of the same switch. The aggregator
-    emits one record per port, both classes always present."""
+    """PFC pauses fire on the ingress port; ECN marks on the egress port.
+    Different ports of the same switch — aggregator emits one record per
+    port, both PFC and ECN classes always present per queue (zero-filled
+    where no events fired)."""
     pfc = [
-        PfcEvent(timestamp_ns=1, node_id=256, node_type=1, if_index=34, event_type=2),
+        PfcEvent(timestamp_ns=1, node_id=256, node_type=1,
+                 if_index=34, event_type=2, q_index=3),
     ]
     ecn = [
         EcnMarkEvent(timestamp_ns=2, switch_id=256, if_index=17, q_index=3),
@@ -248,93 +291,107 @@ def test_aggregate_counters_combines_pfc_and_ecn_on_same_switch_different_ports(
     ]
     result = aggregate_counters(pfc, ecn)
     assert len(result["ports"]) == 2
-
     by_port = {r["if_index"]: r for r in result["ports"]}
-    assert by_port[17]["ecn_marks_sent"] == 2
-    assert by_port[17]["pfc_pause_sent"] == 0
-    assert by_port[34]["pfc_pause_sent"] == 1
-    assert by_port[34]["ecn_marks_sent"] == 0
+    assert by_port[17]["queues"][3]["ecn_marks_sent"] == 2
+    assert by_port[17]["queues"][3]["pfc_pause_sent"] == 0
+    assert by_port[34]["queues"][3]["pfc_pause_sent"] == 1
+    assert by_port[34]["queues"][3]["ecn_marks_sent"] == 0
 
 
-def test_aggregate_counters_every_port_record_has_every_field():
-    """The asymmetry diagnostic depends on the agent seeing both classes
-    in *every* record. Loop over every port record and assert that all
-    five counter fields are present and integer-valued, regardless of
-    which classes the events actually populated."""
-    pfc = [PfcEvent(timestamp_ns=1, node_id=200, node_type=0, if_index=1, event_type=1)]
+def test_aggregate_counters_every_port_has_8_queues_with_every_field():
+    """Structural leak guard, SONiC-shape edition. Every port carries
+    a queues array of length 8; every queue carries every counter
+    field; every value is an int (zero is data, not absence)."""
+    pfc = [PfcEvent(timestamp_ns=1, node_id=200, node_type=0,
+                    if_index=1, event_type=1, q_index=0)]
     ecn = [EcnMarkEvent(timestamp_ns=2, switch_id=300, if_index=5, q_index=0)]
     result = aggregate_counters(pfc, ecn)
-    required_fields = {
-        "pfc_pause_sent", "pfc_pause_rcvd",
-        "pfc_resume_sent", "pfc_resume_rcvd",
-        "ecn_marks_sent",
-    }
     for rec in result["ports"]:
-        assert required_fields.issubset(rec.keys())
-        for f in required_fields:
-            assert isinstance(rec[f], int)
+        assert PORT_TOP_LEVEL_FIELDS.issubset(rec.keys())
+        assert len(rec["queues"]) == 8
+        for q_index, q in enumerate(rec["queues"]):
+            assert q["q_index"] == q_index
+            assert QUEUE_FIELDS.issubset(q.keys()), (
+                f"queue {q_index} missing fields: "
+                f"{QUEUE_FIELDS - q.keys()}"
+            )
+            for f in QUEUE_FIELDS:
+                assert isinstance(q[f], int)
 
 
 def test_aggregate_counters_breaks_pfc_event_types_into_correct_buckets():
     """Substrate's get_pfc encodes the event type as 0..3:
-    0=resume_rcvd, 1=pause_rcvd, 2=pause_sent, 3=resume_sent."""
+    0=resume_rcvd, 1=pause_rcvd, 2=pause_sent, 3=resume_sent. Each
+    lands in its own field of the per-queue record."""
     pfc = [
-        PfcEvent(timestamp_ns=1, node_id=10, node_type=0, if_index=2, event_type=0),
-        PfcEvent(timestamp_ns=2, node_id=10, node_type=0, if_index=2, event_type=1),
-        PfcEvent(timestamp_ns=3, node_id=10, node_type=0, if_index=2, event_type=2),
-        PfcEvent(timestamp_ns=4, node_id=10, node_type=0, if_index=2, event_type=3),
+        PfcEvent(timestamp_ns=1, node_id=10, node_type=0,
+                 if_index=2, event_type=0, q_index=3),
+        PfcEvent(timestamp_ns=2, node_id=10, node_type=0,
+                 if_index=2, event_type=1, q_index=3),
+        PfcEvent(timestamp_ns=3, node_id=10, node_type=0,
+                 if_index=2, event_type=2, q_index=3),
+        PfcEvent(timestamp_ns=4, node_id=10, node_type=0,
+                 if_index=2, event_type=3, q_index=3),
     ]
-    rec = aggregate_counters(pfc, [])["ports"][0]
-    assert rec["pfc_resume_rcvd"] == 1
-    assert rec["pfc_pause_rcvd"] == 1
-    assert rec["pfc_pause_sent"] == 1
-    assert rec["pfc_resume_sent"] == 1
+    q = aggregate_counters(pfc, [])["ports"][0]["queues"][3]
+    assert q["pfc_resume_rcvd"] == 1
+    assert q["pfc_pause_rcvd"] == 1
+    assert q["pfc_pause_sent"] == 1
+    assert q["pfc_resume_sent"] == 1
 
 
 def test_aggregate_counters_ports_sorted_stably_by_node_then_port():
     """Port records emit in (node_id, if_index) order so trace renderings
     and diffs are reproducible."""
     pfc = [
-        PfcEvent(timestamp_ns=1, node_id=300, node_type=1, if_index=4, event_type=2),
-        PfcEvent(timestamp_ns=2, node_id=200, node_type=1, if_index=8, event_type=2),
-        PfcEvent(timestamp_ns=3, node_id=200, node_type=1, if_index=4, event_type=2),
+        PfcEvent(timestamp_ns=1, node_id=300, node_type=1,
+                 if_index=4, event_type=2, q_index=3),
+        PfcEvent(timestamp_ns=2, node_id=200, node_type=1,
+                 if_index=8, event_type=2, q_index=3),
+        PfcEvent(timestamp_ns=3, node_id=200, node_type=1,
+                 if_index=4, event_type=2, q_index=3),
     ]
-    keys = [(r["node_id"], r["if_index"]) for r in aggregate_counters(pfc, [])["ports"]]
+    keys = [(r["node_id"], r["if_index"])
+            for r in aggregate_counters(pfc, [])["ports"]]
     assert keys == [(200, 4), (200, 8), (300, 4)]
 
 
 # -------------------------------------------------------- counters.txt parser
 
 def test_parse_counters_file_parses_well_formed_rows(tmp_path):
+    """Ten-column per-(switch, port, queue) format with rx/tx
+    packets+bytes, drops, egress qlen peak, and ingress PG watermark."""
     counters = tmp_path / "counters.txt"
     counters.write_text(
         textwrap.dedent(
             """\
-            128 1 67717 5959096 67717 5959096 0 0
-            128 17 198108 215937720 198106 215935540 5 237620
+            128 1 3 67717 5959096 67717 5959096 0 0 3270
+            128 17 3 198108 215937720 198106 215935540 5 237620 0
             """
         )
     )
     rows = parse_counters_file(counters)
     assert len(rows) == 2
     assert rows[0] == CounterRollupRow(
-        switch_id=128, if_index=1,
+        switch_id=128, if_index=1, q_index=3,
         rx_packets=67717, rx_bytes=5959096,
         tx_packets=67717, tx_bytes=5959096,
-        drops=0, qlen_peak_bytes=0,
+        dropped_packets=0, qlen_peak_bytes=0,
+        pg_watermark_bytes=3270,
     )
-    assert rows[1].drops == 5
+    assert rows[1].dropped_packets == 5
     assert rows[1].qlen_peak_bytes == 237620
+    assert rows[1].pg_watermark_bytes == 0
 
 
 def test_parse_counters_file_skips_malformed_lines(tmp_path):
     counters = tmp_path / "counters.txt"
     counters.write_text(
         "header that should be ignored\n"
-        "128 1 67717 5959096 67717 5959096 0 0\n"
+        "128 1 3 67717 5959096 67717 5959096 0 0 3270\n"
         "256 4 too few\n"
         "256 5 1 2 3 4 5 6 7 8 9 too many\n"
-        "256 6 abc def 1 2 3 4 5 6\n"
+        "256 6 abc def 1 2 3 4 5 6 7\n"
     )
     rows = parse_counters_file(counters)
     assert len(rows) == 1
@@ -347,171 +404,194 @@ def test_parse_counters_file_empty_file_returns_empty_list(tmp_path):
     assert parse_counters_file(counters) == []
 
 
-# ------------------------------------------ aggregator: volumetric + topology
+# ------------------------------------------ aggregator: rollup + topology + state
 
-def test_aggregate_counters_volumetric_fields_default_zero_without_rollup():
-    """Stage 5a backward-compat: callers passing only PFC + ECN events get
-    the volumetric fields zero-filled. The structural-leak guarantee
-    extends to the new counter classes."""
-    pfc = [PfcEvent(timestamp_ns=1, node_id=128, node_type=1, if_index=2, event_type=2)]
-    rec = aggregate_counters(pfc, [])["ports"][0]
-    for f in ("rx_packets", "rx_bytes", "tx_packets", "tx_bytes",
-              "drops", "qlen_peak_bytes"):
-        assert rec[f] == 0
-
-
-def test_aggregate_counters_rollup_populates_volumetric_fields():
+def test_aggregate_counters_rollup_populates_per_queue_volumetric():
+    """A counters.txt rollup row populates the matching (port, queue)
+    record's rx/tx/dropped/qlen_peak/pg_watermark fields."""
     rollup = [
         CounterRollupRow(
-            switch_id=128, if_index=17,
+            switch_id=128, if_index=17, q_index=3,
             rx_packets=198108, rx_bytes=215937720,
             tx_packets=198106, tx_bytes=215935540,
-            drops=5, qlen_peak_bytes=237620,
+            dropped_packets=5, qlen_peak_bytes=237620,
+            pg_watermark_bytes=0,
         ),
     ]
     rec = aggregate_counters([], [], rollup_rows=rollup)["ports"][0]
     assert rec["node_id"] == 128
     assert rec["if_index"] == 17
-    assert rec["rx_packets"] == 198108
-    assert rec["rx_bytes"] == 215937720
-    assert rec["tx_packets"] == 198106
-    assert rec["drops"] == 5
-    assert rec["qlen_peak_bytes"] == 237620
-    # PFC and ECN remain zero because no events fed in
-    assert rec["pfc_pause_sent"] == 0
-    assert rec["ecn_marks_sent"] == 0
+    q = rec["queues"][3]
+    assert q["rx_packets"] == 198108
+    assert q["rx_bytes"] == 215937720
+    assert q["tx_packets"] == 198106
+    assert q["dropped_packets"] == 5
+    assert q["qlen_peak_bytes"] == 237620
+    assert q["pg_watermark_bytes"] == 0
+    # PFC and ECN remain zero on every queue because no events fed in.
+    for queue in rec["queues"]:
+        assert queue["pfc_pause_sent"] == 0
+        assert queue["ecn_marks_sent"] == 0
 
 
-def test_aggregate_counters_rollup_and_events_combine_on_same_port():
-    """The agent reads asymmetry across PFC, ECN, and volumetric on the
-    same record. When all three sources reference the same (node_id,
-    if_index), the aggregator must coalesce — not duplicate — into one
+def test_aggregate_counters_rollup_and_events_combine_on_same_port_queue():
+    """Triple-source coalesce: PFC + ECN events + counters rollup all
+    referencing the same (switch, port, queue) merge into one queue
     record carrying every counter class."""
     pfc = [
-        PfcEvent(timestamp_ns=1, node_id=128, node_type=1, if_index=17, event_type=2),
-        PfcEvent(timestamp_ns=2, node_id=128, node_type=1, if_index=17, event_type=2),
+        PfcEvent(timestamp_ns=1, node_id=128, node_type=1,
+                 if_index=17, event_type=2, q_index=3),
+        PfcEvent(timestamp_ns=2, node_id=128, node_type=1,
+                 if_index=17, event_type=2, q_index=3),
     ]
     ecn = [EcnMarkEvent(timestamp_ns=3, switch_id=128, if_index=17, q_index=3)]
     rollup = [
         CounterRollupRow(
-            switch_id=128, if_index=17,
+            switch_id=128, if_index=17, q_index=3,
             rx_packets=1000, rx_bytes=1_000_000,
             tx_packets=999, tx_bytes=999_000,
-            drops=0, qlen_peak_bytes=42_000,
+            dropped_packets=0, qlen_peak_bytes=42_000,
+            pg_watermark_bytes=8_000,
         ),
     ]
     result = aggregate_counters(pfc, ecn, rollup_rows=rollup)
     assert len(result["ports"]) == 1
-    rec = result["ports"][0]
-    assert rec["pfc_pause_sent"] == 2
-    assert rec["ecn_marks_sent"] == 1
-    assert rec["tx_packets"] == 999
-    assert rec["qlen_peak_bytes"] == 42_000
+    q = result["ports"][0]["queues"][3]
+    assert q["pfc_pause_sent"] == 2
+    assert q["ecn_marks_sent"] == 1
+    assert q["tx_packets"] == 999
+    assert q["qlen_peak_bytes"] == 42_000
+    assert q["pg_watermark_bytes"] == 8_000
 
 
-def test_aggregate_counters_topology_zero_fills_all_switch_ports():
-    """Production-shape: a topology with N switch ports must produce N
-    records, even when only one port saw activity. Storm-vs-baseline
-    detection requires the agent to find the anomalous port among
-    zero-filled siblings — not against a 2-row payload that pre-aggregates
-    asymmetry by omission. (Stage 5a-realistic, 2026-05-09.)"""
+def test_aggregate_counters_topology_zero_fills_all_switch_ports_with_8_queues():
+    """Production-shape: every port the topology declares appears in the
+    output with all 8 queues zero-filled. The agent has to find the
+    storm port AND the storm queue among many enumerated zeroes —
+    asymmetry is *relative*, not absolute."""
     topology = Topology(leaves=2, spines=1, hosts_per_leaf=4)
     # Leaf has hosts_per_leaf + spines = 5 ports each (×2 leaves = 10).
-    # Spine has leaves = 2 ports (×1 spine = 2). Total = 12.
+    # Spine has leaves = 2 ports (×1 spine = 2). Total = 12 ports.
     rollup = [
         CounterRollupRow(
-            switch_id=topology.first_leaf_id(), if_index=3,
+            switch_id=topology.first_leaf_id(), if_index=3, q_index=3,
             rx_packets=99, rx_bytes=99_000,
             tx_packets=99, tx_bytes=99_000,
-            drops=0, qlen_peak_bytes=12_345,
+            dropped_packets=0, qlen_peak_bytes=12_345,
+            pg_watermark_bytes=4_000,
         ),
     ]
     result = aggregate_counters([], [], rollup_rows=rollup, topology=topology)
     assert len(result["ports"]) == 12
-    # The one storm port is preserved with its volumetric values intact.
-    storm = next(
+    # Every port has 8 queues regardless of activity
+    for rec in result["ports"]:
+        assert len(rec["queues"]) == 8
+    # The one storm queue is preserved with its values intact
+    storm_port = next(
         r for r in result["ports"]
         if r["node_id"] == topology.first_leaf_id() and r["if_index"] == 3
     )
-    assert storm["rx_packets"] == 99
-    assert storm["qlen_peak_bytes"] == 12_345
-    # Every other port reports zero across the volumetric fields.
-    quiet = [r for r in result["ports"] if not (
-        r["node_id"] == topology.first_leaf_id() and r["if_index"] == 3
-    )]
-    assert len(quiet) == 11
-    for r in quiet:
-        assert r["rx_packets"] == 0
-        assert r["tx_bytes"] == 0
-        assert r["drops"] == 0
-        assert r["qlen_peak_bytes"] == 0
+    assert storm_port["queues"][3]["rx_packets"] == 99
+    assert storm_port["queues"][3]["qlen_peak_bytes"] == 12_345
+    assert storm_port["queues"][3]["pg_watermark_bytes"] == 4_000
+    # Other queues on the storm port are zero
+    for q in (0, 1, 2, 4, 5, 6, 7):
+        assert storm_port["queues"][q]["rx_packets"] == 0
+    # Other ports report zero across all queues
+    quiet_ports = [r for r in result["ports"]
+                   if not (r["node_id"] == topology.first_leaf_id() and r["if_index"] == 3)]
+    assert len(quiet_ports) == 11
+    for r in quiet_ports:
+        for q in r["queues"]:
+            assert q["rx_packets"] == 0
+            assert q["tx_bytes"] == 0
+            assert q["dropped_packets"] == 0
+            assert q["qlen_peak_bytes"] == 0
+            assert q["pg_watermark_bytes"] == 0
 
 
 def test_aggregate_counters_topology_zero_fill_includes_spines():
     """Spine switches must appear in the enumerated port set with one
-    if_index per leaf they connect to. Otherwise the agent could miss
-    asymmetry that surfaces only on spine uplinks."""
+    if_index per leaf they connect to, all with 8 zero-filled queues."""
     topology = Topology(leaves=4, spines=2, hosts_per_leaf=2)
     result = aggregate_counters([], [], topology=topology)
     spine_ids = {topology.first_spine_id(), topology.first_spine_id() + 1}
     spine_ports = [r for r in result["ports"] if r["node_id"] in spine_ids]
-    assert len(spine_ports) == 2 * topology.leaves  # 2 spines × 4 ports
-    # Each spine port appears with if_index 1..leaves
+    assert len(spine_ports) == 2 * topology.leaves
     by_spine = {}
     for r in spine_ports:
         by_spine.setdefault(r["node_id"], []).append(r["if_index"])
     for spine_id, indices in by_spine.items():
         assert sorted(indices) == [1, 2, 3, 4]
+    for r in spine_ports:
+        assert len(r["queues"]) == 8
 
 
 def test_aggregate_counters_topology_rollup_outside_topology_still_emitted():
-    """If the rollup references a (switch_id, if_index) that the topology
-    enumeration doesn't include, the row is still emitted as a record —
-    substrate data is not silently dropped."""
+    """If the rollup references a (switch_id, if_index) that the
+    topology enumeration doesn't include, the row is still emitted as
+    a record — substrate data is not silently dropped."""
     topology = Topology(leaves=1, spines=1, hosts_per_leaf=1)
     # leaf=2 ports, spine=1 port. Total enumerated = 3.
     rollup = [
         CounterRollupRow(
-            switch_id=999, if_index=42,  # node_id outside topology
+            switch_id=999, if_index=42, q_index=3,
             rx_packets=7, rx_bytes=7_000,
             tx_packets=7, tx_bytes=7_000,
-            drops=0, qlen_peak_bytes=0,
+            dropped_packets=0, qlen_peak_bytes=0,
+            pg_watermark_bytes=0,
         ),
     ]
     result = aggregate_counters([], [], rollup_rows=rollup, topology=topology)
-    assert len(result["ports"]) == 4  # 3 topology ports + 1 unexpected
+    assert len(result["ports"]) == 4
     extra = [r for r in result["ports"] if r["node_id"] == 999]
-    assert len(extra) == 1 and extra[0]["rx_packets"] == 7
+    assert len(extra) == 1
+    assert extra[0]["queues"][3]["rx_packets"] == 7
 
 
-def test_aggregate_counters_every_port_record_has_every_counter_class():
-    """Asymmetry diagnostic depends on the agent seeing PFC + ECN +
-    volumetric in *every* record. With the new volumetric fields added in
-    Stage 5a-realistic, the structural enforcement extends to all 11
-    counter fields, regardless of which classes happened to populate."""
-    topology = Topology(leaves=1, spines=1, hosts_per_leaf=1)
-    pfc = [PfcEvent(timestamp_ns=1, node_id=200, node_type=0, if_index=1, event_type=1)]
-    ecn = [EcnMarkEvent(timestamp_ns=2, switch_id=300, if_index=5, q_index=0)]
-    rollup = [
-        CounterRollupRow(
-            switch_id=300, if_index=5,
-            rx_packets=1, rx_bytes=1, tx_packets=1, tx_bytes=1,
-            drops=0, qlen_peak_bytes=0,
-        ),
-    ]
-    result = aggregate_counters(pfc, ecn, rollup_rows=rollup, topology=topology)
-    required = {
-        "pfc_pause_sent", "pfc_pause_rcvd",
-        "pfc_resume_sent", "pfc_resume_rcvd",
-        "ecn_marks_sent",
-        "rx_packets", "rx_bytes",
-        "tx_packets", "tx_bytes",
-        "drops", "qlen_peak_bytes",
-    }
+def test_aggregate_counters_topology_populates_interface_state():
+    """Per-port interface state matches SONiC's `show interfaces status`:
+    oper_status, admin_status, speed_bps, mtu_bytes. Speeds come from
+    the Topology (host_link_bps for downlinks, spine_link_bps for
+    uplinks); MTU is the substrate's fixed PACKET_PAYLOAD_SIZE."""
+    topology = Topology(
+        leaves=2, spines=1, hosts_per_leaf=2,
+        host_link_bps=25_000_000_000,
+        spine_link_bps=100_000_000_000,
+    )
+    result = aggregate_counters([], [], topology=topology)
     for rec in result["ports"]:
-        assert required.issubset(rec.keys())
-        for f in required:
-            assert isinstance(rec[f], int)
+        assert rec["oper_status"] == "up"
+        assert rec["admin_status"] == "up"
+        assert rec["mtu_bytes"] == 1000  # SUBSTRATE_FIXED_MTU_BYTES
+        assert rec["speed_bps"] in {25_000_000_000, 100_000_000_000}
+    # Leaf 0's downlinks (host-facing if_index 1..hosts_per_leaf) are
+    # 25Gbps; its uplinks (if_index hosts_per_leaf+1..hosts_per_leaf+spines)
+    # are 100Gbps. Spine downlinks are also 100Gbps.
+    leaf0 = topology.first_leaf_id()
+    spine0 = topology.first_spine_id()
+    leaf0_ports = sorted(
+        (r for r in result["ports"] if r["node_id"] == leaf0),
+        key=lambda r: r["if_index"],
+    )
+    assert leaf0_ports[0]["speed_bps"] == 25_000_000_000  # host downlink
+    assert leaf0_ports[1]["speed_bps"] == 25_000_000_000  # host downlink
+    assert leaf0_ports[2]["speed_bps"] == 100_000_000_000  # spine uplink
+    spine0_ports = [r for r in result["ports"] if r["node_id"] == spine0]
+    for r in spine0_ports:
+        assert r["speed_bps"] == 100_000_000_000
+
+
+def test_aggregate_counters_pfc_event_with_invalid_q_index_is_ignored():
+    """PFC event with q_index outside [0, 7] is dropped silently rather
+    than indexing into a nonexistent queue. Prevents one malformed
+    substrate row from corrupting the response shape."""
+    pfc = [
+        PfcEvent(timestamp_ns=1, node_id=10, node_type=0,
+                 if_index=2, event_type=2, q_index=99),
+    ]
+    result = aggregate_counters(pfc, [])
+    assert result["ports"] == []  # no port created from invalid q_index
 
 
 # ----------------------------------------------------------------- driver api

@@ -1,5 +1,5 @@
 # Doppelgänger NS-3 substrate: provandal/ns3-datacenter (fork of inet-tub/ns3-datacenter, NS-3.39)
-# Pinned at SHA 640ea8d
+# Pinned at SHA 5f2ff4f
 #   - 4dd55d8: upstream master HEAD validated by 2026-05-02 fork spike
 #   - 6aeea1c: top-level LICENSE clarification (GPL-2.0)
 #   - bff3b9c: pfc.txt / mix.tr / qlen.txt trace-output gaps fixed (2026-05-05)
@@ -7,6 +7,10 @@
 #   - da095c7: ECN-mark trace source + ecn.txt counter emission (2026-05-08, Stage 5a)
 #   - 640ea8d: per-port counter rollup (counters.txt) — rx/tx bytes+packets,
 #              drops, qlen_peak — Stage 5a-realistic, 2026-05-09
+#   - 5f2ff4f: SONiC-shaped expansion — per-priority PFC trace (QbbPfcQ),
+#              counters.txt becomes per-(switch, port, queue) with
+#              pg_watermark_bytes; pfc.txt extends to 6 columns (qIndex)
+#              — Stage 5a-realistic SONiC, 2026-05-10
 #
 # To build:
 #   docker build -t doppelganger-substrate -f docker/substrate.Dockerfile .
@@ -77,7 +81,7 @@ WORKDIR /opt
 # requires re-validation against the failing scenarios.
 RUN git clone https://github.com/provandal/ns3-datacenter.git \
  && cd ns3-datacenter \
- && git checkout 640ea8d4b57708a472d6d7e25f3aaedc29d6cdbd
+ && git checkout 5f2ff4fc3cbe82b79e723260db6f426d554abd15
 WORKDIR /opt/ns3-datacenter
 
 # The repo structure is `simulator/ns-3.39/` per its README

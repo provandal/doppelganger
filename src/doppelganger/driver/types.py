@@ -76,6 +76,9 @@ class PfcEvent:
     """One row from pfc.txt — per-PFC-frame event at a QbbNetDevice.
 
     `event_type`: 0=resume_rcvd, 1=pause_rcvd, 2=pause_sent, 3=resume_sent.
+    `q_index`: 802.1p priority of the PFC frame (0-7). Added 2026-05-10
+    for SONiC-shaped per-priority PFC reporting; substrate fork emits
+    via the new ``QbbPfcQ`` trace source.
     """
 
     timestamp_ns: int
@@ -83,6 +86,7 @@ class PfcEvent:
     node_type: int
     if_index: int
     event_type: int
+    q_index: int
 
     @property
     def is_pause(self) -> bool:
@@ -101,21 +105,40 @@ class EcnMarkEvent:
 
 @dataclass(frozen=True)
 class CounterRollupRow:
-    """One row from counters.txt — end-of-sim per-port volumetric counters.
+    """One row from counters.txt — end-of-sim per-(switch, port, queue) counters.
 
-    Distinct shape from PfcEvent / EcnMarkEvent: those are per-event streams
-    (one row per pause / per CE-stamp), this is a single end-of-sim snapshot
-    of cumulative interface counters mirroring how real switches expose port
-    state via SNMP. Substrate emits one row per ``(switch_id, if_index)`` that
-    saw any activity during the run; ports with no activity are absent from
-    the file and zero-filled by the aggregator from the scenario topology.
+    Per-queue dimension (q_index 0-7) added 2026-05-10 for SONiC alignment:
+    matches the per-priority breakdown SONiC operators see via
+    ``show queue counters`` / ``show queue watermark`` /
+    ``show priority-group watermark``. Substrate emits one row per
+    (switch, port, queue) that saw any activity OR any non-zero watermark
+    sample; queues with no activity are absent from the file and
+    zero-filled by the aggregator from the scenario topology.
+
+    Distinct shape from PfcEvent / EcnMarkEvent: those are per-event
+    streams; this is the SNMP-style cumulative snapshot real switches
+    expose via interface counters.
+
+    Fields:
+        switch_id, if_index, q_index: identifying triple.
+        rx_packets, rx_bytes: enqueued into this queue (counts what
+            arrived from the routing stage destined for this priority).
+        tx_packets, tx_bytes: dequeued from this queue.
+        dropped_packets: admission-control failures into this queue.
+        qlen_peak_bytes: per-queue egress depth peak (sampled
+            periodically, mirrors SAI ``SAI_QUEUE_STAT_WATERMARK_BYTES``).
+        pg_watermark_bytes: per-priority-group ingress occupancy peak
+            (sampled periodically, mirrors SAI
+            ``SAI_INGRESS_PRIORITY_GROUP_STAT_XOFF_ROOM_WATERMARK_BYTES``).
     """
 
     switch_id: int
     if_index: int
+    q_index: int
     rx_packets: int
     rx_bytes: int
     tx_packets: int
     tx_bytes: int
-    drops: int
+    dropped_packets: int
     qlen_peak_bytes: int
+    pg_watermark_bytes: int

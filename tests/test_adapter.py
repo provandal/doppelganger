@@ -16,6 +16,8 @@ where a real client exists to issue requests.
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 from doppelganger.adapter import (
@@ -271,6 +273,122 @@ def test_get_topology_payload_does_not_leak_eval_ground_truth():
                     f"{name} payload field {key!r} == scenario name; "
                     f"likely leaks the answer key"
                 )
+
+
+# ----------------------------------------------- response-shape leak guards
+
+
+def _walk_strings(obj):
+    """Yield every string value reachable in a nested data structure."""
+    if isinstance(obj, str):
+        yield obj
+    elif isinstance(obj, dict):
+        for v in obj.values():
+            yield from _walk_strings(v)
+    elif isinstance(obj, (list, tuple)):
+        for v in obj:
+            yield from _walk_strings(v)
+
+
+def test_get_fabric_counters_response_does_not_leak_scenario_name():
+    """Stage 5a-realistic closing-test bug (trace
+    3ef43138e182c9c84d41f35cc9a353b0, 2026-05-09): the fabric counters
+    response contained "scenario": "pfc-storm-16h", which the agent
+    quoted directly as "Scenario tag in the counter dump literally
+    reads pfc-storm-16h." The response data — including any
+    auto-generated run_id — must contain no string equal to or
+    containing the substrate scenario name.
+    """
+    from doppelganger.adapter.server import build_server
+    from doppelganger.driver.simulation import Driver
+
+    # Non-runnable Driver — we don't actually exercise the substrate;
+    # we exercise only the part of the path that builds the response
+    # for an in-process scenario lookup. The leaked field was always
+    # the data-side scenario string, never the substrate output.
+    driver = Driver(substrate_image="bogus-image")
+    server = build_server(driver=driver)
+    tool = server._tool_manager._tools["get_fabric_counters"]  # type: ignore[attr-defined]
+    # We cannot call tool.fn() because it triggers a real subprocess;
+    # instead, assert the docstring and the data-key set we ship for
+    # any future change to this surface.
+    assert tool.fn.__doc__, "get_fabric_counters needs a docstring"
+    import ast
+    import inspect
+    import textwrap
+    src = textwrap.dedent(inspect.getsource(tool.fn))
+    tree = ast.parse(src)
+    # Find every dict literal in the response and check none of its
+    # static keys is "scenario" or "trace_dir".
+    leaky_keys = {"scenario", "trace_dir"}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Dict):
+            for k in node.keys:
+                if isinstance(k, ast.Constant) and k.value in leaky_keys:
+                    raise AssertionError(
+                        f"get_fabric_counters response builds a dict with "
+                        f"key {k.value!r} — this surfaces the scenario name "
+                        f"to the agent. Drop the field."
+                    )
+
+
+def test_run_scenario_response_does_not_leak_scenario_name():
+    """Same leak guard as get_fabric_counters but for run_scenario.
+    Both tools previously emitted "scenario" + "trace_dir" data fields;
+    both must drop them so auto-generated run_ids (UUID-prefixed) are
+    the only run-identifying string the agent sees.
+    """
+    from doppelganger.adapter.server import build_server
+    from doppelganger.driver.simulation import Driver
+
+    driver = Driver(substrate_image="bogus-image")
+    server = build_server(driver=driver)
+    tool = server._tool_manager._tools["run_scenario"]  # type: ignore[attr-defined]
+    import ast
+    import inspect
+    import textwrap
+    src = textwrap.dedent(inspect.getsource(tool.fn))
+    tree = ast.parse(src)
+    leaky_keys = {"scenario", "trace_dir"}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Dict):
+            for k in node.keys:
+                if isinstance(k, ast.Constant) and k.value in leaky_keys:
+                    raise AssertionError(
+                        f"run_scenario response builds a dict with "
+                        f"key {k.value!r} — leaks scenario name to agent."
+                    )
+
+
+def test_driver_auto_run_id_does_not_embed_scenario_name(tmp_path):
+    """Driver.run_scenario with run_id=None must auto-generate an ID
+    that does NOT contain the scenario name. The previous pattern was
+    f"{scenario_name}-{int(time.time())}" — so the generated trace
+    directory name read e.g. "pfc-storm-16h-1746719876", and adapter
+    response surfaces that to the agent.
+    """
+    from doppelganger.driver.simulation import Driver
+    from doppelganger.scenarios.builtin import pfc_storm
+
+    driver = Driver(substrate_image="bogus-image", traces_root=tmp_path)
+    scenario = pfc_storm()  # name is "pfc-storm-16h"
+
+    # Exercise the resolver via the private prep method to avoid
+    # spinning a subprocess.
+    _name, _cmd, _cfg, trace_dir = driver._prepare_run(  # type: ignore[attr-defined]
+        scenario, run_id=None,
+    )
+    assert "pfc-storm" not in trace_dir.name, (
+        f"auto-generated run_id {trace_dir.name!r} contains scenario "
+        f"name; this is the leak vector"
+    )
+
+    _name, _cmd, _cfg, trace_dir = driver._prepare_run(  # type: ignore[attr-defined]
+        "spike-burst", run_id=None,
+    )
+    assert "spike-burst" not in trace_dir.name, (
+        f"auto-generated run_id {trace_dir.name!r} contains 'spike-burst'"
+    )
 
 
 # ---------------------------------------------- get_fabric_counters end-to-end (gated)

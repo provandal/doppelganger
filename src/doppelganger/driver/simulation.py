@@ -29,6 +29,7 @@ from __future__ import annotations
 import shutil
 import subprocess
 import time
+import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Union
@@ -183,7 +184,13 @@ class Driver:
                     f"Known: {sorted(_BUILTIN_SCENARIOS)}"
                 )
             scenario_name = scenario
-            run_id = run_id or f"{scenario_name}-{int(time.time())}"
+            # Auto-generated run_id MUST NOT embed scenario_name — the
+            # adapter surfaces run_id (and trace_dir.name) on tool
+            # responses, so any string the agent sees must not leak the
+            # answer key. Erik flagged the leak in the Stage 5a-realistic
+            # closing-test response (2026-05-09): the agent literally
+            # quoted "Scenario tag in the counter dump reads pfc-storm-16h."
+            run_id = run_id or f"run-{uuid.uuid4().hex[:12]}"
             trace_dir = self.traces_root / run_id
             trace_dir.mkdir(parents=True, exist_ok=True)
             return (
@@ -195,7 +202,8 @@ class Driver:
 
         if isinstance(scenario, Scenario):
             scenario_name = scenario.name
-            run_id = run_id or f"{scenario_name}-{int(time.time())}"
+            # See note above re: scenario-name leak via run_id / trace_dir.
+            run_id = run_id or f"run-{uuid.uuid4().hex[:12]}"
             trace_dir = self.traces_root / run_id
             trace_dir.mkdir(parents=True, exist_ok=True)
 

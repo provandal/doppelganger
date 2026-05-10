@@ -335,15 +335,18 @@ def build_server(
             )
 
         summary = summarize_run(result.flows)
-        # NOTE: scenario name and trace_dir path are deliberately omitted
-        # from the response data. Both leak the substrate scenario name
-        # to the agent (Driver auto-generates run_id from scenario_name +
-        # timestamp; the adapter previously surfaced "scenario": "pfc-
-        # storm-16h" directly). Operator-side metadata still appears in
-        # the envelope's `source` field, which is not agent-facing.
+        # NOTE: the substrate scenario name is deliberately omitted from
+        # the response data — surfacing "scenario": "pfc-storm-16h"
+        # leaked the answer key on 2026-05-09. trace_dir IS exposed
+        # because the harness runner needs it to wire compare_runs
+        # against the same trace pair; the leak risk lives on the
+        # caller-controlled run_id (Driver auto-generates UUID prefixes
+        # so its trace_dir never embeds scenario names — callers
+        # generating their own run_ids must do the same).
         return envelope(
             {
                 "run_id": result.trace_dir.name,
+                "trace_dir": str(result.trace_dir),
                 "compiled_config_path": (
                     str(result.compiled_config_path)
                     if result.compiled_config_path else None
@@ -448,15 +451,18 @@ def build_server(
             pfc_events, ecn_events, rollup_rows, scenario_topology
         )
 
-        # NOTE: scenario name and trace_dir path deliberately omitted
-        # from the response data. The Stage 5a-realistic closing test
-        # (trace 3ef43138e182c9c84d41f35cc9a353b0, 2026-05-09) caught the
-        # agent literally quoting "Scenario tag in the counter dump reads
+        # NOTE: the substrate scenario name is deliberately omitted from
+        # the response data. The Stage 5a-realistic closing test (trace
+        # 3ef43138e182c9c84d41f35cc9a353b0, 2026-05-09) caught the agent
+        # literally quoting "Scenario tag in the counter dump reads
         # pfc-storm-16h" — the substrate scenario name was leaking via
-        # both the "scenario" field and the trace_dir path string.
+        # the "scenario" data field. trace_dir is exposed for harness
+        # plumbing; callers MUST generate UUID-style run_ids so the
+        # trace path itself doesn't carry scenario semantics.
         return envelope(
             {
                 "run_id": result.trace_dir.name,
+                "trace_dir": str(result.trace_dir),
                 "ports": aggregate["ports"],
             },
             source=f"driver.run_scenario({name!r})+counters_aggregate",

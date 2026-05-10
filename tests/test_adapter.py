@@ -320,7 +320,13 @@ def test_get_fabric_counters_response_does_not_leak_scenario_name():
     tree = ast.parse(src)
     # Find every dict literal in the response and check none of its
     # static keys is "scenario" or "trace_dir".
-    leaky_keys = {"scenario", "trace_dir"}
+    # `scenario` is banned because it's the literal scenario name
+    # (e.g. "pfc-storm-16h"). `trace_dir` is intentionally allowed —
+    # callers (HarnessIT runner) need it for compare_runs plumbing,
+    # and the path is non-leaky as long as run_ids are UUID-style
+    # (Driver auto-generates that pattern; HarnessIT runner does too
+    # since 2026-05-10).
+    leaky_keys = {"scenario"}
     for node in ast.walk(tree):
         if isinstance(node, ast.Dict):
             for k in node.keys:
@@ -349,7 +355,13 @@ def test_run_scenario_response_does_not_leak_scenario_name():
     import textwrap
     src = textwrap.dedent(inspect.getsource(tool.fn))
     tree = ast.parse(src)
-    leaky_keys = {"scenario", "trace_dir"}
+    # `scenario` is banned because it's the literal scenario name
+    # (e.g. "pfc-storm-16h"). `trace_dir` is intentionally allowed —
+    # callers (HarnessIT runner) need it for compare_runs plumbing,
+    # and the path is non-leaky as long as run_ids are UUID-style
+    # (Driver auto-generates that pattern; HarnessIT runner does too
+    # since 2026-05-10).
+    leaky_keys = {"scenario"}
     for node in ast.walk(tree):
         if isinstance(node, ast.Dict):
             for k in node.keys:

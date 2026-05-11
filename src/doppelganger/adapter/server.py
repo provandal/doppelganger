@@ -471,6 +471,63 @@ def build_server(
         )
 
     @server.tool()
+    def get_flow_records(name: str, run_id: str | None = None) -> dict[str, Any]:
+        """Run a scenario and return per-flow completion records + summary.
+
+        Each flow record carries its 5-tuple (sip, dip, sport, dport),
+        completion status, actual size in bytes, start time in ns,
+        measured FCT in ns, the standalone (uncongested) FCT in ns, and
+        the slowdown ratio. The substrate's ``fct.txt`` only emits rows
+        for *completed* flows per Doppelgänger v0.2 §4.2; surfacing
+        incomplete flows (the eval-discipline finding from the 2026-05-02
+        spike) requires substrate-side cross-referencing not yet shipped.
+        Until that lands, this tool surfaces the completed set; agents
+        diagnose flow-loss faults primarily from FCT-distribution shape
+        rather than from incomplete-flow records.
+
+        The ``summary`` field repeats the counts-by-status + FCT
+        percentile distribution that ``run_scenario`` returns; surfacing
+        it here lets the agent reason about distribution shape without
+        iterating over the full ``flows`` array. ``summary.completed``
+        and ``summary.fct`` are the load-bearing fields for tail-
+        latency and flow-completion analysis.
+
+        Parameters
+        ----------
+        name:
+            One of the names returned by ``list_scenarios``.
+        run_id:
+            Optional run identifier (used as the trace-dir name). If
+            omitted, the Driver generates a UUID-prefixed one.
+
+        Returns the response envelope; ``data.flows`` is the per-flow
+        array, ``data.summary`` is the run-level summary.
+        """
+        if name == "spike-burst":
+            result = driver.run_scenario("spike-burst", run_id=run_id)
+        elif name in BUILTIN_SCENARIO_FACTORIES:
+            scenario = BUILTIN_SCENARIO_FACTORIES[name]()
+            result = driver.run_scenario(scenario, run_id=run_id)
+        else:
+            raise ValueError(
+                f"Unknown scenario {name!r}. "
+                f"Call list_scenarios for the available set."
+            )
+
+        summary = summarize_run(result.flows)
+        return envelope(
+            {
+                "run_id": result.trace_dir.name,
+                "trace_dir": str(result.trace_dir),
+                "summary": _summary_to_dict(summary),
+                "flows": [_flow_to_dict(f) for f in result.flows],
+            },
+            source=f"driver.run_scenario({name!r})+fct_parse",
+            observed_at_ns=None,
+            staleness_class="fresh",
+        )
+
+    @server.tool()
     def compare_runs(
         baseline_trace_dir: str,
         injected_trace_dir: str,

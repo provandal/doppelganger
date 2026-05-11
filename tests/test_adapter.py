@@ -91,7 +91,7 @@ def test_build_server_returns_fastmcp_instance():
 
 
 def test_server_registers_expected_tools():
-    """The server must expose list_scenarios, run_scenario, get_topology, compare_runs."""
+    """The server must expose all six adapter tools."""
     server = build_server()
     # FastMCP exposes registered tools via list_tools (async); we go through
     # the tool manager directly for sync access in tests.
@@ -100,6 +100,7 @@ def test_server_registers_expected_tools():
     assert "run_scenario" in tool_names
     assert "get_topology" in tool_names
     assert "get_fabric_counters" in tool_names
+    assert "get_flow_records" in tool_names
     assert "compare_runs" in tool_names
 
 
@@ -403,6 +404,54 @@ def test_driver_auto_run_id_does_not_embed_scenario_name(tmp_path):
     )
 
 
+# ---------------------------------------------- get_flow_records
+
+
+def test_get_flow_records_response_does_not_leak_scenario_name():
+    """Mirror of test_get_fabric_counters_response_does_not_leak_scenario_name
+    for the new get_flow_records tool. Same AST-walk: no dict literal in
+    the response builder may carry a `scenario` key. trace_dir is
+    allowed because (a) HarnessIT runner needs it for compare_runs
+    plumbing in paired scenarios, and (b) the path is non-leaky as long
+    as run_ids are UUID-style (Driver auto-generates that pattern).
+    """
+    from doppelganger.adapter.server import build_server
+    from doppelganger.driver.simulation import Driver
+
+    driver = Driver(substrate_image="bogus-image")
+    server = build_server(driver=driver)
+    tool = server._tool_manager._tools["get_flow_records"]  # type: ignore[attr-defined]
+    assert tool.fn.__doc__, "get_flow_records needs a docstring"
+    import ast
+    import inspect
+    import textwrap
+    src = textwrap.dedent(inspect.getsource(tool.fn))
+    tree = ast.parse(src)
+    leaky_keys = {"scenario"}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Dict):
+            for k in node.keys:
+                if isinstance(k, ast.Constant) and k.value in leaky_keys:
+                    raise AssertionError(
+                        f"get_flow_records response builds a dict with "
+                        f"key {k.value!r} — leaks scenario name to agent."
+                    )
+
+
+def test_get_flow_records_unknown_scenario_raises():
+    """The tool must raise ValueError for an unknown scenario name —
+    same error contract as the other run-the-scenario tools."""
+    from doppelganger.adapter.server import build_server
+    from doppelganger.driver.simulation import Driver
+
+    driver = Driver(substrate_image="bogus-image")
+    server = build_server(driver=driver)
+    tool = server._tool_manager._tools["get_flow_records"]  # type: ignore[attr-defined]
+
+    with pytest.raises(ValueError, match="Unknown scenario"):
+        tool.fn(name="no-such-scenario", run_id=None)
+
+
 # ---------------------------------------------- get_fabric_counters end-to-end (gated)
 
 @pytest.mark.requires_substrate
@@ -662,6 +711,54 @@ def test_get_fabric_counters_zero_fills_every_topology_switch_port(tmp_path):
         "enumeration; every queue had observed activity, suggesting "
         "the per-queue zero-fill collapsed"
     )
+
+
+# ---------------------------------------------- get_flow_records end-to-end (gated)
+
+@pytest.mark.requires_substrate
+def test_get_flow_records_microburst_returns_per_flow_array(tmp_path):
+    """Run the microburst scenario via the adapter and verify the
+    response envelope carries a non-empty `flows` array whose records
+    have the expected per-flow fields (sip/dip/sport/dport/status/
+    fct_ns/standalone_fct_ns/slowdown/actual_size_bytes/actual_start_ns)
+    plus a `summary` field with completed/incomplete/total counts and
+    FCT distribution.
+    """
+    from doppelganger.adapter.server import build_server
+    from doppelganger.driver.simulation import Driver
+
+    if not _substrate_image_present():
+        pytest.skip("doppelganger-substrate image not built locally")
+
+    driver = Driver(traces_root=tmp_path)
+    server = build_server(driver=driver)
+    tool = server._tool_manager._tools["get_flow_records"]  # type: ignore[attr-defined]
+
+    envelope = tool.fn(name="microburst", run_id=None)
+    assert envelope["confidence"] == "high"
+    data = envelope["data"]
+
+    assert isinstance(data["flows"], list)
+    assert len(data["flows"]) > 0
+    record = data["flows"][0]
+    expected_fields = {
+        "sip", "dip", "sport", "dport",
+        "status",
+        "actual_size_bytes", "actual_start_ns",
+        "fct_ns", "standalone_fct_ns",
+        "slowdown",
+    }
+    assert expected_fields.issubset(record.keys()), (
+        f"flow record missing fields: {expected_fields - record.keys()}"
+    )
+
+    summary = data["summary"]
+    assert summary["total"] == len(data["flows"])
+    assert summary["completed"] >= 0
+    assert summary["incomplete"] >= 0
+    assert summary["total"] == summary["completed"] + summary["incomplete"]
+    assert "fct" in summary
+    assert summary["fct"]["n"] >= 0
 
 
 def _substrate_image_present() -> bool:

@@ -44,6 +44,24 @@ from doppelganger.scenarios.types import Scenario
 DEFAULT_SUBSTRATE_IMAGE = "doppelganger-substrate"
 SUBSTRATE_NS3_DIR = "/opt/ns3-datacenter/simulator/ns-3.39"
 
+# 2026-05-12 (session-level run cache): files the current MCP tool surface
+# depends on. If all six are present in a trace_dir, a substrate run is
+# considered complete and run_scenario skips the Docker invocation —
+# returning a SimulationResult built from the existing files. This makes
+# the Driver idempotent on run_id and enables one substrate run to feed
+# all four agent-facing tools (get_topology, get_fabric_counters,
+# get_flow_records, get_host_counters) within an eval session. Optional
+# files like mix.tr and qlen.txt are not in this set; they don't gate
+# the tool surface.
+_REQUIRED_OUTPUT_FILES: tuple[str, ...] = (
+    "fct.txt",
+    "intended.txt",
+    "pfc.txt",
+    "ecn.txt",
+    "counters.txt",
+    "host_counters.txt",
+)
+
 # Built-in scenario shell commands. Each runs against the substrate's bundled
 # example config; trace files land in ``mix/`` relative to the NS-3 root.
 _BUILTIN_SCENARIOS: dict[str, str] = {
@@ -129,6 +147,26 @@ class Driver:
         scenario_name, sim_command, compiled_config_path, trace_dir = (
             self._prepare_run(scenario, run_id)
         )
+
+        # 2026-05-12 (session-level run cache): if trace_dir already holds
+        # the full set of substrate output files, build the result from
+        # disk and skip the substrate run. The check happens AFTER
+        # _prepare_run (which writes input config files — re-writing
+        # deterministic content is harmless) and BEFORE the image check
+        # (a cached run doesn't need Docker at all). Enables one substrate
+        # run per eval session to feed all agent-facing tools.
+        if self._has_complete_output(trace_dir):
+            fct_path = trace_dir / "fct.txt"
+            flows = parse_fct_file(fct_path) if fct_path.exists() else []
+            return SimulationResult(
+                scenario=scenario_name,
+                trace_dir=trace_dir,
+                flows=flows,
+                stdout="(cached: trace_dir already contains a complete run)",
+                stderr="",
+                wall_clock_seconds=0.0,
+                compiled_config_path=compiled_config_path,
+            )
 
         self._verify_image_present()
 
@@ -234,6 +272,20 @@ class Driver:
         raise DriverError(
             f"scenario must be a str or Scenario, got {type(scenario).__name__}"
         )
+
+    def _has_complete_output(self, trace_dir: Path) -> bool:
+        """Return True iff trace_dir holds the full set of substrate
+        output files required by the current MCP tool surface.
+
+        Used by ``run_scenario`` for session-level idempotency: a
+        complete trace_dir means the substrate has already produced a
+        consistent run for this run_id, and a re-run would (a) waste
+        compute and (b) for stochastic scenarios produce a *different*
+        run whose data wouldn't cross-correlate with the agent's other
+        tool calls. Returning True here lets the Driver short-circuit
+        to "parse the existing files" without invoking the substrate.
+        """
+        return all((trace_dir / f).exists() for f in _REQUIRED_OUTPUT_FILES)
 
     def _verify_image_present(self) -> None:
         if shutil.which("docker") is None:

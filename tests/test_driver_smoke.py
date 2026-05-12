@@ -662,6 +662,67 @@ def test_driver_does_not_pass_algorithm_for_builtin_string_scenario(tmp_path):
     assert "--algorithm" not in sim_cmd
 
 
+def test_driver_run_cache_short_circuits_when_outputs_already_present(tmp_path):
+    """Session-level run cache (2026-05-12): if all six substrate output
+    files already exist in trace_dir, run_scenario must skip the Docker
+    invocation and build a SimulationResult from the existing files.
+
+    The test pre-populates a complete output set, then calls run_scenario
+    with a substrate_image guaranteed not to exist locally. If the
+    cache path works, no Docker call is attempted and no DriverError is
+    raised; the result has flows parsed from the planted fct.txt.
+    """
+    run_id = "cached-run"
+    trace_dir = tmp_path / run_id
+    trace_dir.mkdir()
+    # Plant a complete output set. fct.txt has one well-formed flow so
+    # we can verify the parse path populates SimulationResult.flows.
+    (trace_dir / "fct.txt").write_text(
+        "0b000001 0b000201 49152 10001 7500000 50000000 1500 1000\n"
+    )
+    (trace_dir / "intended.txt").write_text(
+        "0b000001 0b000201 10001 5000 50000000\n"
+    )
+    (trace_dir / "pfc.txt").write_text("")
+    (trace_dir / "ecn.txt").write_text("")
+    (trace_dir / "counters.txt").write_text("")
+    (trace_dir / "host_counters.txt").write_text("")
+
+    driver = Driver(
+        substrate_image="doppelganger-substrate-definitely-does-not-exist",
+        traces_root=tmp_path,
+    )
+    result = driver.run_scenario("spike-burst", run_id=run_id)
+
+    assert "cached" in result.stdout
+    assert result.wall_clock_seconds == 0.0
+    assert len(result.flows) == 1
+    assert result.flows[0].sip == "0b000001"
+    assert result.flows[0].fct_ns == 1500
+
+
+def test_driver_run_cache_requires_all_six_output_files(tmp_path):
+    """Partial output (e.g., missing host_counters.txt) must NOT trigger
+    the cache path — that would let a crashed-mid-write substrate run
+    look like a successful one. All six required files must be present.
+    """
+    run_id = "partial-run"
+    trace_dir = tmp_path / run_id
+    trace_dir.mkdir()
+    # Five of six files — missing host_counters.txt (the latest addition).
+    for fname in ("fct.txt", "intended.txt", "pfc.txt", "ecn.txt", "counters.txt"):
+        (trace_dir / fname).write_text("")
+
+    driver = Driver(
+        substrate_image="doppelganger-substrate-definitely-does-not-exist",
+        traces_root=tmp_path,
+    )
+    # Should still try to verify image (cache miss) and fail because the
+    # image doesn't exist — i.e., the cache did NOT short-circuit.
+    with pytest.raises(DriverError, match="not found locally"):
+        driver.run_scenario("spike-burst", run_id=run_id)
+
+
 def test_driver_compiles_scenario_before_image_check(tmp_path):
     """Driver should compile the scenario into trace_dir before checking the image.
 

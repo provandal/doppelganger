@@ -91,7 +91,7 @@ def test_build_server_returns_fastmcp_instance():
 
 
 def test_server_registers_expected_tools():
-    """The server must expose all six adapter tools."""
+    """The server must expose all seven adapter tools."""
     server = build_server()
     # FastMCP exposes registered tools via list_tools (async); we go through
     # the tool manager directly for sync access in tests.
@@ -101,6 +101,7 @@ def test_server_registers_expected_tools():
     assert "get_topology" in tool_names
     assert "get_fabric_counters" in tool_names
     assert "get_flow_records" in tool_names
+    assert "get_host_counters" in tool_names
     assert "compare_runs" in tool_names
 
 
@@ -436,6 +437,45 @@ def test_get_flow_records_response_does_not_leak_scenario_name():
                         f"get_flow_records response builds a dict with "
                         f"key {k.value!r} — leaks scenario name to agent."
                     )
+
+
+def test_get_host_counters_response_does_not_leak_scenario_name():
+    """Mirror of test_get_fabric_counters_response_does_not_leak_scenario_name
+    for the new get_host_counters tool. Same AST-walk: no dict literal
+    in the response builder may carry a `scenario` key."""
+    from doppelganger.adapter.server import build_server
+    from doppelganger.driver.simulation import Driver
+
+    driver = Driver(substrate_image="bogus-image")
+    server = build_server(driver=driver)
+    tool = server._tool_manager._tools["get_host_counters"]  # type: ignore[attr-defined]
+    assert tool.fn.__doc__, "get_host_counters needs a docstring"
+    import ast
+    import inspect
+    import textwrap
+    src = textwrap.dedent(inspect.getsource(tool.fn))
+    tree = ast.parse(src)
+    leaky_keys = {"scenario"}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Dict):
+            for k in node.keys:
+                if isinstance(k, ast.Constant) and k.value in leaky_keys:
+                    raise AssertionError(
+                        f"get_host_counters response builds a dict with "
+                        f"key {k.value!r} — leaks scenario name to agent."
+                    )
+
+
+def test_get_host_counters_unknown_scenario_raises():
+    from doppelganger.adapter.server import build_server
+    from doppelganger.driver.simulation import Driver
+
+    driver = Driver(substrate_image="bogus-image")
+    server = build_server(driver=driver)
+    tool = server._tool_manager._tools["get_host_counters"]  # type: ignore[attr-defined]
+
+    with pytest.raises(ValueError, match="Unknown scenario"):
+        tool.fn(name="no-such-scenario", run_id=None)
 
 
 def test_get_flow_records_unknown_scenario_raises():
@@ -806,6 +846,43 @@ def test_get_flow_records_microburst_returns_per_flow_array(tmp_path):
     assert summary["total"] == summary["completed"] + summary["incomplete"]
     assert "fct" in summary
     assert summary["fct"]["n"] >= 0
+
+
+# ---------------------------------------------- get_host_counters end-to-end (gated)
+
+@pytest.mark.requires_substrate
+def test_get_host_counters_zero_fills_every_host(tmp_path):
+    """A healthy microburst run should produce host_counters.txt (possibly
+    empty) and the response should zero-fill an entry for every host
+    declared by the topology. The diagnostic principle is "observed-zero
+    is data, not absence" — the agent must see all hosts to recognize
+    that none had PHY drops on this run.
+    """
+    from doppelganger.adapter.server import build_server
+    from doppelganger.driver.simulation import Driver
+
+    if not _substrate_image_present():
+        pytest.skip("doppelganger-substrate image not built locally")
+
+    driver = Driver(traces_root=tmp_path)
+    server = build_server(driver=driver)
+    tool = server._tool_manager._tools["get_host_counters"]  # type: ignore[attr-defined]
+
+    envelope = tool.fn(name="microburst", run_id=None)
+    assert envelope["confidence"] == "high"
+    data = envelope["data"]
+
+    # microburst has 16 hosts; zero-fill must give us at least 16 records
+    assert len(data["hosts"]) >= 16
+    # Each record has the four expected fields
+    for rec in data["hosts"][:5]:  # spot check
+        assert set(rec.keys()) >= {
+            "host_id", "ip", "if_index", "drop_packets"
+        }
+    # Microburst is healthy → no link errors injected → every drop_packets
+    # value should be 0
+    for rec in data["hosts"]:
+        assert rec["drop_packets"] == 0
 
 
 def _substrate_image_present() -> bool:

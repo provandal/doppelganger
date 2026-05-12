@@ -24,6 +24,7 @@ from doppelganger.driver.incomplete import compute_incomplete_flows
 from doppelganger.driver.parsers.counters import parse_counters_file
 from doppelganger.driver.parsers.ecn import parse_ecn_file
 from doppelganger.driver.parsers.fct import parse_fct_file
+from doppelganger.driver.parsers.host_counters import parse_host_counters_file
 from doppelganger.driver.parsers.intended import parse_intended_file
 from doppelganger.driver.parsers.pfc import parse_pfc_file
 from doppelganger.driver.simulation import Driver
@@ -537,6 +538,112 @@ def build_server(
                 "flows": [_flow_to_dict(f) for f in all_flows],
             },
             source=f"driver.run_scenario({name!r})+fct_parse+intended_xref",
+            observed_at_ns=None,
+            staleness_class="fresh",
+        )
+
+    @server.tool()
+    def get_host_counters(name: str, run_id: str | None = None) -> dict[str, Any]:
+        """Run a scenario and return per-host PHY-rx drop counters.
+
+        Each record carries the host_id, its IP (per the substrate's
+        node_id_to_ip convention), the NIC if_index, and the count of
+        packets dropped at the host's PHY layer during simulation —
+        i.e., packets that arrived corrupted on the host's incoming
+        link. Zero counts surface as ``0``, not as missing rows; the
+        agent should treat zero across the fabric as "no link-layer
+        drops detected," not as "missing data."
+
+        The diagnostic surface this enables: when flows are
+        completing slowly or not at all and switch-side counters look
+        clean (no admission drops, no PFC propagation, ECN within
+        normal range), elevated host-PHY drops point to link-layer
+        silent drops — the canonical RoCE-fabric failure mode where
+        CRC errors / optical degradation / cable issues let some
+        fraction of packets through corrupted. Switch-side
+        ``dropped_packets`` (in ``get_fabric_counters``) tracks
+        admission failures; host-side drops here track PHY corruption.
+        The two together cover both classes of drop.
+
+        Parameters
+        ----------
+        name:
+            One of the names returned by ``list_scenarios``.
+        run_id:
+            Optional run identifier (used as the trace-dir name).
+
+        Returns the response envelope; ``data.hosts`` is a list of
+        per-(host_id, if_index) records.
+        """
+        scenario_topology: Topology | None = None
+        if name == "spike-burst":
+            result = driver.run_scenario("spike-burst", run_id=run_id)
+        elif name in BUILTIN_SCENARIO_FACTORIES:
+            scenario = BUILTIN_SCENARIO_FACTORIES[name]()
+            scenario_topology = scenario.custom_topology
+            result = driver.run_scenario(scenario, run_id=run_id)
+        else:
+            raise ValueError(
+                f"Unknown scenario {name!r}. "
+                f"Call list_scenarios for the available set."
+            )
+
+        host_counters_path = result.trace_dir / "host_counters.txt"
+        observed = (
+            parse_host_counters_file(host_counters_path)
+            if host_counters_path.exists() else []
+        )
+
+        # Build per-(host_id, if_index) lookup of observed drops.
+        observed_by_key: dict[tuple[int, int], int] = {
+            (r.host_id, r.if_index): r.drop_packets for r in observed
+        }
+
+        hosts_payload: list[dict[str, Any]] = []
+        if scenario_topology is not None:
+            # Custom-topology scenarios: enumerate all hosts from
+            # topology declaration and zero-fill drops for those that
+            # had no observed activity. Default to if_index=1 per the
+            # substrate's host NIC assignment (loopback is if 0).
+            for host_id in range(scenario_topology.num_hosts):
+                # If any (host_id, if_*) appeared in the file, surface
+                # those; otherwise emit a single zero-row for if_index=1.
+                ifs = [k for k in observed_by_key if k[0] == host_id]
+                if ifs:
+                    for (h, ifi) in ifs:
+                        hosts_payload.append({
+                            "host_id": h,
+                            "ip": _host_id_to_ip(h),
+                            "if_index": ifi,
+                            "drop_packets": observed_by_key[(h, ifi)],
+                        })
+                else:
+                    hosts_payload.append({
+                        "host_id": host_id,
+                        "ip": _host_id_to_ip(host_id),
+                        "if_index": 1,
+                        "drop_packets": 0,
+                    })
+        else:
+            # Substrate-bundled scenarios: no topology declaration to
+            # enumerate against. Surface only what's in the file. The
+            # agent gets a degraded payload but can still spot a
+            # non-zero count when it appears.
+            for r in observed:
+                hosts_payload.append({
+                    "host_id": r.host_id,
+                    "ip": _host_id_to_ip(r.host_id),
+                    "if_index": r.if_index,
+                    "drop_packets": r.drop_packets,
+                })
+
+        return envelope(
+            {
+                "run_id": result.trace_dir.name,
+                "trace_dir": str(result.trace_dir),
+                "hosts": hosts_payload,
+            },
+            source=f"driver.run_scenario({name!r})+host_phy_rx_drops",
             observed_at_ns=None,
             staleness_class="fresh",
         )

@@ -163,14 +163,18 @@ def test_incomplete_record_preserves_intended_start_time():
     assert incomplete[0].intended_start_ns == 123456789
 
 
-def test_incomplete_record_has_sport_zero_when_never_scheduled():
-    """A flow that never scheduled has no sport. Zero is the
-    canonical placeholder used in the response — the dport carries
-    the agent-readable identifier."""
+def test_incomplete_record_has_sport_none_when_never_scheduled():
+    """A flow that never scheduled has no sport. The field is None,
+    NOT 0. The 2026-05-12 silent-drops trace 4911e4f5... showed that
+    a sentinel like 0 reads as a real signal to the agent — the
+    response constructed a multi-paragraph 'sport=0 library regression'
+    story anchored on that placeholder. None forces null in the
+    serialized response and disambiguates 'unknown' from a real port.
+    """
     intended = [_intended_flow(dport=10001)]
     completed: list[PerFlowRecord] = []
     incomplete = compute_incomplete_flows(intended, completed)
-    assert incomplete[0].sport == 0
+    assert incomplete[0].sport is None
 
 
 def test_completed_flow_not_in_intended_is_ignored():

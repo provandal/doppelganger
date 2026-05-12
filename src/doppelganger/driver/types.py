@@ -32,12 +32,21 @@ class PerFlowRecord:
     `status`: completed flows fill `actual_*` fields from `fct.txt`;
     incomplete flows leave them as None and the record exists because the
     scenario metadata said this flow should have run.
+
+    ``sport`` is ``int | None`` (2026-05-12) — completed flows carry an
+    int from fct.txt; incomplete flows carry None because the substrate
+    assigns sport at flow-schedule time, after intended.txt is written,
+    and a flow that never schedules never gets one. Using a sentinel
+    like 0 here let agents read it as a real diagnostic signal and
+    fabricate plausible-but-wrong stories around it (silent-drops trace
+    4911e4f5... on 2026-05-12); None forces the field to render as
+    null in the response and disambiguates "unknown" from a real port.
     """
 
     # Identifying fields (always present; populated from scenario or trace)
     sip: str
     dip: str
-    sport: int
+    sport: int | None
     dport: int
     flow_id: str | None = None
     intended_start_ns: int | None = None

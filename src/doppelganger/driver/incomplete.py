@@ -21,6 +21,14 @@ written); incomplete flows that never schedule never get an sport, so
 including it would never match. The scenarios this targets do not
 multiplex flows of the same ``(sip, dip, dport)`` triple at different
 sports, so the key is unambiguous.
+
+Incomplete records carry ``sport=None`` (2026-05-12 leak fix). The
+previous placeholder value of 0 was readable as a diagnostic signal
+by the agent — silent-drops trace 4911e4f5... on 2026-05-12 spent
+several paragraphs constructing a coherent-but-wrong story around
+"all 13 incomplete flows share sport=0, library regression with
+ECMP hash collapse." None disambiguates "unknown" from a real port
+and forces JSON null in the serialized response.
 """
 
 from __future__ import annotations
@@ -47,11 +55,12 @@ def compute_incomplete_flows(
     -------
     list[PerFlowRecord]
         One record per intended flow whose ``(sip, dip, dport)`` does
-        not appear in the completed set. Each record carries the
-        intended 5-tuple (sport=0 because unknown), the intended start
-        time, and ``status=DROPPED_WITHOUT_COMPLETION``. Measurement
-        fields (fct_ns, standalone_fct_ns, actual_*) are left None
-        because the flow never produced them.
+        not appear in the completed set. Each record carries sip/dip/
+        dport from intent, ``sport=None`` (substrate never assigned
+        one for this flow), the intended start time, and
+        ``status=DROPPED_WITHOUT_COMPLETION``. Measurement fields
+        (fct_ns, standalone_fct_ns, actual_*) are left None because
+        the flow never produced them.
     """
     completed_keys = {(r.sip, r.dip, r.dport) for r in completed}
     incomplete: list[PerFlowRecord] = []
@@ -63,7 +72,7 @@ def compute_incomplete_flows(
             PerFlowRecord(
                 sip=intent.sip,
                 dip=intent.dip,
-                sport=0,
+                sport=None,
                 dport=intent.dport,
                 status=CompletionStatus.DROPPED_WITHOUT_COMPLETION,
                 intended_start_ns=intent.intended_start_ns,

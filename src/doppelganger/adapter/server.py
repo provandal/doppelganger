@@ -20,9 +20,11 @@ from typing import Any, Callable
 from mcp.server.fastmcp import FastMCP
 
 from doppelganger.driver.counters import aggregate_counters
+from doppelganger.driver.incomplete import compute_incomplete_flows
 from doppelganger.driver.parsers.counters import parse_counters_file
 from doppelganger.driver.parsers.ecn import parse_ecn_file
 from doppelganger.driver.parsers.fct import parse_fct_file
+from doppelganger.driver.parsers.intended import parse_intended_file
 from doppelganger.driver.parsers.pfc import parse_pfc_file
 from doppelganger.driver.simulation import Driver
 from doppelganger.driver.types import CompletionStatus, PerFlowRecord
@@ -514,15 +516,27 @@ def build_server(
                 f"Call list_scenarios for the available set."
             )
 
-        summary = summarize_run(result.flows)
+        # 2026-05-12: cross-reference intended.txt against completed
+        # flows to surface incomplete flows. intended.txt is written by
+        # the substrate fork at flow-schedule time; missing for older
+        # substrate images, in which case incomplete tracking degrades
+        # to zero and the response shape stays the same.
+        intended_path = result.trace_dir / "intended.txt"
+        intended_records = (
+            parse_intended_file(intended_path) if intended_path.exists() else []
+        )
+        incomplete = compute_incomplete_flows(intended_records, result.flows)
+        all_flows = list(result.flows) + incomplete
+
+        summary = summarize_run(all_flows)
         return envelope(
             {
                 "run_id": result.trace_dir.name,
                 "trace_dir": str(result.trace_dir),
                 "summary": _summary_to_dict(summary),
-                "flows": [_flow_to_dict(f) for f in result.flows],
+                "flows": [_flow_to_dict(f) for f in all_flows],
             },
-            source=f"driver.run_scenario({name!r})+fct_parse",
+            source=f"driver.run_scenario({name!r})+fct_parse+intended_xref",
             observed_at_ns=None,
             staleness_class="fresh",
         )

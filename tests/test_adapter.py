@@ -716,6 +716,53 @@ def test_get_fabric_counters_zero_fills_every_topology_switch_port(tmp_path):
 # ---------------------------------------------- get_flow_records end-to-end (gated)
 
 @pytest.mark.requires_substrate
+def test_get_flow_records_intended_txt_present_and_summary_consistent(tmp_path):
+    """End-to-end check that the substrate (fork commit f004e9e or later)
+    emits intended.txt and Doppelgänger's cross-reference produces a
+    summary where total == completed + incomplete with `flows` length
+    equal to total.
+
+    Doesn't assert on incomplete > 0 for microburst — that scenario
+    is expected to complete cleanly. A scenario engineered to lose
+    flows (silent-drops at sufficient rate) is what would exercise
+    the non-zero path; this test only validates the wiring.
+    """
+    from pathlib import Path
+
+    from doppelganger.adapter.server import build_server
+    from doppelganger.driver.simulation import Driver
+
+    if not _substrate_image_present():
+        pytest.skip("doppelganger-substrate image not built locally")
+
+    driver = Driver(traces_root=tmp_path)
+    server = build_server(driver=driver)
+    tool = server._tool_manager._tools["get_flow_records"]  # type: ignore[attr-defined]
+
+    envelope = tool.fn(name="microburst", run_id=None)
+    data = envelope["data"]
+
+    trace_dir = Path(data["trace_dir"])
+    intended_path = trace_dir / "intended.txt"
+    assert intended_path.exists(), (
+        f"intended.txt not emitted at {intended_path}; substrate image "
+        f"may be from before fork commit f004e9e (2026-05-12)"
+    )
+    # At least one intended row should be present for a non-trivial scenario
+    intended_lines = [
+        ln for ln in intended_path.read_text().splitlines() if ln.strip()
+    ]
+    assert len(intended_lines) > 0
+
+    summary = data["summary"]
+    assert summary["total"] == summary["completed"] + summary["incomplete"]
+    assert len(data["flows"]) == summary["total"]
+    # All intended flows are accounted for: completed + incomplete should
+    # equal the intended row count.
+    assert summary["total"] == len(intended_lines)
+
+
+@pytest.mark.requires_substrate
 def test_get_flow_records_microburst_returns_per_flow_array(tmp_path):
     """Run the microburst scenario via the adapter and verify the
     response envelope carries a non-empty `flows` array whose records

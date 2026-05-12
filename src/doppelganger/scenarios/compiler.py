@@ -125,6 +125,7 @@ def compile_scenario(scenario: Scenario, output_path: Path) -> Path:
     lines.append("PFC_OUTPUT_FILE mix/pfc.txt")
     lines.append("ECN_OUTPUT_FILE mix/ecn.txt")
     lines.append("COUNTERS_OUTPUT_FILE mix/counters.txt")
+    lines.append("INTENDED_OUTPUT_FILE mix/intended.txt")
     lines.append("")
 
     # Simulation duration

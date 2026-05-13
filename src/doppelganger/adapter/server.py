@@ -20,6 +20,7 @@ from typing import Any, Callable
 from mcp.server.fastmcp import FastMCP
 
 from doppelganger.driver.counters import aggregate_counters
+from doppelganger.driver.host_counters import aggregate_host_counters
 from doppelganger.driver.incomplete import compute_incomplete_flows
 from doppelganger.driver.parsers.counters import parse_counters_file
 from doppelganger.driver.parsers.ecn import parse_ecn_file
@@ -32,6 +33,8 @@ from doppelganger.driver.types import CompletionStatus, PerFlowRecord
 from doppelganger.eval.comparison import compare_runs as _compare_runs
 from doppelganger.eval.comparison import summarize_run
 from doppelganger.scenarios.builtin import (
+    SPIKE_BURST_256,
+    SPIKE_BURST_256_TOPOLOGY,
     asymmetric_path,
     hash_polarization,
     microburst,
@@ -547,12 +550,15 @@ def build_server(
         """Run a scenario and return per-host PHY-rx drop counters.
 
         Each record carries the host_id, its IP (per the substrate's
-        node_id_to_ip convention), the NIC if_index, and the count of
-        packets dropped at the host's PHY layer during simulation —
-        i.e., packets that arrived corrupted on the host's incoming
-        link. Zero counts surface as ``0``, not as missing rows; the
-        agent should treat zero across the fabric as "no link-layer
-        drops detected," not as "missing data."
+        node_id_to_ip convention), the NIC if_index, the count of
+        packets dropped at the host's PHY layer during simulation, and
+        a derived ``drops_per_million`` rate against the count of
+        packets the host's leaf transmitted toward it. Zero counts
+        surface as ``0``, not as missing rows; the agent should treat
+        zero across the fabric as "no link-layer drops detected," not
+        as "missing data." ``drops_per_million`` is ``null`` when the
+        denominator is 0 (host received no inbound traffic this run)
+        or when topology metadata is unavailable.
 
         The diagnostic surface this enables: when flows are
         completing slowly or not at all and switch-side counters look
@@ -563,7 +569,11 @@ def build_server(
         fraction of packets through corrupted. Switch-side
         ``dropped_packets`` (in ``get_fabric_counters``) tracks
         admission failures; host-side drops here track PHY corruption.
-        The two together cover both classes of drop.
+        The two together cover both classes of drop. The
+        ``drops_per_million`` rate makes hosts of different load
+        levels comparable on a single axis — a small absolute count on
+        a lightly loaded host can be the same corruption rate as a
+        large count on a heavily loaded one.
 
         Parameters
         ----------
@@ -578,9 +588,17 @@ def build_server(
         scenario_topology: Topology | None = None
         if name == "spike-burst":
             result = driver.run_scenario("spike-burst", run_id=run_id)
+            # The "spike-burst" CLI shortcut runs the bundled topology;
+            # use the Python-side shadow so drops_per_million is computable.
+            scenario_topology = SPIKE_BURST_256_TOPOLOGY
         elif name in BUILTIN_SCENARIO_FACTORIES:
             scenario = BUILTIN_SCENARIO_FACTORIES[name]()
             scenario_topology = scenario.custom_topology
+            if scenario_topology is None and scenario.topology.name == SPIKE_BURST_256.name:
+                # Substrate-bundled topology with no Python declaration —
+                # fall back to the shadow so the aggregator can compute
+                # the host→leaf-port mapping for drops_per_million.
+                scenario_topology = SPIKE_BURST_256_TOPOLOGY
             result = driver.run_scenario(scenario, run_id=run_id)
         else:
             raise ValueError(
@@ -593,49 +611,14 @@ def build_server(
             parse_host_counters_file(host_counters_path)
             if host_counters_path.exists() else []
         )
+        counters_path = result.trace_dir / "counters.txt"
+        rollup_rows = (
+            parse_counters_file(counters_path) if counters_path.exists() else []
+        )
 
-        # Build per-(host_id, if_index) lookup of observed drops.
-        observed_by_key: dict[tuple[int, int], int] = {
-            (r.host_id, r.if_index): r.drop_packets for r in observed
-        }
-
-        hosts_payload: list[dict[str, Any]] = []
-        if scenario_topology is not None:
-            # Custom-topology scenarios: enumerate all hosts from
-            # topology declaration and zero-fill drops for those that
-            # had no observed activity. Default to if_index=1 per the
-            # substrate's host NIC assignment (loopback is if 0).
-            for host_id in range(scenario_topology.num_hosts):
-                # If any (host_id, if_*) appeared in the file, surface
-                # those; otherwise emit a single zero-row for if_index=1.
-                ifs = [k for k in observed_by_key if k[0] == host_id]
-                if ifs:
-                    for (h, ifi) in ifs:
-                        hosts_payload.append({
-                            "host_id": h,
-                            "ip": _host_id_to_ip(h),
-                            "if_index": ifi,
-                            "drop_packets": observed_by_key[(h, ifi)],
-                        })
-                else:
-                    hosts_payload.append({
-                        "host_id": host_id,
-                        "ip": _host_id_to_ip(host_id),
-                        "if_index": 1,
-                        "drop_packets": 0,
-                    })
-        else:
-            # Substrate-bundled scenarios: no topology declaration to
-            # enumerate against. Surface only what's in the file. The
-            # agent gets a degraded payload but can still spot a
-            # non-zero count when it appears.
-            for r in observed:
-                hosts_payload.append({
-                    "host_id": r.host_id,
-                    "ip": _host_id_to_ip(r.host_id),
-                    "if_index": r.if_index,
-                    "drop_packets": r.drop_packets,
-                })
+        hosts_payload = aggregate_host_counters(
+            observed, rollup_rows, scenario_topology
+        )
 
         return envelope(
             {

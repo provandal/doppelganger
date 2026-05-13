@@ -874,15 +874,18 @@ def test_get_host_counters_zero_fills_every_host(tmp_path):
 
     # microburst has 16 hosts; zero-fill must give us at least 16 records
     assert len(data["hosts"]) >= 16
-    # Each record has the four expected fields
+    # Each record has the five expected fields (drops_per_million added
+    # 2026-05-13 as Option D from HANDOFF_NEXT_SESSION.md)
     for rec in data["hosts"][:5]:  # spot check
         assert set(rec.keys()) >= {
-            "host_id", "ip", "if_index", "drop_packets"
+            "host_id", "ip", "if_index", "drop_packets", "drops_per_million"
         }
     # Microburst is healthy → no link errors injected → every drop_packets
-    # value should be 0
+    # value should be 0. drops_per_million is either 0.0 (if the host
+    # received traffic) or None (if not) — never a non-zero number.
     for rec in data["hosts"]:
         assert rec["drop_packets"] == 0
+        assert rec["drops_per_million"] in (0.0, None)
 
 
 def _substrate_image_present() -> bool:

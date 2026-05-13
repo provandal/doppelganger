@@ -14,6 +14,7 @@ can mutate fields without poisoning the next caller.
 from __future__ import annotations
 
 from doppelganger.scenarios.topology import Topology
+from doppelganger.scenarios.topology import Topology
 from doppelganger.scenarios.traffic import OPEN_LOOP_PACKETS, Flow, TrafficPattern
 from doppelganger.scenarios.types import Scenario, TopologyRef
 
@@ -26,6 +27,28 @@ SPIKE_BURST_256 = TopologyRef(
         "256-host leaf-spine with the bundled burst flow pattern. "
         "What the 2026-05-02 fork spike validated end-to-end."
     ),
+)
+
+
+# Python-side shadow of the substrate-bundled topology-256.txt dimensions.
+# Used by the Adapter to compute fields that need host→leaf-port mapping
+# (e.g., drops_per_million in get_host_counters) for scenarios that
+# reference SPIKE_BURST_256 instead of declaring a custom_topology.
+#
+# Dimensions verified by reading topology-256.txt: 8 leaves (node_ids
+# 256-263) × 32 hosts/leaf = 256 hosts. Spines = 4 is a placeholder —
+# the leaf↔spine connectivity shape doesn't affect host→leaf-port
+# mapping (which is what drops_per_million needs); if a future
+# aggregator needs accurate spine fan-out, refine this constant from
+# the actual topology.txt.
+#
+# NOT passed to the Driver as scenario.custom_topology — the bundled
+# scenarios use TopologyRef pointing at the bundled topology file +
+# bundled flow file, and forcing custom_topology would compile a fresh
+# topology.txt that wouldn't match the bundled flows. This is a
+# metadata-only shadow.
+SPIKE_BURST_256_TOPOLOGY: Topology = Topology(
+    leaves=8, spines=4, hosts_per_leaf=32,
 )
 
 
